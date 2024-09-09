@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Thermal Printer",
+    "brand": ["Grozziie"],
+    "model": ["TP598", "TP518", "TP876", "TP230", "TP210"]
+  },
+  {
+    "name": "Attendance Check",
+    "brand": ["Geo Master"],
+    "model": ["V-6"]
+  },
+  {
+    "name": "Dot Printer",
+    "brand": ["Dot Matrix"],
+    "model": ["DOT101"]
+  }
+]

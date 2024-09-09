@@ -1,0 +1,21 @@
+[debug] [2023-07-04T07:56:10.535Z] ----------------------------------------------------------------------
+[debug] [2023-07-04T07:56:10.539Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\joyti\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2023-07-04T07:56:10.540Z] CLI Version:   12.4.2
+[debug] [2023-07-04T07:56:10.541Z] Platform:      win32
+[debug] [2023-07-04T07:56:10.541Z] Node Version:  v18.16.0
+[debug] [2023-07-04T07:56:10.542Z] Time:          Tue Jul 04 2023 13:56:10 GMT+0600 (Bangladesh Standard Time)
+[debug] [2023-07-04T07:56:10.543Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-07-04T07:56:10.555Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-07-04T07:56:10.555Z] > authorizing via signed-in user (thtshajjad@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\joyti\projects\export_import
+
