@@ -15,6 +15,9 @@ const NewBrand = () => {
   const [productsName, setProductsName] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -38,6 +41,7 @@ const NewBrand = () => {
   // products fetch from server
   const fetchProductsName = async () => {
     try {
+
       const response = await axios.get(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/newproduct"
       );
@@ -45,10 +49,12 @@ const NewBrand = () => {
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
       setProductsName(sortedData);
       setLoading(false);
+
     } catch (error) {
       toast.error("Error getting data from server!", {
         position: "top-center",
       });
+
     }
   };
 
@@ -61,6 +67,7 @@ const NewBrand = () => {
       // data see in table descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
       setProducts(sortedData);
+      setFilteredProducts(sortedData);
       setLoading(false);
     } catch (error) {
       toast.error("Error getting data from server!", {
@@ -69,9 +76,23 @@ const NewBrand = () => {
     }
   };
 
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    // Filter products based on search term for productName and productBrand
+    const filtered = products?.filter((product) =>
+      product.productName.toLowerCase().includes(value) || // Filter by productName
+      product.productBrand.toLowerCase().includes(value)   // Filter by productBrand
+    );
+
+    setFilteredProducts(filtered);
+  };
+
   // http://localhost:5001/products
   const handleSubmit = (e) => {
     e.preventDefault();
+    setBtnLoading(true);
     // console.log(formData);
     axios
       .post(
@@ -87,12 +108,14 @@ const NewBrand = () => {
         toast.success("Successfully Data Uploaded", {
           position: "top-center",
         });
+        setBtnLoading(false);
         navigate("/admin");
       })
       .catch((err) =>
         toast.error("Error coming from server please try again later", {
           position: "top-center",
         })
+
       );
 
     // console.log(formData);
@@ -173,7 +196,7 @@ const NewBrand = () => {
               <button
                 className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
                 type="submit">
-                Save
+                {btnLoading ? "Loading" : "Save"}
               </button>
             </div>
           </div>
@@ -182,9 +205,19 @@ const NewBrand = () => {
 
       {/* Table data get from products database */}
       <div className="w-full lg:w-3/4 mx-auto">
-        <h1 className="text-center my-6 text-2xl text-info font-bold bg-slate-500 p-[10px] rounded-lg uppercase">
-          All Product's List
-        </h1>
+        <div className="flex justify-between items-center bg-slate-500 p-[10px] rounded-lg my-6">
+          <h1 className="text-2xl text-info font-bold uppercase">
+            All Product's List
+          </h1>
+          <input
+            type="text"
+            placeholder="Search Product Or Brand"
+            className="p-2 rounded-lg border border-gray-300"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>
+
         <div className="overflow-x-auto add__scrollbar">
           {loading ? (
             <div className="">
@@ -210,7 +243,7 @@ const NewBrand = () => {
                 </tr>
               </thead>
               <tbody>
-                {products?.map((product) => (
+                {filteredProducts?.map((product) => (
                   <tr className="hover cursor-pointer" key={product.id}>
                     <td>{product.id}</td>
                     <td>{product.productName}</td>

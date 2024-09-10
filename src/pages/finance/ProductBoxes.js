@@ -12,11 +12,12 @@ const ProductBoxes = () => {
 
   // For multiple product add
   const [selectedProductName, setSelectedProductName] = useState("");
-  const [selectedProductModels, setSelectedProductModels] = useState({});
+  const [selectedProductModels, setSelectedProductModels] = useState("");
   const [selectedProductPallet, setSelectedProductPallet] = useState("");
   const [inputValues, setInputValues] = useState({});
   const [perBoxProducts, setPerBoxProducts] = useState(0);
   const [resultsValues, setResultsValues] = useState(0);
+  const [productQuantity, setProductQuantity] = useState(0);
   const [totalBox, setTotalBox] = useState(0);
   const [sessionData, setSessionData] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -24,22 +25,10 @@ const ProductBoxes = () => {
   const componentPDF = useRef();
 
   useEffect(() => {
-    fetchProducts();
+    // fetchProducts();
     fetchAccounts();
-    fetchBoxProducts();
+    // fetchBoxProducts();
   }, []);
-
-  // Fetch functions
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get(
-        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/products"
-      );
-      setAccounts(response?.data);
-    } catch (error) {
-      toast.error("Error getting data from server!");
-    }
-  };
 
   const fetchAccounts = async () => {
     try {
@@ -52,26 +41,8 @@ const ProductBoxes = () => {
     }
   };
 
-  const fetchBoxProducts = async () => {
-    try {
-      const response = await axios.get(
-        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes"
-      );
-      setBoxProducts(response?.data);
-    } catch (error) {
-      toast.error("Error getting data from server!");
-    }
-  };
 
-  // Get unique product names
-  const products = Array.from(new Set(accounts?.map((p) => p.productName)) || []);
 
-  // Filter models based on selected product name
-  const filteredProductModels = accounts
-    .filter((p) => p.productName === selectedProductName)
-    .map((p) => p.productModel);
-
-  // Handle changes in product model checkboxes
   const handleProductModelCheckboxChange = (e) => {
     const { value, checked } = e.target;
     setSelectedProductModels((prev) => ({
@@ -81,61 +52,33 @@ const ProductBoxes = () => {
     setErrorMessage("");
   };
 
-  // Handle input value changes with debounce
-  const handleInputValueChange = (e) => {
-    const { name, value } = e.target;
-    const numericValue = parseFloat(value) || 0;
 
-    setInputValues((prev) => ({
-      ...prev,
-      [name]: numericValue,
-    }));
-  };
 
-  const debouncedInputValueChange = debounce(handleInputValueChange, 300);
 
-  // Automatically calculate on input change
-  // useEffect(() => {
-  //   // Calculate perBoxProducts
-  //   const perBox = Object.values(inputValues)
-  //     .filter((val, idx) => Object.keys(selectedProductModels)[idx] && selectedProductModels[Object.keys(selectedProductModels)[idx]])
-  //     .reduce((acc, val) => acc + val, 0);
-  //   setPerBoxProducts(perBox);
+  //Update
+  const handlePerBoxValueChange = (e) => {
+    console.log(e.target.value);
+    setPerBoxProducts(e.target.value)
+  }
 
-  //   // Calculate resultsValues
-  //   const quantity = Object.values(inputValues).reduce((acc, val) => acc + val, 0);
-  //   setResultsValues(quantity);
+  const handleQuantityValueChange = (e) => {
+    console.log(e.target.value);
+    setProductQuantity(e.target.value)
 
-  //   // Calculate totalBox
-  //   if (perBox > 0) {
-  //     const boxes = Math.ceil(quantity / perBox);
-  //     setTotalBox(boxes);
-  //   } else {
-  //     setTotalBox(0);
-  //   }
-  // }, [inputValues, selectedProductModels]);
+  }
 
   useEffect(() => {
-    // Calculate perBoxProducts based on selected models
-    const perBox = Object.keys(selectedProductModels)
-      .filter(model => selectedProductModels[model])
-      .reduce((acc, model) => acc + (inputValues[`perBox_${model}`] || 0), 0);
-    setPerBoxProducts(perBox);
 
-    // Calculate resultsValues based on selected models
-    const quantity = Object.keys(selectedProductModels)
-      .filter(model => selectedProductModels[model])
-      .reduce((acc, model) => acc + (inputValues[`quantity_${model}`] || 0), 0);
-    setResultsValues(quantity);
+    if (perBoxProducts > 0) {
 
-    // Calculate totalBox based on the product quantity and per box quantity
-    if (perBox > 0) {
-      const boxes = Math.ceil(quantity / perBox);
+      const boxes = Math.ceil(productQuantity / perBoxProducts);
+      console.log(productQuantity, perBoxProducts, boxes, "box");
+
       setTotalBox(boxes);
     } else {
       setTotalBox(0);
     }
-  }, [inputValues, selectedProductModels]);
+  }, [productQuantity, perBoxProducts]);
 
 
   // Handle pallet input change
@@ -151,83 +94,55 @@ const ProductBoxes = () => {
   };
 
   // Handle product name change
+  // const handleNameInputChange = (e) => {
+  //   const selectedProduct = JSON.parse(e.target.value); // Parse the selected product
+  //   setSelectedProductName(selectedProduct?.productName); // Update the state with the selected product name
+  //   setSelectedProductModels(selectedProduct?.productModel); // Update the state with the selected product model
+
+
+  //   // Reset other input fields and values
+  //   setInputValues({});
+  //   setPerBoxProducts(0);
+  //   setResultsValues(0);
+  //   setTotalBox(0);
+  //   setErrorMessage("");
+  // };
+
   const handleNameInputChange = (e) => {
-    setSelectedProductName(e.target.value);
-    setSelectedProductModels({});
+    const productName = e.target.value; // Get the selected productName directly from the value
+    const selectedProduct = filteredProducts.find(product => product.productName === productName); // Find the selected product by name
+
+    if (selectedProduct) {
+      setSelectedProductName(selectedProduct.productName); // Update the state with the selected product name
+      setSelectedProductModels(selectedProduct.productModel); // Update the state with the selected product model
+    }
+
+    // Reset other input fields and values
     setInputValues({});
     setPerBoxProducts(0);
     setResultsValues(0);
     setTotalBox(0);
     setErrorMessage("");
   };
+  console.log(selectedProductName, "product");
 
-  // Handle form submission to add products to sessionData
-  const handleInstantStore = (e) => {
-    e.preventDefault();
 
-    if (!selectedProductName) {
-      setErrorMessage("Please select a product name.");
-      return;
-    }
 
-    if (!selectedProductPallet) {
-      setErrorMessage("Please enter a pallet number.");
-      return;
-    }
 
-    if (!truckNumber) {
-      setErrorMessage("Please enter a truck number.");
-      return;
-    }
 
-    if (Object.keys(selectedProductModels).length === 0) {
-      setErrorMessage("Please select at least one product model.");
-      return;
-    }
-
-    const selectedModels = Object.keys(selectedProductModels).filter(
-      (model) => selectedProductModels[model]
-    );
-
-    const splitProductsBox = selectedModels.map((model) => ({
-      productModel: model,
-      perBox: inputValues[`perBox_${model}`] || 0,
-    }));
-
-    const splitQuantitySingleProduct = selectedModels.map((model) => ({
-      productModel: model,
-      quantity: inputValues[`quantity_${model}`] || 0,
-    }));
-
-    const newData = {
-      productName: selectedProductName,
-      productModel: selectedModels,
-      quantity: resultsValues,
-      splitProductsBox,
-      splitQuantitySingleProduct,
-      productPerBox: perBoxProducts,
-      totalBox,
-      totalPallet: selectedProductPallet,
-      truckNumber,
-    };
-
-    setSessionData((prevData) => [...prevData, newData]);
-    setErrorMessage("");
-
-    // Reset form fields
-    setSelectedProductName("");
-    setSelectedProductModels({});
-    setInputValues({});
-    setPerBoxProducts(0);
-    setResultsValues(0);
-    setTotalBox(0);
-    setSelectedProductPallet("");
-    setTruckNumber("");
-  };
 
   // Handle form submission to send data to server
   const formSubmit = async (e) => {
     e.preventDefault();
+    const productData = {
+      productName: selectedProductName,
+      productModel: selectedProductModels,
+      perBoxProducts,
+      productQuantity,
+      totalBox
+    }
+    console.log(productData, "productData");
+
 
     if (sessionData.length === 0) {
       toast.error("No products to save.", {
@@ -291,14 +206,91 @@ const ProductBoxes = () => {
     }
   };
 
+  const [allDataProducts, setAllDataProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(""); // State for selected date
+  const [dates, setDates] = useState([]); // State for unique dates
+
+  useEffect(() => {
+    setLoading(true);
+    fetchAllDataProducts();
+  }, []);
+
+  // Fetch products from the server
+  const fetchAllDataProducts = async () => {
+    try {
+      const response = await axios.get(
+        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts"
+      );
+      const data = response?.data || [];
+      const sortedData = data.sort((a, b) => b.id - a.id);
+      setAllDataProducts(sortedData);
+      setFilteredProducts(sortedData);
+
+      // Extract unique dates from the products
+      const uniqueDates = [...new Set(data.map(product => product.date))];
+      setDates(uniqueDates);
+      setLoading(false);
+    } catch (error) {
+      toast.error("Error getting products from server!", {
+        position: "top-center",
+      });
+    }
+  };
+
+  // Handle date selection change
+  const handleDateChange = (event) => {
+    const selectedDate = event.target.value;
+    setSelectedDate(selectedDate);
+
+    // Filter products based on the selected date
+    const filtered = selectedDate
+      ? allDataProducts.filter((product) => product.date === selectedDate)
+      : [];
+
+    setFilteredProducts(filtered);
+  };
+
+  const handleToProductAdd = (e) => {
+    e.preventDefault();
+    const productData = {
+      productName: selectedProductName,
+      productModel: selectedProductModels,
+      perBoxProducts,
+      productQuantity,
+      totalBox
+    }
+    console.log(productData, "productData");
+    return;
+  }
+  console.log(filteredProducts);
+
+
   return (
     <div>
       {/* Form Design for Products Boxes */}
       <div className="mt-5 lg:flex justify-center items-center mb-4">
-        <form className="card shadow-xl mt-5 p-3" onSubmit={handleInstantStore}>
-          <h2 className="text-4xl font-bold text-violet-500 text-center mt-3">
-            Products Listed For Export
-          </h2>
+        <form className="card shadow-xl mt-5 p-3"  >
+          <div className="flex justify-between items-center bg-slate-500 p-3 rounded-lg my-6">
+            <h2 className="text-4xl font-bold text-info">
+              Products Listed For Export
+            </h2>
+            <div className="flex space-x-4">
+              <select
+                className="p-2 rounded-lg border border-gray-300"
+                value={selectedDate}
+                onChange={handleDateChange} // Update selected date on change
+              >
+                <option value="">Select Date</option>
+                {dates?.map((date) => (
+                  <option key={date} value={date}>
+                    {date}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
           <div className="lg:flex justify-between items-center">
             <div className="form-control card-body">
               <div className="w-full">
@@ -310,20 +302,38 @@ const ProductBoxes = () => {
                       <label className="text-lg font-semibold mb-3">
                         Product Name
                       </label>
-                      <div className="input-group">
+                      {/* <div className="input-group">
                         <select
                           className="select select-secondary w-full focus:outline-none"
-                          value={selectedProductName}
+                          value={selectedProductName || ""} // Make sure it's an empty string initially if no product is selected
                           name="productName"
                           required
-                          onChange={handleNameInputChange}
+                          onChange={handleNameInputChange} // Attach onChange to the select
                         >
                           <option value="" className="mt-2">
                             Pick product Name
                           </option>
-                          {products.map((productName, index) => (
-                            <option key={index} value={productName}>
-                              {productName}
+                          {filteredProducts?.map((product, index) => (
+                            <option key={index} value={JSON.stringify(product)}>
+                              {product?.productName}
+                            </option>
+                          ))}
+                        </select>
+                      </div> */}
+                      <div className="input-group">
+                        <select
+                          className="select select-secondary w-full focus:outline-none"
+                          value={selectedProductName || ""} // Make sure it's an empty string initially if no product is selected
+                          name="productName"
+                          required
+                          onChange={handleNameInputChange} // Attach onChange to the select
+                        >
+                          <option value="" className="mt-2">
+                            Pick product Name
+                          </option>
+                          {filteredProducts?.map((product, index) => (
+                            <option key={index} value={product.productName}>
+                              {product?.productName}
                             </option>
                           ))}
                         </select>
@@ -338,44 +348,48 @@ const ProductBoxes = () => {
                       <label className="text-lg font-semibold">
                         Select Models:
                       </label>
+
                       <div className="w-full">
-                        {filteredProductModels.map((productModel, index) => (
-                          <div key={index} className="flex items-center">
-                            <input
+
+                        <div className="flex items-center">
+                          {
+                            selectedProductModels ? <input
                               className="mr-[4px] my-[3px] checkbox checkbox-xs checkbox-info"
                               type="checkbox"
-                              value={productModel}
-                              checked={selectedProductModels[productModel] || false}
+                              value={selectedProductModels}
+                              checked={selectedProductModels}
                               onChange={handleProductModelCheckboxChange}
-                            />
-                            <span>{productModel}</span>
+                            /> : ""
+                          }
 
-                            {selectedProductModels[productModel] && (
-                              <>
-                                <input
-                                  type="number"
-                                  min="0"
-                                  name={`perBox_${productModel}`}
-                                  required
-                                  onWheel={(e) => e.target.blur()}
-                                  onChange={debouncedInputValueChange}
-                                  placeholder="Per Box"
-                                  className="w-[100px] ml-2 my-[3px] p-[6px] border border-b-blue-500 focus:outline-none"
-                                />
-                                <input
-                                  type="number"
-                                  min="0"
-                                  name={`quantity_${productModel}`}
-                                  required
-                                  onWheel={(e) => e.target.blur()}
-                                  onChange={debouncedInputValueChange}
-                                  placeholder="Product Quantity"
-                                  className="w-[170px] mx-[18px] my-[3px] p-[6px] border border-b-blue-500 focus:outline-none"
-                                />
-                              </>
-                            )}
-                          </div>
-                        ))}
+                          <span>{selectedProductModels}</span>
+
+                          {selectedProductModels && (
+                            <>
+                              <input
+                                type="number"
+                                min="0"
+                                name={`perBox_${selectedProductModels}`}
+                                required
+                                // onWheel={(e) => e.target.blur()}
+                                onChange={handlePerBoxValueChange}
+                                placeholder="Per Box"
+                                className="w-[100px] ml-2 my-[3px] p-[6px] border border-b-blue-500 focus:outline-none"
+                              />
+                              <input
+                                type="number"
+                                min="0"
+                                name={`quantity_${selectedProductModels}`}
+                                required
+                                onWheel={(e) => e.target.blur()}
+                                onChange={handleQuantityValueChange}
+                                placeholder="Product Quantity"
+                                className="w-[170px] mx-[18px] my-[3px] p-[6px] border border-b-blue-500 focus:outline-none"
+                              />
+                            </>
+                          )}
+                        </div>
+
                       </div>
                     </div>
 
@@ -429,7 +443,7 @@ const ProductBoxes = () => {
                         min="0"
                         required
                         readOnly
-                        value={resultsValues}
+                        value={productQuantity}
                         name="quantityProduct"
                       />
                     </div>
@@ -459,7 +473,7 @@ const ProductBoxes = () => {
                       <label
                         className="text-lg font-semibold"
                         htmlFor="truckNumber">
-                        Truck Number
+                        Courier Number
                       </label>
                       <input
                         className="w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent"
@@ -487,7 +501,7 @@ const ProductBoxes = () => {
             </Link>
             <button
               className="btn btn-info font-bold px-6 py-1 text-purple-950 hover:text-purple-800 mr-6 mt-3 md:my-0"
-              type="submit">
+              type="submit" onClick={handleToProductAdd}>
               Add Products
             </button>
           </div>

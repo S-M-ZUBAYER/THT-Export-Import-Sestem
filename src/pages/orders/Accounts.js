@@ -15,6 +15,8 @@ const Accounts = () => {
   const [serverData, setServerData] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [filteredAccounts, setFilteredAccounts] = useState([]);
 
   const [formData, setFormData] = useState([
     {
@@ -27,6 +29,7 @@ const Accounts = () => {
   ]);
 
   const navigate = useNavigate();
+
 
   useEffect(() => {
     setLoading(true);
@@ -52,12 +55,14 @@ const Accounts = () => {
       const response = await axios.get(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts"
       );
-      // data see in table descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
       setAccounts(sortedData);
+      setFilteredAccounts(sortedData); // Set filtered accounts to full list initially
       setLoading(false);
     } catch (error) {
-      toast.error("Error from server to get data!!");
+      toast.error("Error getting accounts from server!", {
+        position: "top-center",
+      });
     }
   };
 
@@ -71,60 +76,42 @@ const Accounts = () => {
   const formSubmit = (e) => {
     e.preventDefault();
 
-    const { productModel, productQuantity } = formData;
+    const { productModel, productQuantity, date } = formData;
 
     // Check if the productModel exists in accounts
     const existingModel = accounts.find(
-      (account) => account.productModel === productModel
+      (account) => {
+        console.log(account, "account");
+
+        return account.productModel === productModel && account.date === date
+      }
     );
 
     if (existingModel) {
-      // If the productModel exists, update the quantity
-      // const updatedQuantity =
-      //   parseInt(existingModel.productQuantity) + parseInt(productQuantity);
-      // console.log(updatedQuantity);
-      axios
-        .patch(
-          `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts/add`,
-          { ...existingModel, productQuantity }
-        )
-        .then((res) => {
-          toast.success(
-            "Your entry model already in database that's updated successfully!",
-            {
-              position: "top-center",
-            }
-          );
-          fetchAccounts();
-          navigate("/exportimport");
-        })
-        .catch((err) =>
-          toast.error("Error updating quantity. Please try again later.", {
-            position: "top-center",
-          })
-        );
-    } else {
-      axios
-        .post(
-          "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts",
-          formData
-        )
-        .then((res) => {
-          toast.success(
-            "Successfully File added to server & check below table",
-            {
-              position: "top-center",
-            }
-          );
-          // console.log(res);
-          navigate("/exportimport");
-        })
-        .catch((err) =>
-          toast.error("Error coming from server please try again later", {
-            position: "top-center",
-          })
-        );
+      toast.warn("You Can't add same model number in same date you need to edit please..");
+      return;
     }
+
+    axios
+      .post(
+        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts",
+        formData
+      )
+      .then((res) => {
+        toast.success(
+          "Successfully File added to server & check below table",
+          {
+            position: "top-center",
+          }
+        );
+        // console.log(res);
+        navigate("/exportimport");
+      })
+      .catch((err) =>
+        toast.error("Error coming from server please try again later", {
+          position: "top-center",
+        })
+      );
   };
 
   // account delete from server and also frontend
@@ -146,6 +133,22 @@ const Accounts = () => {
       }
     }
   };
+
+  // Handle search input change
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    // Filter accounts based on search term
+    const filteredAccounts = accounts.filter((account) =>
+      account.productName.toLowerCase().includes(value) ||
+      account.productBrand.toLowerCase().includes(value) ||
+      account.productModel.toLowerCase().includes(value) ||
+      account.date.includes(value) // Direct comparison for date strings in 'YYYY-MM-DD' format
+    );
+    setFilteredAccounts(filteredAccounts);
+  };
+
 
   return (
     <>
@@ -277,7 +280,7 @@ const Accounts = () => {
               {/* date field */}
               <div className="form-control lg:pr-2 text-center flex flex-col justify-center items-center">
                 <label className="text-center mb-2">
-                  <span className="lebel-text text-lg font-semibold">Date</span>
+                  <span className="lebel-text text-lg font-semibold">Export Date</span>
                 </label>
                 <input
                   type="date"
@@ -308,9 +311,19 @@ const Accounts = () => {
 
       {/* Table data get from accouts input database */}
       <div className="mb-6 w-full lg:w-3/4 mx-auto">
-        <h1 className="text-center my-6 text-3xl text-info font-bold bg-slate-500 p-3 rounded-lg uppercase">
-          Production Quantities Data Table
-        </h1>
+        <div className="flex justify-between items-center bg-slate-500 p-3 rounded-lg my-6">
+          <h1 className="text-3xl text-info font-bold uppercase">
+            Production Quantities Data Table
+          </h1>
+          <input
+            type="text"
+            placeholder="Search..."
+            className="p-2 rounded-lg border border-gray-300"
+            value={searchTerm} // Assuming searchTerm is part of your state
+            onChange={handleSearch} // Assuming handleSearch is defined to handle input changes
+          />
+        </div>
+
         <div className="overflow-x-auto add__scrollbar">
           {loading ? (
             <div className="">
@@ -333,12 +346,12 @@ const Accounts = () => {
                   <th className="sticky top-0 bg-gray-200">Product Brand</th>
                   <th className="sticky top-0 bg-gray-200">Product Model</th>
                   <th className="sticky top-0 bg-gray-200">Quantity</th>
-                  <th className="sticky top-0 bg-gray-200">Date</th>
+                  <th className="sticky top-0 bg-gray-200">Export Date</th>
                   <th className="sticky top-0 bg-gray-200">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {accounts?.map((product) => (
+                {filteredAccounts?.map((product) => (
                   <tr className="hover cursor-pointer" key={product.id}>
                     <td>{product.id}</td>
                     <td>{product.productName}</td>

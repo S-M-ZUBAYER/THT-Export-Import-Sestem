@@ -15,6 +15,8 @@ const override = {
 const TransportCountry = () => {
   const navigate = useNavigate();
   const [countries, setCountries] = useState(true);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [filteredCountries, setFilteredCountries] = useState([]); // State for filtered countries
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     countryName: "",
@@ -28,20 +30,23 @@ const TransportCountry = () => {
     });
   };
 
+
+
   useEffect(() => {
     setLoading(true);
     fetchCountries();
   }, []);
 
-  // products fetch from server
+  // Fetch countries from the server
   const fetchCountries = async () => {
     try {
       const response = await axios.get(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/transport_country"
       );
-      // data see in table descending order
+      // Sort data in descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
       setCountries(sortedData);
+      setFilteredCountries(sortedData); // Set filtered countries to full list initially
       setLoading(false);
     } catch (error) {
       toast.error("Error getting data from server!", {
@@ -49,6 +54,21 @@ const TransportCountry = () => {
       });
     }
   };
+
+  // Handle search input change
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    // Filter countries based on search term for countryName and countryPort
+    const filtered = countries.filter((country) =>
+      country.countryName.toLowerCase().includes(value) ||  // Filter by countryName
+      country.countryPort.toLowerCase().includes(value)     // Filter by countryPort
+    );
+
+    setFilteredCountries(filtered);
+  };
+
 
   // submit data and save to server
   const handleSubmit = (e) => {
@@ -154,9 +174,19 @@ const TransportCountry = () => {
 
       {/* Table data get from products database */}
       <div className="w-full lg:w-3/4 mx-auto">
-        <h1 className="text-center my-6 text-2xl text-info font-bold bg-slate-500 p-[10px] rounded-lg uppercase">
-          Transport Countries List
-        </h1>
+        <div className="flex justify-between items-center bg-slate-500 p-[10px] rounded-lg my-6">
+          <h1 className="text-2xl text-info font-bold uppercase">
+            Transport Countries List
+          </h1>
+          <input
+            type="text"
+            placeholder="Search Country & port"
+            className="p-2 rounded-lg border border-gray-300"
+            value={searchTerm} // Assuming searchTerm is already part of your state
+            onChange={handleSearch} // Assuming handleSearch is defined to handle input changes
+          />
+        </div>
+
         <div className="overflow-x-auto add__scrollbar">
           {loading ? (
             <div className="">
@@ -178,23 +208,23 @@ const TransportCountry = () => {
                   <th className="sticky top-0 bg-gray-200">ID</th>
                   <th className="sticky top-0 bg-gray-200">Country Name</th>
                   <th className="sticky top-0 bg-gray-200">Country Port</th>
-                  {/* <th className="sticky top-0 bg-gray-200">Actions</th> */}
+                  <th className="sticky top-0 bg-gray-200">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {countries?.map((product) => (
+                {filteredCountries?.map((product) => (
                   <tr className="hover cursor-pointer" key={product.id}>
                     <td>{product.id}</td>
                     <td>{product.countryName}</td>
                     <td>{product.countryPort}</td>
-                    {/* <td className="flex justify-around items-center">
-                      <Link to={`/datainput/${product.id}`}>
+                    <td className="flex justify-around items-center">
+                      {/* <Link to={`/datainput/${product.id}`}>
                         <AiOutlineEdit className="w-6 h-6 text-purple-600" />
-                      </Link>
+                      </Link> */}
                       <button onClick={() => handleDelete(product.id)}>
                         <AiOutlineDelete className="w-6 h-6 text-red-600" />
                       </button>
-                    </td> */}
+                    </td>
                   </tr>
                 ))}
               </tbody>

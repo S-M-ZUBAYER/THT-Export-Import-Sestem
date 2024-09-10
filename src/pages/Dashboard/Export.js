@@ -19,7 +19,6 @@ const Export = () => {
 
   const handleDelete = (index) => {
     localStorage.removeItem("formData");
-    console.log(index);
   };
 
   // console.log(localData);

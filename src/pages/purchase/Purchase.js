@@ -391,6 +391,7 @@ const Purchase = () => {
             <h1 className="text-center my-6 text-3xl text-info font-bold bg-slate-500 p-3 rounded-lg uppercase">
               Select the Product
             </h1>
+            <p>Make search filed according to date, pallet no , truck no</p>
             <div className="overflow-x-auto add__scrollbar">
               {loading ? (
                 <div className="">
@@ -438,7 +439,7 @@ const Purchase = () => {
                               value={product.id}
                               checked={selectedItems.includes(product.id)}
                               onChange={() => handleCheckboxChange(product.id)}
-                              // onClick={() => handleProductCheck(product)}
+                            // onClick={() => handleProductCheck(product)}
                             />
                           </td>
                           <td>{product.id}</td>
@@ -585,11 +586,11 @@ const Purchase = () => {
                 <div className="">
                   <div>
                     <label className="text-lg font-semibold" htmlFor="ipNo">
-                      IP No.
+                      EP No.
                     </label>
                     <input
                       className="w-full border-[1px] border-info rounded-md p-3 mt-3 bg-transparent"
-                      placeholder="IP No."
+                      placeholder="EP No."
                       type="text"
                       name="ipNo"
                       required
@@ -612,8 +613,6 @@ const Purchase = () => {
                       type="number"
                       name="total"
                       min={0}
-                      required
-                      aria-required
                       value={total}
                       onWheel={(e) => e.target.blur()}
                       onChange={(e) => setTotal(e.target.value)}
@@ -624,7 +623,7 @@ const Purchase = () => {
                 {/* Truck No. */}
                 <div className="">
                   <label className="text-lg font-semibold" htmlFor="ipNo">
-                    Truck No.
+                    Truck No. (nedd to select multiple)
                   </label>
                   <div className="mt-3">
                     <select

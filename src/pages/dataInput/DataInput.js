@@ -14,6 +14,8 @@ const override = {
 const DataInput = () => {
   const [products, setProducts] = useState([]);
   const [productsName, setProductsName] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -61,27 +63,46 @@ const DataInput = () => {
     // });
   };
 
+
+
   useEffect(() => {
     setLoading(true);
     fetchProducts();
     fetchProductsName();
   }, []);
 
-  // products fetch from server
+  // Fetch products from server
   const fetchProducts = async () => {
     try {
       const response = await axios.get(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/products"
       );
-      // data see in table descending order
+      // Sort data in descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
       setProducts(sortedData);
+      setFilteredProducts(sortedData); // Initially set filtered products to the full list
       setLoading(false);
     } catch (error) {
       toast.error("Error getting data from server!", {
         position: "top-center",
       });
     }
+  };
+
+
+  // Handle search input change
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    // Filter products based on search term for productName, productBrand, and productModel
+    const filtered = products.filter((product) =>
+      product.productName.toLowerCase().includes(value) ||  // Filter by productName
+      product.productBrand.toLowerCase().includes(value) || // Filter by productBrand
+      product.productModel.toLowerCase().includes(value)    // Filter by productModel
+    );
+
+    setFilteredProducts(filtered);
   };
 
   // products name and brand fetch from server
@@ -319,9 +340,19 @@ const DataInput = () => {
 
       {/* Table data get from products database */}
       <div className="w-full lg:w-3/4 mx-auto">
-        <h1 className="text-center my-6 text-2xl text-info font-bold bg-slate-500 p-[10px] rounded-lg uppercase">
-          All Product's List
-        </h1>
+        <div className="flex justify-between items-center bg-slate-500 p-[10px] rounded-lg my-6">
+          <h1 className="text-2xl text-info font-bold uppercase">
+            All Product's List
+          </h1>
+          <input
+            type="text"
+            placeholder="Search by Product Name or Brand"
+            className="p-2 rounded-lg border border-gray-300"
+            value={searchTerm}
+            onChange={handleSearch} // Function to handle search input change
+          />
+        </div>
+
         <div className="overflow-x-auto add__scrollbar">
           {loading ? (
             <div className="">
@@ -351,7 +382,7 @@ const DataInput = () => {
                 </tr>
               </thead>
               <tbody>
-                {products?.map((product) => (
+                {filteredProducts?.map((product) => (
                   <tr className="hover cursor-pointer" key={product.id}>
                     <td>{product.id}</td>
                     <td>{product.productName}</td>

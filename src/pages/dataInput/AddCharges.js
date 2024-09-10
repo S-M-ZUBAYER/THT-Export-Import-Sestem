@@ -14,6 +14,8 @@ const override = {
 
 const AddCharges = () => {
   const [charges, setCharges] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [filteredCharges, setFilteredCharges] = useState([]); // State for filtered charges
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -29,18 +31,23 @@ const AddCharges = () => {
     });
   };
 
+
+
   useEffect(() => {
     setLoading(true);
     fetchAccounts();
   }, []);
 
-  // data fetch from server
+  // Fetch charges from the server
   const fetchAccounts = async () => {
     try {
       const response = await axios.get(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/addcharges"
       );
+
+
       setCharges(response?.data);
+      setFilteredCharges(response?.data); // Initially set filtered charges to the full list
       setLoading(false);
     } catch (error) {
       toast.error("Error getting data from server!", {
@@ -49,6 +56,18 @@ const AddCharges = () => {
     }
   };
 
+  // Handle search input change
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    // Filter charges based on search term for expensesName
+    const filtered = charges.filter((charge) =>
+      charge?.particularExpenseName?.toLowerCase()?.includes(value) // Filter by expensesName
+    );
+
+    setFilteredCharges(filtered);
+  };
   // Data save for server
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -165,9 +184,19 @@ const AddCharges = () => {
 
       {/* Table data get from accouts input database */}
       <div className="w-full lg:w-3/4 mx-auto">
-        <h1 className="text-center my-6 text-2xl text-info font-bold bg-slate-500 p-[10px] rounded-lg uppercase">
-          Charges List
-        </h1>
+        <div className="flex justify-between items-center bg-slate-500 p-[10px] rounded-lg my-6">
+          <h1 className="text-2xl text-info font-bold uppercase">
+            Charges List
+          </h1>
+          <input
+            type="text"
+            placeholder="Search Charges..."
+            className="p-2 rounded-lg border border-gray-300"
+            value={searchTerm} // Assuming searchTerm is part of your state
+            onChange={handleSearch} // Assuming handleSearch is defined to handle input changes
+          />
+        </div>
+
         <div className="overflow-x-auto add__scrollbar">
           {loading ? (
             <div className="">
@@ -193,7 +222,7 @@ const AddCharges = () => {
                 </tr>
               </thead>
               <tbody>
-                {charges?.map((charge) => (
+                {filteredCharges?.map((charge) => (
                   <tr className="hover cursor-pointer" key={charge.id}>
                     <td>{charge.id}</td>
                     <td>{charge.particularExpenseName}</td>

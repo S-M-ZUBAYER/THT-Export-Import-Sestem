@@ -32,7 +32,6 @@ const Transport = () => {
   const formSubmit = (e) => {
     e.preventDefault();
     toast.success("File added", { position: "top-center" });
-    console.log(formData);
     navigate("/export");
   };
 

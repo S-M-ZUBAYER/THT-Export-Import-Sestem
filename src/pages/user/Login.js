@@ -6,6 +6,7 @@ import { UserContext } from "../../components/context/authContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [btnLoading, setBtnLoading] = useState(false);
   const { loginUser } = useContext(UserContext);
   const [values, setValues] = useState({
     userEmail: "",
@@ -14,6 +15,7 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
+    setBtnLoading(true);
     // http://localhost:5001/login
     // https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev//users/signin
     axios
@@ -25,11 +27,13 @@ const Login = () => {
         if (res.data === true) {
           loginUser(values?.userEmail);
           toast.success("Login Successfully", { position: "top-center" });
+          setBtnLoading(false);
           navigate("/");
         } else {
           toast.error("Email & password don't match!!", {
             position: "top-center",
           });
+          setBtnLoading(false);
         }
       })
       .catch((err) => toast.error("Something went wrong Please try again!"));
@@ -85,7 +89,8 @@ const Login = () => {
                 <button
                   className="active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-xl bg-violet-500 text-white text-lg font-bold"
                   type="submit">
-                  Sign in
+                  {btnLoading ? "Loading" : "Sign in"}
+
                 </button>
                 <div className="divider text-base font-semibold">OR</div>
               </div>
