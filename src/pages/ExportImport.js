@@ -52,6 +52,11 @@ const ExportImport = () => {
           Product In Boxes
         </Link>
         <Link
+          to="/printInitialData"
+          className="btn btn-info w-60 p-1 text-white font-bold text-xl mt-4">
+          print Initial Data
+        </Link>
+        <Link
           to="/purchase"
           className="btn btn-info w-60 p-1 text-white font-bold text-xl mt-4">
           Purchase

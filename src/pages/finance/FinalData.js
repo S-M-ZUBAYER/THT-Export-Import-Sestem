@@ -316,7 +316,7 @@ const FinalData = () => {
           // pageCount={Math.ceil(finances.length / itemsPerPage)}
           pageCount={Math.ceil(
             (filteredData.length > 0 ? filteredData.length : finances.length) /
-              itemsPerPage
+            itemsPerPage
           )}
           onPageChange={handlePageChange}
           containerClassName={"pagination flex gap-2 justify-center mt-4"}

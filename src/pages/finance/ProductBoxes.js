@@ -76,7 +76,7 @@ const ProductBoxes = () => {
   const formSubmit = async (e) => {
     e.preventDefault();
 
-
+    // Check if productList is empty
     if (productList.length === 0) {
       toast.error("No products to save.", {
         position: "top-center",
@@ -85,54 +85,87 @@ const ProductBoxes = () => {
     }
 
     try {
-      // Prepare data for server
-      const preparedData = sessionData.map((item) => ({
-        ...item,
-        productModel: JSON.stringify(item.productModel),
-        splitProductsBox: JSON.stringify(item.splitProductsBox),
-        splitQuantitySingleProduct: JSON.stringify(item.splitQuantitySingleProduct),
-      }));
+      // Iterate over productList to send each product to the API
+      for (const product of productList) {
 
-      // Send each product entry to the server
-      for (const item of preparedData) {
-        const { productModel, splitQuantitySingleProduct } = item;
-        const models = JSON.parse(productModel);
-        const quantities = JSON.parse(splitQuantitySingleProduct);
+        const productData = {
+          productName: product.productName,
+          productModel: product.productModels,
+          quantity: product.productQuantity,
+          splitProductsBox: product.perBoxProducts,
+          splitQuantitySingleProduct: product.modelQuantity,
+          productPerBox: product.productQuantity,
+          totalBox: product.totalBox,
+          totalPallet: product.palletNo,
+          truckNumber: product.truckNumber,
+        };
 
-        const productData = models.map((model, index) => ({
-          productModel: model,
-          productQuantity: quantities[index]?.quantity || 0,
-        }));
+        // Send the data to the product API
+        const response = await fetch('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productData),
+        });
 
-        // Post product in boxes
-        const response = await axios.post(
-          "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes",
-          item,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.status !== 201) {
-          throw new Error("Network response was not ok");
+        // Handle response
+        if (!response.ok) {
+          console.error('Failed to save product:', response.status, response.statusText);
+          throw new Error(`Failed to save product. Status code: ${response.status}`);
         }
 
-        // Patch office accounts
-        for (const entry of productData) {
-          await axios.patch(
-            "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts/sub",
-            entry
-          );
+        const result = await response.json();
+        console.log('Product saved successfully:', result);
+
+        // Prepare the data for the second API
+        const productReduceData = {
+          productName: product.productName,
+          productModel: product.productModels,
+          productBrand: product.productBrand,
+          productQuantity: product.productQuantity,
+          date: product.date
+        };
+        console.log(productReduceData, "reduce");
+        // Split productModels if there are multiple values
+        // Split productModels and modelQuantity if there are multiple values
+        const productModels = product.productModels.split(',').map(model => model.trim());
+        const productQuantities = product.modelQuantity.split(',').map(quantity => quantity.trim());
+
+        // Ensure both arrays have the same length
+        if (productModels.length !== productQuantities.length) {
+          throw new Error("Mismatch between number of product models and quantities");
+        }
+
+        // Patch office accounts for each product model and quantity pair
+        for (let i = 0; i < productModels.length; i++) {
+          const updateData = {
+            ...productReduceData,
+            productModel: productModels[i],
+            productQuantity: productQuantities[i]  // Use the corresponding quantity
+          };
+
+          try {
+            await axios.patch(
+              "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts/sub",
+              updateData
+            );
+            console.log('Office account updated successfully:', updateData);
+          } catch (patchError) {
+            console.error('Failed to patch office account:', patchError);
+            throw patchError;  // Rethrow to catch in the outer try-catch block
+          }
         }
       }
 
+      // Success toast and navigation
       toast.success("Successfully uploaded to server", {
         position: "top-center",
       });
       navigate("/exportimport");
+
     } catch (error) {
+      console.error('Error occurred:', error);
       toast.error("Network Error. Please try again later", {
         position: "top-center",
       });
@@ -196,7 +229,6 @@ const ProductBoxes = () => {
       palletNo: selectedProductPallet,
       truckNumber
     };
-    console.log(productData);
 
     // Append the new product object to the array
     setProductList((prevProductList) => [...prevProductList, productData]);
@@ -236,7 +268,7 @@ const ProductBoxes = () => {
     setModelData({});
     setInputValues({});
   };
-  console.log(modelList, "sdfrd");
+
 
   const handleProductModelCheckboxChange = (e) => {
     const { value, checked } = e.target;

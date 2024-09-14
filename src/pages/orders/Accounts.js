@@ -81,8 +81,6 @@ const Accounts = () => {
     // Check if the productModel exists in accounts
     const existingModel = accounts.find(
       (account) => {
-        console.log(account, "account");
-
         return account.productModel === productModel && account.date === date
       }
     );
@@ -104,7 +102,7 @@ const Accounts = () => {
             position: "top-center",
           }
         );
-        // console.log(res);
+
         navigate("/exportimport");
       })
       .catch((err) =>

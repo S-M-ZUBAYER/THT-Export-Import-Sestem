@@ -43,25 +43,6 @@ const Purchase = () => {
   const navigate = useNavigate();
 
   const productData = JSON.stringify(selectedItems);
-  // const data = JSON.parse(boxData);
-  // const data = boxData.map((b) => b.productModel);
-
-  // const extractedData = data.map((str) => {
-  //   const jsonStr = str.replace(/^"|"$/g, ""); // Remove leading and trailing quotes
-  //   return JSON.parse(jsonStr);
-  // });
-
-  // const saveFilteredTruckNumbersToLocalStorage = (filteredTruckNumbers) => {
-  //   localStorage.setItem(
-  //     "filteredTruckNumbers",
-  //     JSON.stringify(filteredTruckNumbers)
-  //   );
-  // };
-
-  // const getFilteredTruckNumbersFromLocalStorage = () => {
-  //   const storedFilteredData = localStorage.getItem("filteredTruckNumbers");
-  //   return storedFilteredData ? JSON.parse(storedFilteredData) : [];
-  // };
 
   // data get from office_accounts API
   const fetchAccounts = async () => {
@@ -72,6 +53,8 @@ const Purchase = () => {
       // data see in table descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
       setAccounts(sortedData);
+      console.log(sortedData, "OfficeAccount");
+
       setLoading(false);
     } catch (error) {
       toast.error("Error from server to get data!!");
@@ -83,6 +66,7 @@ const Purchase = () => {
       const response = await axios.get(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/addcharges"
       );
+      console.log(response?.data, "Charge");
       setCharges(response?.data);
     } catch (error) {
       toast.error("Error from server to get data!!");
@@ -97,7 +81,10 @@ const Purchase = () => {
       // data see in table descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
       // const data = JSON.parse(sortedData);
+      console.log(sortedData, "productInBox");
+
       setBoxData(sortedData);
+      setFilteredData(sortedData);
       setLoading(false);
     } catch (error) {
       toast.error("Error from server to get data!!");
@@ -110,6 +97,7 @@ const Purchase = () => {
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/transport_country"
       );
       setTransportCountry(response?.data);
+      console.log(response?.data, "transportCountry");
     } catch (error) {
       toast.error("Error from server to get data!!");
     }
@@ -121,6 +109,7 @@ const Purchase = () => {
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/transport"
       );
       setTransportPath(response?.data);
+      console.log(response?.data, "transport");
     } catch (error) {
       toast.error("Error from server to get data!!");
     }
@@ -132,6 +121,7 @@ const Purchase = () => {
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance"
       );
       setPurchase(response?.data);
+      console.log(response?.data, "finance");
     } catch (error) {
       toast.error("Error from server to get data!!");
     }
@@ -143,6 +133,7 @@ const Purchase = () => {
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance"
       );
       setFinances(response?.data);
+      console.log(response?.data, "Finance2");
     } catch (error) {
       toast.error("Error from server to get data!!");
     }
@@ -164,118 +155,48 @@ const Purchase = () => {
     fetchFinance();
     // fetch purchase data
     fetchPurchase();
-
-    // const productInBoxData = boxData;
-    // const financeApiData = finances;
-
-    // const productInBoxTruckNumbers = productInBoxData.map(
-    //   (item) => item.truckNumber
-    // );
-    // // console.log(productInBoxTruckNumbers);
-    // const financeTruckNumbers = financeApiData?.map((item) => item.truckNo);
-    // // console.log(financeTruckNumbers);
-    // const commonTruckNumbers = productInBoxTruckNumbers?.filter((truckNo) =>
-    //   financeTruckNumbers?.includes(truckNo)
-    // );
-    // // console.log(commonTruckNumbers);
-    // const filteredTruckNumbers = productInBoxTruckNumbers?.filter(
-    //   (truckNo) => !commonTruckNumbers?.includes(truckNo)
-    // );
-    // setFilteredTruckNumbers(filteredTruckNumbers);
-    // console.log(filteredTruckNumbers);
-    // saveFilteredTruckNumbersToLocalStorage(filteredTruckNumbers);
-    // const savedFilteredTruckNumbers = getFilteredTruckNumbersFromLocalStorage();
-    // setFilteredTruckNumbers(savedFilteredTruckNumbers);
-
-    // id matches for table
-    // const api2Ids = purchase?.map((item) => item?.officeAccount).flat();
-    // // console.log(api2Ids);
-    // const api2IdsPasrse = api2Ids?.map((a) => JSON.parse(a)).flat();
-    // // console.log(api2IdsPasrse);
-
-    // const filteredBoxData = boxData?.filter(
-    //   (item) => !api2IdsPasrse.includes(item.id)
-    // );
-    // setFilteredData(filteredBoxData);
   }, []);
 
-  useEffect(() => {
-    // hide table data if it's selected works it
-    if (boxData?.length > 0 && purchase?.length >= 0) {
-      // const api2Ids = purchase.flatMap((item) => item.officeAccount);
-      // const filteredBoxData = boxData.filter(
-      //   (item) => !api2Ids.includes(item.id)
-      // );
-
-      const api2Ids = purchase?.map((item) => item?.officeAccount).flat();
-      const api2IdsPasrse = api2Ids?.map((a) => JSON.parse(a)).flat();
-      const filteredBoxData = boxData?.filter(
-        (item) => !api2IdsPasrse.includes(item.id)
-      );
-
-      setFilteredData(filteredBoxData);
-    }
-
-    // hide truck number if truck number selected
-    if (boxData.length > 0 && finances.length >= 0) {
-      const productInBoxData = boxData;
-      const financeApiData = finances;
-
-      const productInBoxTruckNumbers = productInBoxData.map(
-        (item) => item.truckNumber
-      );
-      // console.log(productInBoxTruckNumbers);
-      const financeTruckNumbers = financeApiData?.map((item) => item.truckNo);
-      // console.log(financeTruckNumbers);
-      const commonTruckNumbers = productInBoxTruckNumbers?.filter((truckNo) =>
-        financeTruckNumbers?.includes(truckNo)
-      );
-      // console.log(commonTruckNumbers);
-      const filteredTruckNumbers = productInBoxTruckNumbers?.filter(
-        (truckNo) => !commonTruckNumbers?.includes(truckNo)
-      );
-      setFilteredTruckNumbers(filteredTruckNumbers);
-    }
-  }, [boxData, purchase, finances]);
-
-  // console.log(filteredData);
-
-  // If truck number filter then this useEffect need
   // useEffect(() => {
-  //   Promise.all([
-  //     fetchTransportRoute(),
-  //     fetchTransportCountry(),
-  //     fetchAccounts(),
-  //     fetchCharges(),
-  //     fetchBoxData(),
-  //     fetchFinance(),
-  //   ]).then(() => {
+  // hide table data if it's selected works it
+  // console.log(boxData, "Box data");
+
+  // if (boxData?.length > 0 && purchase?.length >= 0) {
+
+  // setFilteredData(boxData);
+  // const api2Ids = purchase?.map((item) => item?.officeAccount).flat();
+  // const api2IdsPasrse = api2Ids?.map((a) => JSON.parse(a)).flat();
+  // const filteredBoxData = boxData?.filter(
+  //   (item) => !api2IdsPasrse.includes(item.id)
+  // );
+
+  // setFilteredData(filteredBoxData);
+  // }
+
+  // hide truck number if truck number selected
+  //   if (boxData.length > 0 && finances.length >= 0) {
   //     const productInBoxData = boxData;
   //     const financeApiData = finances;
 
   //     const productInBoxTruckNumbers = productInBoxData.map(
   //       (item) => item.truckNumber
   //     );
-
+  //     // console.log(productInBoxTruckNumbers);
   //     const financeTruckNumbers = financeApiData?.map((item) => item.truckNo);
-
+  //     // console.log(financeTruckNumbers);
   //     const commonTruckNumbers = productInBoxTruckNumbers?.filter((truckNo) =>
   //       financeTruckNumbers?.includes(truckNo)
   //     );
-
+  //     // console.log(commonTruckNumbers);
   //     const filteredTruckNumbers = productInBoxTruckNumbers?.filter(
   //       (truckNo) => !commonTruckNumbers?.includes(truckNo)
   //     );
-
   //     setFilteredTruckNumbers(filteredTruckNumbers);
-  //     setLoading(false);
-  //   });
-  // }, []);
+  //   }
+  // }, [boxData, purchase, finances]);
 
-  // below table products select checkbox
-  // const handleProductCheck = (product) => {
-  //   setProductChecks([...productChecks, product.id]);
-  // };
+
+
 
   const handleCheckboxChange = (id) => {
     if (selectedItems.includes(id)) {
@@ -301,28 +222,6 @@ const Purchase = () => {
     setTruckNo(event.target.value);
   };
 
-  // const handleDelete = (id) => {
-  //   const confirmDelete = window.confirm(
-  //     "Are you sure, you want to delete this Product Data?"
-  //   );
-  //   if (confirmDelete) {
-  //     axios
-  //       .delete(
-  //         `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes/${id}`
-  //       )
-  //       .then((res) => {
-  //         toast.warn("Data Successfully Deleted!!", {
-  //           position: "top-center",
-  //         });
-  //         fetchAccounts();
-  //       })
-  //       .catch((error) => {
-  //         toast.error("Something wrong can't delete", {
-  //           position: "top-center",
-  //         });
-  //       });
-  //   }
-  // };
 
   const handleExpenseSave = (selectedExpenseData) => {
     setSavedExpenses(selectedExpenseData);
@@ -372,6 +271,27 @@ const Purchase = () => {
         })
       );
   };
+  const [searchValue, setSearchValue] = useState('');
+
+  // Handle input change and filter products
+  const handleSearchChange = (e) => {
+    const value = e.target.value.toLowerCase(); // Use the current input value
+    setSearchValue(value);
+
+    // Use `value` directly in the filter instead of `searchValue`
+    const filteredProducts = boxData.filter((account) =>
+      account.productName.toLowerCase().includes(value) ||
+      account.truckNumber.toLowerCase().includes(value) ||
+      account.productModel.toLowerCase().includes(value) ||
+      account.totalPallet.toLowerCase().includes(value)
+    );
+
+    setFilteredData(filteredProducts);
+    console.log(value, filteredProducts);
+  };
+
+
+
 
   return (
     <>
@@ -388,10 +308,19 @@ const Purchase = () => {
 
           {/* Table data get from accouts input database */}
           <div className="w-full lg:w-3/4 mx-auto">
-            <h1 className="text-center my-6 text-3xl text-info font-bold bg-slate-500 p-3 rounded-lg uppercase">
-              Select the Product
-            </h1>
-            <p>Make search filed according to date, pallet no , truck no</p>
+            <div className="flex justify-between items-center my-6 bg-slate-500 p-3 rounded-lg">
+              <h1 className="text-3xl text-info font-bold uppercase">
+                Select the Product
+              </h1>
+              <input
+                type="text"
+                placeholder="Search model, pallet no, truck no"
+                className="border border-gray-300 p-2 rounded-md focus:outline-none"
+                value={searchValue}
+                onChange={handleSearchChange}
+              />
+            </div>
+
             <div className="overflow-x-auto add__scrollbar">
               {loading ? (
                 <div className="">
@@ -423,12 +352,12 @@ const Purchase = () => {
                   </thead>
                   <tbody>
                     {filteredData?.map((product) => {
-                      const jsonStr = product.productModel.replace(
-                        /^"|"$/g,
-                        ""
-                      );
-                      const data = JSON.parse(jsonStr);
-                      const result = data.join(",");
+                      // const jsonStr = product.productModel.replace(
+                      //   /^"|"$/g,
+                      //   ""
+                      // );
+                      // const data = JSON.parse(jsonStr);
+                      // const result = data.join(",");
                       return (
                         <tr className={`hover cursor-pointer`} key={product.id}>
                           <td>
@@ -444,7 +373,7 @@ const Purchase = () => {
                           </td>
                           <td>{product.id}</td>
                           <td>{product.productName}</td>
-                          <td>{result}</td>
+                          <td>{product.productModel}</td>
                           <td>{product.quantity}</td>
                           <td>{product.totalPallet}</td>
                           <td>{product.truckNumber}</td>
@@ -635,14 +564,7 @@ const Purchase = () => {
                       aria-required
                       onChange={handleTruckNo}>
                       <option value="">---- Pick Truck No. ----</option>
-                      {/* show all truck truck number */}
-                      {/* {boxData
-                        .sort((a, b) => b.truckNumber - a.truckNumber)
-                        .map((p, index) => (
-                          <option value={p.truckNumber} key={index}>
-                            {p.truckNumber}
-                          </option>
-                        ))} */}
+
                       {/* filter truck number If any truck number save then hide automatically */}
                       {filteredTruckNumbers
                         ?.sort((a, b) => b.truckNumber - a.truckNumber)
@@ -652,32 +574,12 @@ const Purchase = () => {
                           </option>
                         ))}
                       {/* check truck number not use it */}
-                      {/* {filteredTruckNumbers.map((item, index) => (
-                        <option key={index} value={item.truckNumber}>
-                          {item.truckNumber}
-                        </option>
-                      ))} */}
+
                     </select>
                   </div>
                 </div>
 
-                {/* Total */}
-                {/* <div className="">
-                  <div>
-                    <label className="text-lg font-semibold" htmlFor="total">
-                      Total <span className="text-red-600">(USD)</span>
-                    </label>
-                    <input
-                      className="w-full border-[1px] border-info rounded-md p-3 mt-3 bg-transparent"
-                      placeholder="Total in USD"
-                      type="text"
-                      name="total"
-                      value={total}
-                      required
-                      onChange={(e) => setTotal(e.target.value)}
-                    />
-                  </div>
-                </div> */}
+
               </div>
 
               {/* checking element for calculation */}
