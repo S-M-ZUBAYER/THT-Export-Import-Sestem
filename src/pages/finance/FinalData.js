@@ -102,6 +102,8 @@ const FinalData = () => {
       const sortedData = response?.data.sort(
         (a, b) => b.financeId - a.financeId
       );
+      console.log(sortedData, "final data");
+
       setFinances(sortedData);
       setLoading(false);
     } catch (error) {
@@ -159,6 +161,8 @@ const FinalData = () => {
   // print and pdf function
   const handlePrint = (finance) => {
     // generatePDF(finances[currentPage]);
+    console.log(finance, "finance");
+    return;
     generatePDF(finance);
   };
 

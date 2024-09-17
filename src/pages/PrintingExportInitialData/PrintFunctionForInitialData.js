@@ -14,27 +14,28 @@ export const generateInitialPDF = (dataArray, remark) => {
     );
 
     // Set the font and size for the title
-    doc.setFontSize(45); // Adjusted size for "Mark" heading
+    doc.setFontSize(35); // Adjusted size for "Mark" heading
     doc.text("Mark", 78, 30);
 
-    // Add the remark section below the "Mark" heading
-    doc.setFontSize(20); // Font size for remark
-    doc.text("Remark:", 10, 45);
-    doc.setFontSize(16); // Font size for the remark content
+
+    doc.setFontSize(26); // Font size for the remark content
     const remarkLines = doc.splitTextToSize(remark, 190); // Adjust width as needed
-    doc.text(remarkLines, 10, 55); // Display the remark below the "Mark" heading
+    doc.text(remarkLines, 10, 45); // Display the remark below the "Mark" heading
 
     // Display Product Name and Truck Number as headings
     const firstProduct = dataArray[0]; // Assuming truck number and product name are the same for all
-    doc.setFontSize(38);
+    doc.setFontSize(30);
     const productNameLines = doc.splitTextToSize(
         `Product Name: ${firstProduct.productName}`,
-        250
+        240
     );
-    doc.text(productNameLines, 7, 90); // Product Name
+    doc.text(productNameLines, 7, 85); // Product Name
 
-    doc.setFontSize(40);
-    doc.text(`Truck Number: ${firstProduct.truckNumber}`, 7, 120); // Truck Number (Heading)
+    doc.setFontSize(30);
+    doc.text(`Truck Number: ${firstProduct.totalPallet}`, 7, 100); // Truck Number (Heading)
+
+    doc.setFontSize(20);
+    doc.text(`Made in Bangladesh`, 70, 123); // Truck Number (Heading)
 
     // Set font smaller for total details text
     doc.setFontSize(30);
@@ -49,13 +50,13 @@ export const generateInitialPDF = (dataArray, remark) => {
     ]);
 
     // Define the columns and column headers, including Truck Number
-    const columns = ["Model", "Split Quantity", "Total Box", "Pallet", "Truck Number"];
+    const columns = ["Model", "Split Quantity", "Total Box", "Pallet No", "Truck No"];
 
     // Generate a single table with all product details, including truck number
     doc.autoTable({
         head: [columns],
         body: tableData,
-        startY: 140, // Adjust the Y position based on content above
+        startY: 130, // Adjust the Y position based on content above
         styles: {
             fontSize: 10, // Reduced font size for table content
             halign: "center",

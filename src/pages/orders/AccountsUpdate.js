@@ -13,6 +13,7 @@ const AccountsUpdate = () => {
     productBrand: "",
     productModel: "",
     productQuantity: "",
+    usedProduct: "",
     date: "",
   });
 
@@ -35,6 +36,8 @@ const AccountsUpdate = () => {
   // update data submit
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log(formData, "formdata");
+
     axios
       .put(
         `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts`,
@@ -166,6 +169,27 @@ const AccountsUpdate = () => {
                     setFormData({
                       ...formData,
                       productQuantity: e.target.value,
+                    })
+                  }
+                  required
+                />
+              </div>
+              {/* product Quantity */}
+              <div className="mt-3">
+                <label
+                  className="text-lg font-semibold"
+                  htmlFor="usedProduct">
+                  Used Product
+                </label>
+                <input
+                  className="w-full border-2 border-gray-100 rounded-xl p-[10px] mt-1 bg-transparent"
+                  type="number"
+                  name="usedProduct"
+                  value={formData.usedProduct}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      usedProduct: parseInt(e.target.value, 10) || 0, // Default to 0 if it's not a valid number
                     })
                   }
                   required

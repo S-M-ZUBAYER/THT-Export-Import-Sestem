@@ -56,6 +56,15 @@ const Accounts = () => {
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts"
       );
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
+
+      // Use forEach instead of map for side effects (deleting)
+      sortedData.forEach(product => {
+        if (product?.productQuantity === 0) {
+          handleToAutomaticallyDelete(product?.id);  // Assuming handleDelete is defined and removes the item from the server
+        }
+      });
+
+      // Set the accounts after deletion logic is applied
       setAccounts(sortedData);
       setFilteredAccounts(sortedData); // Set filtered accounts to full list initially
       setLoading(false);
@@ -65,6 +74,7 @@ const Accounts = () => {
       });
     }
   };
+
 
   const handleChange = (event) => {
     setFormData({
@@ -130,6 +140,21 @@ const Accounts = () => {
         });
       }
     }
+  };
+
+  // account delete from server and also frontend
+  const handleToAutomaticallyDelete = async (id) => {
+    try {
+      await axios.delete(
+        `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts/${id}`
+      );
+      fetchAccounts();
+    } catch (error) {
+      toast.error("You can't delete now. Please try again later!", {
+        position: "top-center",
+      });
+    }
+
   };
 
   // Handle search input change
@@ -344,6 +369,7 @@ const Accounts = () => {
                   <th className="sticky top-0 bg-gray-200">Product Brand</th>
                   <th className="sticky top-0 bg-gray-200">Product Model</th>
                   <th className="sticky top-0 bg-gray-200">Quantity</th>
+                  <th className="sticky top-0 bg-gray-200">used Product</th>
                   <th className="sticky top-0 bg-gray-200">Export Date</th>
                   <th className="sticky top-0 bg-gray-200">Action</th>
                 </tr>
@@ -356,6 +382,7 @@ const Accounts = () => {
                     <td>{product.productBrand}</td>
                     <td>{product.productModel}</td>
                     <td>{product.productQuantity}</td>
+                    <td>{product.usedProduct}</td>
                     <td>{product.date}</td>
                     <td className="flex justify-around items-center">
                       <Link to={`/accounts/${product.id}`}>

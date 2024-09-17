@@ -11,6 +11,16 @@ const PrintingExInitialData = () => {
     const [remark, setRemark] = useState("");
     const [loading, setLoading] = useState(true);
     const [searchValue, setSearchValue] = useState('');
+    const [mark, setMark] = useState('');
+    const [receiptNumber, setReceiptNumber] = useState('');
+    const [totalPallet, setTotalPallet] = useState('');
+    const [totalBoxPallet, setTotalBoxPallet] = useState('');
+    const [language, setLanguage] = useState("EN");
+    const [location, setLocation] = useState("China");
+    const [company, setCompany] = useState("");
+
+
+    console.log(mark, receiptNumber, totalPallet, totalBoxPallet, language, location, company, "check");
 
 
     useEffect(() => {
@@ -41,7 +51,8 @@ const PrintingExInitialData = () => {
             account.productName.toLowerCase().includes(value) ||
             account.truckNumber.toLowerCase().includes(value) ||
             account.productModel.toLowerCase().includes(value) ||
-            account.totalPallet.toLowerCase().includes(value)
+            account.totalPallet.toLowerCase().includes(value) ||
+            account.date.toLowerCase().includes(value)
         );
 
         setFilteredData(filteredProducts);
@@ -79,7 +90,7 @@ const PrintingExInitialData = () => {
                 </h1>
                 <input
                     type="text"
-                    placeholder="Search model, pallet no, truck no"
+                    placeholder="Search date, model, pallet no, truck no"
                     className="border border-gray-300 p-2 rounded-md focus:outline-none"
                     value={searchValue}
                     onChange={handleSearchChange}
@@ -98,14 +109,14 @@ const PrintingExInitialData = () => {
                     <table className="table">
                         <thead>
                             <tr>
-                                <th className="sticky top-0 bg-gray-200 flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        onChange={handleSelectAll}
-                                        checked={selectedItems.length === filteredData.length && filteredData.length > 0}
-                                    /> <p className="ml-3">Select All</p>
-                                </th>
+                                <th className="sticky top-0 bg-gray-200"> <input
+                                    className="mr-1"
+                                    type="checkbox"
+                                    onChange={handleSelectAll}
+                                    checked={selectedItems.length === filteredData.length && filteredData.length > 0}
+                                /> Select All</th>
                                 <th className="sticky top-0 bg-gray-200">ID</th>
+                                <th className="sticky top-0 bg-gray-200">Date</th>
                                 <th className="sticky top-0 bg-gray-200">Product Name</th>
                                 <th className="sticky top-0 bg-gray-200">Product Model</th>
                                 <th className="sticky top-0 bg-gray-200">splitQuantity</th>
@@ -126,6 +137,7 @@ const PrintingExInitialData = () => {
                                         />
                                     </td>
                                     <td>{product.id}</td>
+                                    <td>{product.date}</td>
                                     <td>{product.productName}</td>
                                     <td>{product.productModel}</td>
                                     <td>{product.splitQuantitySingleProduct}</td>
@@ -138,21 +150,128 @@ const PrintingExInitialData = () => {
                     </table>
                 )}
             </div>
-            <div className="mt-5">
-                {/* Remark Input Area */}
-                <div className="flex flex-col mb-5">
-                    <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="remarks">
-                        Add Remarks
+
+            <div className="grid grid-cols-2 gap-10 mt-20">
+                <div className="">
+                    <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="languageSelect">
+                        Select Language
                     </label>
-                    <textarea
-                        id="remarks"
-                        className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none h-24"
-                        placeholder="Type your remarks here..."
-                        value={remark}
-                        onChange={(e) => setRemark(e.target.value)}
-                    />
+                    <select
+                        id="languageSelect"
+                        className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value)}
+                    >
+                        <option value="EN">English</option>
+                        <option value="CN">Chinese</option>
+                    </select>
+                </div>
+
+                {/* Location Select Field */}
+                <div className="">
+                    <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="locationSelect">
+                        Select Location
+                    </label>
+                    <select
+                        id="locationSelect"
+                        className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                    >
+                        <option value="China">China</option>
+                        <option value="Philippines">Philippines</option>
+                    </select>
                 </div>
             </div>
+
+            {
+                location === "Philippines" && <div className="flex flex-col">
+                    <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="remarkInput">
+                        Company Name
+                    </label>
+                    <input
+                        id="CountryInput"
+                        type="text"
+                        className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        placeholder="Enter Company Name..."
+                        value={company}
+                        onChange={(e) => setCompany(e.target.value)}
+                    />
+                </div>
+            }
+
+            <div className="flex flex-col">
+                <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="remarkInput">
+                    Add Remark
+                </label>
+                <input
+                    id="remarkInput"
+                    type="text"
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    placeholder="Enter your remark..."
+                    value={remark}
+                    onChange={(e) => setRemark(e.target.value)}
+                />
+            </div>
+            {/* Mark Text Area */}
+            <div className="flex flex-col">
+                <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="markInput">
+                    Add Mark
+                </label>
+                <textarea
+                    id="markInput"
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none h-24"
+                    placeholder="Type your mark here..."
+                    value={mark}
+                    onChange={(e) => setMark(e.target.value)}
+                />
+            </div>
+            {/* Total Pallet No Input */}
+            <div className="flex flex-col">
+                <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="totalPallet">
+                    Total Pallet No
+                </label>
+                <input
+                    id="totalPallet"
+                    type="number"
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    placeholder="Enter total pallet number..."
+                    value={totalPallet}
+                    onChange={(e) => setTotalPallet(e.target.value)}
+                />
+            </div>
+            {/* Total Box in a Pallet Input */}
+            <div className="flex flex-col">
+                <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="totalBoxPallet">
+                    Total Box in a Pallet
+                </label>
+                <input
+                    id="totalBoxPallet"
+                    type="number"
+                    className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+                    placeholder="Enter total boxes in a pallet..."
+                    value={totalBoxPallet}
+                    onChange={(e) => setTotalBoxPallet(e.target.value)}
+                />
+            </div>
+
+            {/* Receipt Number Input */}
+            {
+                location === "Philippines" && <div className="flex flex-col">
+                    <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="receiptNumber">
+                        Receipt Number
+                    </label>
+                    <input
+                        id="receiptNumber"
+                        type="text"
+                        className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        placeholder="Enter receipt number..."
+                        value={receiptNumber}
+                        onChange={(e) => setReceiptNumber(e.target.value)}
+                    />
+                </div>
+            }
+
             <div className="flex justify-end my-5">
                 <button
                     className="btn-info font-bold px-[20px] py-[3px] mt-4 rounded-lg text-purple-950 hover:text-amber-500 "

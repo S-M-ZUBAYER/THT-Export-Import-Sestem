@@ -29,15 +29,16 @@ const Purchase = () => {
 
   // const [productChecks, setProductChecks] = useState([]);
   const [savedExpenses, setSavedExpenses] = useState([]);
-  const [totalCost, setTotalCost] = useState(0);
+  const [totalCost, setTotalCost] = useState(0.00);
   const [invoiceNo, setInvoiceNo] = useState("");
-  const [total, setTotal] = useState("");
+  const [total, setTotal] = useState(0.00);
   const [ipNo, setIpNo] = useState("");
   const [truckNo, setTruckNo] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState([]);
   // const [error, setError] = useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const [selectedProductDate, setSelectedProductDate] = useState("");
   // const filteredTruckNumbersRef = useRef([]);
 
   const navigate = useNavigate();
@@ -53,7 +54,6 @@ const Purchase = () => {
       // data see in table descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
       setAccounts(sortedData);
-      console.log(sortedData, "OfficeAccount");
 
       setLoading(false);
     } catch (error) {
@@ -66,7 +66,6 @@ const Purchase = () => {
       const response = await axios.get(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/addcharges"
       );
-      console.log(response?.data, "Charge");
       setCharges(response?.data);
     } catch (error) {
       toast.error("Error from server to get data!!");
@@ -81,7 +80,6 @@ const Purchase = () => {
       // data see in table descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
       // const data = JSON.parse(sortedData);
-      console.log(sortedData, "productInBox");
 
       setBoxData(sortedData);
       setFilteredData(sortedData);
@@ -97,7 +95,6 @@ const Purchase = () => {
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/transport_country"
       );
       setTransportCountry(response?.data);
-      console.log(response?.data, "transportCountry");
     } catch (error) {
       toast.error("Error from server to get data!!");
     }
@@ -109,7 +106,6 @@ const Purchase = () => {
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/transport"
       );
       setTransportPath(response?.data);
-      console.log(response?.data, "transport");
     } catch (error) {
       toast.error("Error from server to get data!!");
     }
@@ -121,7 +117,6 @@ const Purchase = () => {
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance"
       );
       setPurchase(response?.data);
-      console.log(response?.data, "finance");
     } catch (error) {
       toast.error("Error from server to get data!!");
     }
@@ -133,7 +128,6 @@ const Purchase = () => {
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance"
       );
       setFinances(response?.data);
-      console.log(response?.data, "Finance2");
     } catch (error) {
       toast.error("Error from server to get data!!");
     }
@@ -195,16 +189,37 @@ const Purchase = () => {
   //   }
   // }, [boxData, purchase, finances]);
 
+  const [selectedProduct, setSelectedProduct] = useState([])
 
-
-
-  const handleCheckboxChange = (id) => {
-    if (selectedItems.includes(id)) {
-      setSelectedItems(selectedItems.filter((item) => item !== id));
+  const handleCheckboxChange = (product) => {
+    // If no product is selected yet, just add the first one
+    if (selectedItems.length === 0) {
+      setSelectedItems([product?.id]); // Store product ID
+      setSelectedProduct([product]); // Store full product object
+      setSelectedProductDate(product?.date); // Save the date of the first selected product
     } else {
-      setSelectedItems([...selectedItems, id]);
+      // Get the date of the first selected product
+      const firstProductDate = selectedProductDate;
+
+      // Check if the selected product has the same date as the first selected product
+      if (product?.date === firstProductDate) {
+        // Check if the product is already selected
+        if (selectedItems.includes(product?.id)) {
+          // Deselect the product: remove it from both selectedItems and selectedProduct
+          setSelectedItems(selectedItems.filter((item) => item !== product?.id));
+          setSelectedProduct(selectedProduct.filter((item) => item.id !== product?.id));
+        } else {
+          // Select the product: add it to both selectedItems and selectedProduct
+          setSelectedItems([...selectedItems, product?.id]);
+          setSelectedProduct([...selectedProduct, product]);
+        }
+      } else {
+        // If the product's date is different, show a warning or prevent selection
+        alert("Selected product's date must match the previously selected product's date.");
+      }
     }
   };
+
 
   const handleTransportWay = (event) => {
     setTransportWay(event.target.value);
@@ -233,25 +248,32 @@ const Purchase = () => {
 
   // data send to server
   const formSubmit = (e) => {
-    const newEx = parseFloat(totalCost) + parseFloat(total);
     e.preventDefault();
-    const data = {
+
+    const newEx = parseFloat(totalCost) + parseFloat(total);
+    const purchaseInfo = {
+      id: 0,
       transportWay: transportWay, // id pass
       transportCountryName: transportCountryName, // id pass
-      transportCountryPort: selectedTransportCountryPort, // id pass
-      officeAccount: productData, //id pass
+      purchaseProductInBoxes: selectedProduct,
       particularExpenseNames: savedExpenses,
       totalCost: totalCost,
-      invoiceNo: invoiceNo,
-      total: newEx,
       ipNo: ipNo,
+      invoiceNo: invoiceNo,
+      total: newEx.toString(),
       truckNo: truckNo,
+      transportCountry: transportCountryName,
+      transportPort: selectedTransportCountryPort,
+      date: selectedProductDate
     };
-    // console.log(data);
+
+    console.log(purchaseInfo, "data");
+
+
     axios
       .post(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
-        data,
+        purchaseInfo,
         {
           headers: {
             "Content-Type": "application/json",
@@ -263,12 +285,12 @@ const Purchase = () => {
           position: "top-center",
         });
         navigate("/finance");
-        // console.log(res);
       })
       .catch((err) =>
         toast.error("This error coming from server please try again later!!", {
           position: "top-center",
         })
+
       );
   };
   const [searchValue, setSearchValue] = useState('');
@@ -283,6 +305,7 @@ const Purchase = () => {
       account.productName.toLowerCase().includes(value) ||
       account.truckNumber.toLowerCase().includes(value) ||
       account.productModel.toLowerCase().includes(value) ||
+      account.date.toLowerCase().includes(value) ||
       account.totalPallet.toLowerCase().includes(value)
     );
 
@@ -314,7 +337,7 @@ const Purchase = () => {
               </h1>
               <input
                 type="text"
-                placeholder="Search model, pallet no, truck no"
+                placeholder="Search date, model, pallet no, truck no"
                 className="border border-gray-300 p-2 rounded-md focus:outline-none"
                 value={searchValue}
                 onChange={handleSearchChange}
@@ -340,6 +363,7 @@ const Purchase = () => {
                     <tr>
                       <th className="sticky top-0 bg-gray-200">Select</th>
                       <th className="sticky top-0 bg-gray-200">ID</th>
+                      <th className="sticky top-0 bg-gray-200">Date</th>
                       <th className="sticky top-0 bg-gray-200">Product Name</th>
                       <th className="sticky top-0 bg-gray-200">
                         Product Model
@@ -367,11 +391,12 @@ const Purchase = () => {
                               name="product"
                               value={product.id}
                               checked={selectedItems.includes(product.id)}
-                              onChange={() => handleCheckboxChange(product.id)}
+                              onChange={() => handleCheckboxChange(product)}
                             // onClick={() => handleProductCheck(product)}
                             />
                           </td>
                           <td>{product.id}</td>
+                          <td>{product.date}</td>
                           <td>{product.productName}</td>
                           <td>{product.productModel}</td>
                           <td>{product.quantity}</td>
@@ -392,7 +417,7 @@ const Purchase = () => {
           </div>
 
           {/* form for details add */}
-          <div className="mt-4 lg:flex justify-center items-center w-full lg:w-3/4 mx-auto">
+          <div className=" lg:flex justify-center items-center w-full lg:w-3/4 mx-auto ">
             <form
               className="bg-base-100 rounded-lg shadow-xl my-5 p-[12px]"
               onSubmit={formSubmit}>
@@ -413,7 +438,7 @@ const Purchase = () => {
                       onChange={handleTransportWay}>
                       <option value="">---- Pick Transport Way ----</option>
                       {transportPath?.map((product, index) => (
-                        <option value={product.id} key={index}>
+                        <option value={product.transportWay} key={index}>
                           {product.transportWay}
                         </option>
                       ))}
@@ -482,7 +507,7 @@ const Purchase = () => {
                             transportCountryName.toLowerCase()
                         )
                         .map((port, index) => (
-                          <option key={index} value={port.id}>
+                          <option key={index} value={port.countryPort}>
                             {port.countryPort}
                           </option>
                         ))}
@@ -543,7 +568,7 @@ const Purchase = () => {
                       name="total"
                       min={0}
                       value={total}
-                      onWheel={(e) => e.target.blur()}
+                      // onWheel={(e) => e.target.blur()}
                       onChange={(e) => setTotal(e.target.value)}
                     />
                   </div>
@@ -552,30 +577,20 @@ const Purchase = () => {
                 {/* Truck No. */}
                 <div className="">
                   <label className="text-lg font-semibold" htmlFor="ipNo">
-                    Truck No. (nedd to select multiple)
+                    Truck No.
                   </label>
                   <div className="mt-3">
-                    <select
-                      className="select select-info w-full"
-                      id="selectOption"
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="truckNoInput"
                       value={truckNo}
                       name="truckNo"
                       required
-                      aria-required
-                      onChange={handleTruckNo}>
-                      <option value="">---- Pick Truck No. ----</option>
-
-                      {/* filter truck number If any truck number save then hide automatically */}
-                      {filteredTruckNumbers
-                        ?.sort((a, b) => b.truckNumber - a.truckNumber)
-                        ?.map((data, index) => (
-                          <option value={data.truckNumber} key={index}>
-                            {data}
-                          </option>
-                        ))}
-                      {/* check truck number not use it */}
-
-                    </select>
+                      placeholder="Enter or pick Truck No."
+                      list="truckNumbersList" // Associate the input with the datalist for filtering
+                      onChange={handleTruckNo}
+                    />
                   </div>
                 </div>
 
