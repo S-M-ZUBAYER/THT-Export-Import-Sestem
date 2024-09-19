@@ -31,6 +31,7 @@ import NewBrand from "../pages/dataInput/NewBrand";
 import NewProductUpdate from "../pages/dataInput/NewProductUpdate";
 import NewBrandUpdate from "../pages/dataInput/NewBrandUpdate";
 import PrintingExInitialData from "../pages/PrintingExportInitialData/PrintingExInitialData";
+import FinalPurchase from "../pages/FinalPurchase/FinalPurchase";
 
 const Routers = () => {
   return (
@@ -57,6 +58,7 @@ const Routers = () => {
         <Route path="/transportcountry" element={<TransportCountry />} />
         <Route path="/printInitialData" element={<PrintingExInitialData />} />
         <Route path="/purchase" element={<Purchase />} />
+        <Route path="/finalPurchase" element={<FinalPurchase />} />
         <Route path="/transportservice" element={<Transportservice />} />
         <Route path="/addcharges" element={<AddCharges />} />
         <Route path="/addcharges/:id" element={<AddChargesUpdate />} />

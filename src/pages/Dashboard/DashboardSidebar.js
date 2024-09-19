@@ -4,7 +4,7 @@ import { TfiAngleLeft, TfiAngleRight } from "react-icons/tfi";
 import { AiOutlineDashboard, AiOutlineExport, AiOutlineImport } from "react-icons/ai"; // Importing icons
 import { MdAddToPhotos, MdAccountBalance, MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { FaShippingFast, FaBoxOpen } from "react-icons/fa";
-import { BiWorld, BiSolidPurchaseTag } from "react-icons/bi";
+import { BiWorld, BiSolidPurchaseTag, BiSolidPurchaseTagAlt } from "react-icons/bi";
 import { FaMoneyBill1Wave } from "react-icons/fa6";
 import { FiPrinter } from "react-icons/fi";
 import { FcPrint } from "react-icons/fc";
@@ -81,6 +81,11 @@ const navLinks = [
     icon: <BiSolidPurchaseTag />,
   },
   {
+    path: "/finalPurchase",
+    display: "Final Purchase",
+    icon: <BiSolidPurchaseTagAlt />,
+  },
+  {
     path: "/finance",
     display: "Finance",
     icon: <GiTakeMyMoney />,
@@ -99,7 +104,7 @@ const DashboardSidebar = ({ children }) => {
     <div className="flex">
       <div
         className={`${open ? "w-80" : "w-16"
-          } duration-300 h-screen bg-cyan-500 text-white relative`}>
+          } duration-300 h-full bg-cyan-500 text-white relative`}>
 
         {/* Toggle Sidebar Button */}
         <button

@@ -2,13 +2,10 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 
 export const generatePDF = (finance) => {
+  console.log(finance, "finance");
+
   const productNameParse = JSON.parse(finance?.productName);
   const uniqueProducts = Array.from(new Set(productNameParse));
-  const totalBoxParse = JSON.parse(finance?.totalBox);
-  const totalBox = totalBoxParse?.reduce(
-    (acc, currentValue) => acc + currentValue,
-    0
-  );
   const productModelParse = JSON.parse(finance.productModel);
 
   const doc = new jsPDF();
@@ -22,84 +19,47 @@ export const generatePDF = (finance) => {
     "S"
   );
 
+  // Title and Main Information
   doc.setFontSize(55);
   doc.text("Mark", 78, 30);
+
   const productNameLines = doc.splitTextToSize(
     `Product Name: ${uniqueProducts}`,
     250
   );
   doc.setFontSize(38);
   doc.text(productNameLines, 7, 60);
+
   doc.setFontSize(40);
-  doc.text(`Total Box: ${totalBox} boxes`, 7, 115);
+  doc.text(`Total Box: ${finance.totalBox} boxes`, 7, 115);
+
   doc.setFontSize(30);
-  doc.text(`Made in Bangladesh`, 62, 140);
+  doc.text(`Made in ${finance.transportCountryName}`, 62, 140);
+
   doc.setFontSize(60);
   doc.text(`Pallet: ${finance.totalPalletQuantity}`, 65, 175);
-  // doc.setFontSize(16);
-  // doc.text(`Date: ${localDate}`, 10, 150);
 
-  // this code is only show for table and data not style properly
-  // Generate the header
-  // doc.autoTable({
-  //   head: [["Model", "Date", "Total Pallet", "Pallet", "Remark"]],
-  //   startY: 200,
-  //   styles: {
-  //     head: {
-  //       fillColor: [255, 255, 255],
-  //       textColor: [0, 0, 0],
-  //     },
-  //   },
-  // });
+  // Table Header
+  let columnWidths = [40, 30, 30, 35, 45]; // Default column widths
 
-  // If product is multiple then this
-  // productModelParse.forEach((model, index) => {
-  //   const dateString = finance.selectedBEDate;
-  //   const dateObj = new Date(dateString);
-  //   const localDate = dateObj.toLocaleDateString();
-
-  //   const totalBox = JSON.parse(finance.totalBox)[index];
-
-  //   doc.autoTable({
-  //     // head: [["Model", "Date", "Total Pallet", "Pallet", "Remark"]],
-  //     body: [
-  //       [
-  //         model,
-  //         localDate,
-  //         "20",
-  //         finance.totalPalletQuantity,
-  //         `${totalBox} boxes`,
-  //       ],
-  //     ],
-  //     startY: 208 + index * 8, // Adjust the Y position based on your content above
-  //     styles: {
-  //       overflow: "linebreak",
-  //     },
-  //   });
-  // });
-
-  // this code is try style and style some fixed
-  let columnWidths = [40, 30, 30, 35, 45]; // Adjust these values as needed
-
-  // Calculate column widths based on content length
   productModelParse.forEach((model, index) => {
-    const totalBox = JSON.parse(finance.totalBox)[index];
+    const totalBox = finance.financeProductInBoxes[index]?.totalBox || 0;
     const contentLength = {
       model: model.length,
       totalBox: totalBox.toString().length + 7, // " boxes" appended
     };
 
-    contentLength.model > columnWidths[0] &&
-      (columnWidths[0] = contentLength.model);
-    contentLength.totalBox > columnWidths[4] &&
-      (columnWidths[4] = contentLength.totalBox);
+    contentLength.model > columnWidths[0] && (columnWidths[0] = contentLength.model);
+    contentLength.totalBox > columnWidths[4] && (columnWidths[4] = contentLength.totalBox);
   });
 
+  // Table for product details
   doc.autoTable({
-    head: [["Model", "Date", "Total", "Pallet", "Remark"]],
+    head: [["Model", "Date", "Quantity", "Pallet", "Truck"]],
     startY: 200,
     styles: {
       halign: "center",
+      fontSize: 12,
     },
     columnStyles: {
       0: { cellWidth: columnWidths[0] },
@@ -110,25 +70,24 @@ export const generatePDF = (finance) => {
     },
   });
 
-  // If product is multiple then this
-  productModelParse.forEach((model, index) => {
+  // Loop to add multiple rows for each product model
+  finance.financeProductInBoxes.forEach((product, index) => {
     const dateString = finance.selectedBEDate;
     const dateObj = new Date(dateString);
     const localDate = dateObj.toLocaleDateString();
-
-    const totalBox = JSON.parse(finance.totalBox)[index];
+    const totalBox = product.totalBox;
 
     doc.autoTable({
       body: [
         [
-          model,
+          product.productModel,
           localDate,
-          "20",
+          product.quantity,
           finance.totalPalletQuantity,
-          `${totalBox} boxes`,
+          product.truckNumber,
         ],
       ],
-      startY: 208 + index * 8,
+      startY: doc.lastAutoTable.finalY + 10, // Adjust position
       styles: {
         overflow: "linebreak",
         lineHeight: 14,
@@ -144,6 +103,6 @@ export const generatePDF = (finance) => {
     });
   });
 
-  // Save PDF code and make file name
+  // Save the generated PDF with a filename based on the invoice number
   doc.save(`finance_details_${finance.invoiceNo}.pdf`);
 };

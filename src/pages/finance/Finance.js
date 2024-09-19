@@ -24,6 +24,7 @@ const Finance = () => {
   const [palletRemarks, setPalletRemarks] = useState("Pallet");
   const [loading, setLoading] = useState(true);
   const [totalPalletCount, setTotalPalletCount] = useState(0);
+  const [financeData, setFinanceData] = useState({});
 
   const navigate = useNavigate();
 
@@ -108,8 +109,7 @@ const Finance = () => {
   };
 
   const handleAddNewData = () => {
-    console.log(formData.ipNo, "ip");
-
+    console.log(formData);
     const data = {
       selectedBEDate,
       epNo: formData.ipNo,
@@ -121,10 +121,18 @@ const Finance = () => {
       totalBox: totalBox,
       totalQuantity: totalQuantity
     };
-    setFormData((prevData) => ({
-      ...prevData,
-      ...data,
-    }));
+    // setFormData((prevData) => ({
+    //   ...prevData,
+    //   ...data,
+    // }));
+    setFormData((prevData) => {
+      const { purchaseProductInBoxes, ...rest } = prevData; // Destructure and remove purchaseProductInBoxes
+      return {
+        ...rest,  // Spread the rest of the data (without purchaseProductInBoxes)
+        ...data,  // Add the new data
+      };
+    });
+    // setFinanceData({ ...formData, ...data })
     toast.success("Successfully data merged. Save Now", {
       position: "top-center",
     });
@@ -132,6 +140,10 @@ const Finance = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    console.log(formData, "formdata");
+    // console.log(financeData, "financedata");
+
 
     axios
       .post(
@@ -167,6 +179,20 @@ const Finance = () => {
       <div>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 my-6 mx-4">
+            {/* B/E Number */}
+            <div>
+              <label className="text-lg font-semibold" htmlFor="beNumber">
+                B/E Number
+              </label>
+              <input
+                className="w-full border-2 border-gray-100 rounded-xl p-3 mt-1 bg-transparent"
+                placeholder="Enter B/E Number"
+                type="text"
+                required
+                name="beNumber"
+                onChange={handleBENumberChange}
+              />
+            </div>
             {/* B/E Date */}
             <div>
               <label className="text-lg font-semibold" htmlFor="bedate">
@@ -205,12 +231,41 @@ const Finance = () => {
                 className="w-full border-2 border-gray-100 rounded-xl p-3 mt-1 bg-transparent"
                 placeholder="Invoice Number"
                 type="text"
-                readOnly
                 name="invoiceNo"
                 value={formData.invoiceNo || ""}
                 onChange={handleInputChange}
               />
             </div>
+            {/* EP Number */}
+            <div>
+              <label className="text-lg font-semibold" htmlFor="ipNo">
+                EP Number
+              </label>
+              <input
+                className="w-full border-2 border-gray-100 rounded-xl p-3 mt-1 bg-transparent"
+                placeholder="Enter IP Number"
+                type="text"
+                name="ipNo"
+                value={formData.ipNo || ""}
+                onChange={handleInputChange}
+              />
+            </div>
+            {/* Truck No */}
+            <div>
+              <label className="text-lg font-semibold" htmlFor="ipNo">
+                Truck No
+              </label>
+              <input
+                className="w-full border-2 border-gray-100 rounded-xl p-3 mt-1 bg-transparent"
+                placeholder="Enter Truck Number"
+                type="text"
+                name="truckNo"
+                value={formData.truckNo || ""}
+                onChange={handleInputChange}
+              />
+            </div>
+
+
             {/* Total Expenses */}
             <div>
               <label className="text-lg font-semibold" htmlFor="total">
@@ -226,35 +281,8 @@ const Finance = () => {
                 onChange={handleInputChange}
               />
             </div>
-            {/* B/E Number */}
-            <div>
-              <label className="text-lg font-semibold" htmlFor="beNumber">
-                B/E Number
-              </label>
-              <input
-                className="w-full border-2 border-gray-100 rounded-xl p-3 mt-1 bg-transparent"
-                placeholder="Enter B/E Number"
-                type="text"
-                required
-                name="beNumber"
-                onChange={handleBENumberChange}
-              />
-            </div>
-            {/* IP Number */}
-            <div>
-              <label className="text-lg font-semibold" htmlFor="ipNo">
-                EP Number
-              </label>
-              <input
-                className="w-full border-2 border-gray-100 rounded-xl p-3 mt-1 bg-transparent"
-                placeholder="Enter IP Number"
-                type="text"
-                readOnly
-                name="ipNo"
-                value={formData.ipNo || ""}
-                onChange={handleInputChange}
-              />
-            </div>
+
+
             {/* Particular Expenses cost */}
             <div>
               <label className="text-lg font-semibold" htmlFor="totalCost">

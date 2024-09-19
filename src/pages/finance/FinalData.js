@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { generatePDF } from "./PrintablePage";
 import { addDays, format } from "date-fns";
 import { DateRangePicker } from "react-date-range";
+import { ShowDetailsModal } from "./ShowDetailsModal";
 
 // loader css style
 const override = {
@@ -15,9 +16,6 @@ const override = {
 };
 
 const FinalData = () => {
-  const [expenses, setExpenses] = useState([]);
-  const [accounts, setAccounts] = useState([]);
-  const [boxData, setBoxData] = useState([]);
   const [finances, setFinances] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
@@ -36,12 +34,22 @@ const FinalData = () => {
     },
   ]);
   const refOne = useRef([]);
+  const [selectedFinance, setSelectedFinance] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = (finance) => {
+    setSelectedFinance(finance);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedFinance(null);
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     setLoading(true);
-    fetchExpenses();
-    fetchAccounts();
-    fetchBoxData();
+
     fetchFinance();
 
     // for date search option hide
@@ -52,45 +60,6 @@ const FinalData = () => {
   // for pagination function
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
-  };
-
-  // Data fetch from purchase API
-  const fetchExpenses = async () => {
-    try {
-      const response = await axios.get(
-        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase"
-      );
-      // data see in table descending order
-      const sortedData = response?.data.sort((a, b) => b.id - a.id);
-      // const data = JSON.parse(sortedData);
-      setExpenses(sortedData);
-    } catch (error) {
-      toast.error("Error from server to get data!!");
-    }
-  };
-
-  // Data fetch from office_accounts API
-  const fetchAccounts = async () => {
-    try {
-      const response = await axios.get(
-        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts"
-      );
-      setAccounts(response?.data);
-    } catch (error) {
-      toast.error("Error from server to get data!!");
-    }
-  };
-
-  // Data fetch from server
-  const fetchBoxData = async () => {
-    try {
-      const response = await axios.get(
-        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes"
-      );
-      setBoxData(response?.data);
-    } catch (error) {
-      toast.error("Error from server to get data!!");
-    }
   };
 
   // Data fetch from finance API
@@ -162,7 +131,7 @@ const FinalData = () => {
   const handlePrint = (finance) => {
     // generatePDF(finances[currentPage]);
     console.log(finance, "finance");
-    return;
+    // return;
     generatePDF(finance);
   };
 
@@ -270,7 +239,7 @@ const FinalData = () => {
                       <td>{finance.invoiceNo}</td>
                       <td>{finance.total}</td>
                       <td>{finance.beNumber}</td>
-                      <td>{finance.ipNo}</td>
+                      <td>{finance.epNo}</td>
                       <td>
                         <ul>
                           {finance.particularExpenseNames.map((ex) => (
@@ -286,7 +255,14 @@ const FinalData = () => {
                       <td>{finance.totalNetWeight}</td>
                       <td>{finance.totalPalletQuantity}</td>
                       {/* <td>{finance.palletRemarks}</td> */}
-                      <td>
+                      <td className="flex">
+                        <button
+                          onClick={() => openModal(finance)}
+                          className=" btn-accent font-bold px-[20px] py-[3px] mt-4 rounded-lg text-purple-950 hover:text-amber-500 mr-2"
+                        >
+                          Details
+                        </button>
+
                         <button
                           className="btn-info font-bold px-[20px] py-[3px] mt-4 rounded-lg text-purple-950 hover:text-amber-500"
                           onClick={() => handlePrint(finance)}>
@@ -335,6 +311,10 @@ const FinalData = () => {
           onClick={handlePrint}>
           Print
         </button> */}
+        {isModalOpen && (
+          <ShowDetailsModal finance={selectedFinance} onClose={closeModal} />
+        )}
+
       </div>
     </>
   );

@@ -32,7 +32,7 @@ export const generateInitialPDF = (dataArray, remark) => {
     doc.text(productNameLines, 7, 85); // Product Name
 
     doc.setFontSize(30);
-    doc.text(`Truck Number: ${firstProduct.totalPallet}`, 7, 100); // Truck Number (Heading)
+    doc.text(`Truck Number: ${firstProduct.truckNumber}`, 7, 100); // Truck Number (Heading)
 
     doc.setFontSize(20);
     doc.text(`Made in Bangladesh`, 70, 123); // Truck Number (Heading)
