@@ -1,0 +1,210 @@
+import React, { useState } from "react";
+
+const ShippingDataTable = () => {
+    const [formData, setFormData] = useState({
+        shipper: "THT-Space Electrical Company Ltd.",
+        blNo: "",
+        containerNo: "",
+        destination: "",
+        vslVoy: "",
+        etd: "",
+        exchangeRate: 109.18, // Default Exchange Rate USD to BDT
+        charges: [
+            { description: "", amountUSD: 0, amountBDT: 0 },
+        ],
+    });
+
+    // Update form fields
+    const handleFieldChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+    };
+
+    // Update charges and calculate amounts
+    const handleChargeChange = (index, field, value) => {
+        const updatedCharges = [...formData.charges];
+        updatedCharges[index][field] = field === "amountUSD" ? parseFloat(value) || 0 : value;
+        if (field === "amountUSD") {
+            updatedCharges[index]["amountBDT"] = (
+                updatedCharges[index]["amountUSD"] * formData.exchangeRate
+            ).toFixed(2);
+        }
+        setFormData({ ...formData, charges: updatedCharges });
+    };
+
+    // Add a new charge row
+    const addNewChargeRow = (e) => {
+        e.preventDefault();
+        setFormData({
+            ...formData,
+            charges: [...formData.charges, { description: "", amountUSD: 0, amountBDT: 0 }],
+        });
+    };
+
+    // Calculate total USD and BDT
+    const calculateTotal = (field) => {
+        return formData.charges.reduce((acc, charge) => acc + parseFloat(charge[field]), 0).toFixed(2);
+    };
+
+    return (
+        <div className="p-4">
+            <h1 className="text-xl font-bold mb-4">Shipping Details Form</h1>
+
+            {/* Shipper and B/L NO Fields */}
+            <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label className="block font-semibold">Shipper</label>
+                    <input
+                        type="text"
+                        name="shipper"
+                        value={formData.shipper}
+                        onChange={handleFieldChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                    />
+                </div>
+                <div>
+                    <label className="block font-semibold">B/L NO</label>
+                    <input
+                        type="text"
+                        name="blNo"
+                        value={formData.blNo}
+                        onChange={handleFieldChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        placeholder="Enter B/L No"
+                    />
+                </div>
+            </div>
+
+            {/* Container, Destination, VSL/VOY, and ETD CGP Fields */}
+            <div className="grid grid-cols-4 gap-4 mb-4">
+                <div>
+                    <label className="block font-semibold">Container No</label>
+                    <input
+                        type="text"
+                        name="containerNo"
+                        value={formData.containerNo}
+                        onChange={handleFieldChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        placeholder="Enter Container No"
+                    />
+                </div>
+                <div>
+                    <label className="block font-semibold">Destination</label>
+                    <input
+                        type="text"
+                        name="destination"
+                        value={formData.destination}
+                        onChange={handleFieldChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        placeholder="Enter Destination"
+                    />
+                </div>
+                <div>
+                    <label className="block font-semibold">VSL/VOY</label>
+                    <input
+                        type="text"
+                        name="vslVoy"
+                        value={formData.vslVoy}
+                        onChange={handleFieldChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        placeholder="Enter VSL/VOY"
+                    />
+                </div>
+                <div>
+                    <label className="block font-semibold">ETD CGP</label>
+                    <input
+                        type="text"
+                        name="etd"
+                        value={formData.etd}
+                        onChange={handleFieldChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        placeholder="Enter ETD CGP"
+                    />
+                </div>
+            </div>
+
+            {/* Exchange Rate */}
+            <div className="mb-4">
+                <label className="block font-semibold">Exchange Rate (USD to BDT)</label>
+                <input
+                    type="number"
+                    name="exchangeRate"
+                    value={formData.exchangeRate}
+                    onChange={handleFieldChange}
+                    className="w-full p-2 border border-gray-300 rounded"
+                />
+            </div>
+
+            {/* Charges Table with Add Row Feature */}
+            <table className="min-w-full table-auto border-collapse border border-gray-300 mb-4">
+                <thead className="bg-gray-200">
+                    <tr>
+                        <th className="border border-gray-300 p-2">Description</th>
+                        <th className="border border-gray-300 p-2">Amount (USD)</th>
+                        <th className="border border-gray-300 p-2">Amount (BDT)</th>
+                        <th className="border border-gray-300 p-2"></th> {/* For delete action */}
+                    </tr>
+                </thead>
+                <tbody>
+                    {formData.charges.map((charge, index) => (
+                        <tr key={index}>
+                            <td className="border border-gray-300 p-2">
+                                <input
+                                    type="text"
+                                    value={charge.description}
+                                    onChange={(e) => handleChargeChange(index, "description", e.target.value)}
+                                    className="w-full p-2 border border-gray-300 rounded"
+                                    placeholder="Enter Description"
+                                />
+                            </td>
+                            <td className="border border-gray-300 p-2">
+                                <input
+                                    type="number"
+                                    value={charge.amountUSD}
+                                    onChange={(e) => handleChargeChange(index, "amountUSD", e.target.value)}
+                                    className="w-full p-2 border border-gray-300 rounded"
+                                />
+                            </td>
+                            <td className="border border-gray-300 p-2 text-right">{charge.amountBDT}</td>
+                            <td className="border border-gray-300 p-2">
+                                <button
+                                    className="bg-red-500 text-white p-1 rounded"
+                                    onClick={() => {
+                                        const updatedCharges = formData.charges.filter((_, i) => i !== index);
+                                        setFormData({ ...formData, charges: updatedCharges });
+                                    }}
+                                >
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+                <tfoot>
+                    <tr className="bg-gray-100">
+                        <td className="border border-gray-300 p-2 font-bold">Total</td>
+                        <td className="border border-gray-300 p-2 text-right font-bold">{calculateTotal("amountUSD")}</td>
+                        <td className="border border-gray-300 p-2 text-right font-bold">{calculateTotal("amountBDT")}</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <button
+                className="bg-blue-500 text-white p-2 rounded"
+                onClick={addNewChargeRow}
+            >
+                Add New Charge Row
+            </button>
+
+            <button
+                className="bg-green-500 text-white p-2 ml-4 rounded"
+                onClick={() => alert("Form Submitted")}
+            >
+                Submit
+            </button>
+        </div>
+    );
+};
+
+export default ShippingDataTable;

@@ -34,6 +34,8 @@ const Purchase = () => {
   const [total, setTotal] = useState(0.00);
   const [ipNo, setIpNo] = useState("");
   const [truckNo, setTruckNo] = useState("");
+  const [grossWeight, setGrossWeight] = useState(0);
+  const [netWeight, setNetWeight] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState([]);
   // const [error, setError] = useState("");
@@ -236,6 +238,12 @@ const Purchase = () => {
   const handleTruckNo = (event) => {
     setTruckNo(event.target.value);
   };
+  const handleGrossWeight = (event) => {
+    setGrossWeight(event.target.value);
+  };
+  const handleNetWeight = (event) => {
+    setNetWeight(event.target.value);
+  };
 
 
   const handleExpenseSave = (selectedExpenseData) => {
@@ -262,13 +270,14 @@ const Purchase = () => {
       invoiceNo: invoiceNo,
       total: newEx.toString(),
       truckNo: truckNo,
+      grossWeight,
+      netWeight,
       transportCountry: transportCountryName,
       transportPort: selectedTransportCountryPort,
       date: selectedProductDate
     };
 
     console.log(purchaseInfo, "data");
-
 
     axios
       .post(
@@ -536,6 +545,26 @@ const Purchase = () => {
                   </div>
                 </div>
 
+
+                {/* Total Expense */}
+                <div className="">
+                  <div>
+                    <label className="text-lg font-semibold" htmlFor="ipNo">
+                      Invoice Value
+                    </label>
+                    <input
+                      className="w-full border-[1px] border-info rounded-md p-3 mt-3 bg-transparent"
+                      placeholder="Expense"
+                      type="number"
+                      name="total"
+                      min={0}
+                      value={total}
+                      // onWheel={(e) => e.target.blur()}
+                      onChange={(e) => setTotal(e.target.value)}
+                    />
+                  </div>
+                </div>
+
                 {/* IP No. */}
                 <div className="">
                   <div>
@@ -555,24 +584,6 @@ const Purchase = () => {
                   </div>
                 </div>
 
-                {/* Total Expense */}
-                <div className="">
-                  <div>
-                    <label className="text-lg font-semibold" htmlFor="ipNo">
-                      Expense
-                    </label>
-                    <input
-                      className="w-full border-[1px] border-info rounded-md p-3 mt-3 bg-transparent"
-                      placeholder="Expense"
-                      type="number"
-                      name="total"
-                      min={0}
-                      value={total}
-                      // onWheel={(e) => e.target.blur()}
-                      onChange={(e) => setTotal(e.target.value)}
-                    />
-                  </div>
-                </div>
 
                 {/* Truck No. */}
                 <div className="">
@@ -590,6 +601,45 @@ const Purchase = () => {
                       placeholder="Enter or pick Truck No."
                       list="truckNumbersList" // Associate the input with the datalist for filtering
                       onChange={handleTruckNo}
+                    />
+                  </div>
+                </div>
+                {/* Net Weight */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="netWeight">
+                    Net Weight
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="number"
+                      className="input input-info w-full"
+                      id="netWeight"
+                      value={netWeight}
+                      name="netWeight"
+                      required
+                      placeholder="Enter or pick netWeight"
+                      list="netWeight" // Associate the input with the datalist for filtering
+                      onChange={handleNetWeight}
+                    />
+                  </div>
+                </div>
+
+                {/* Gross Weight */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="grossWeight">
+                    Gross Weight
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="number"
+                      className="input input-info w-full"
+                      id="grossWeight"
+                      value={grossWeight}
+                      name="grossWeight"
+                      required
+                      placeholder="Enter or pick grossWeight"
+                      list="grossWeight" // Associate the input with the datalist for filtering
+                      onChange={handleGrossWeight}
                     />
                   </div>
                 </div>

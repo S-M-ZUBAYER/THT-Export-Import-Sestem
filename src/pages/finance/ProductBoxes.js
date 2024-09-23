@@ -20,6 +20,8 @@ const ProductBoxes = () => {
   const [perBoxProducts, setPerBoxProducts] = useState(0);
   const [productQuantity, setProductQuantity] = useState(0);
   const [totalBox, setTotalBox] = useState(0);
+  const [weightPerBox, setWeightPerBox] = useState(0);
+  const [individualTotalBoxWeight, setIndividualTotalBoxWeight] = useState(0);
   const [allModelQuantity, setAllModelQuantity] = useState("");
   const [sessionData, setSessionData] = useState([]);
   const [productList, setProductList] = useState([]);
@@ -204,7 +206,9 @@ const ProductBoxes = () => {
           splitProductsBox: product.perBoxProducts,
           splitQuantitySingleProduct: product.modelQuantity,
           productPerBox: product.productQuantity,
+          weightPerBox,
           totalBox: product.totalBox,
+          individualTotalBoxWeight,
           totalPallet: product.palletNo,
           truckNumber: product.truckNumber,
           date: selectedFixDate,
@@ -353,6 +357,8 @@ const ProductBoxes = () => {
       productBrand: selectedProductBrand,
       modelQuantity: allModelQuantity,
       perBoxProducts: allPerBoxQuantity,
+      weightPerBox,
+      individualTotalBoxWeight,
       totalPerBoxProduct: perBoxProducts,
       perProductTotalQuantity: totalPerProductQuantity,
       productQuantity,
@@ -374,11 +380,14 @@ const ProductBoxes = () => {
     setTotalBox(0)
     setSelectedProductPallet("");
     setTruckNumber("");
+    setWeightPerBox(0);
+    setIndividualTotalBoxWeight(0);
 
 
 
     // return;
   };
+
 
 
 
@@ -522,7 +531,7 @@ const ProductBoxes = () => {
       .reduce((max, current) => Math.max(max, current), 0); // Find the largest result
 
     setTotalBox(totalBox); // Set the totalBox with the largest value
-
+    calculateindividualTotalBoxWeight(weightPerBox, totalBox);
     const totalQuantity = Object.values(updatedModelData) // Get all the values from the updated modelData object
       .reduce((sum, model) => sum + (parseInt(model.quantity) || 0), 0);
     setProductQuantity(totalQuantity);
@@ -546,6 +555,19 @@ const ProductBoxes = () => {
     setSelectedFixDate(selectedFixDate);
 
 
+  };
+
+  // Function to calculate total box weight when weight per box is input
+  const handleWeightPerBoxChange = (e) => {
+    const value = e.target.value;
+    setWeightPerBox(value);
+    calculateindividualTotalBoxWeight(value, totalBox); // Call the function to calculate total weight
+  };
+
+  // Function to calculate total box weight
+  const calculateindividualTotalBoxWeight = (weightPerBox, totalBox) => {
+    const totalWeight = weightPerBox * totalBox; // Total weight = weight per box * number of boxes
+    setIndividualTotalBoxWeight(totalWeight);
   };
 
   return (
@@ -675,6 +697,23 @@ const ProductBoxes = () => {
                         value={perBoxProducts}
                       />
                     </div>
+                    {/* Weight Per Box */}
+                    <div>
+                      <label
+                        className="text-lg font-semibold"
+                        htmlFor="weightPerBox">
+                        Weight Per Box
+                      </label>
+                      <input
+                        className="w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent"
+                        placeholder="Please input Weight per box"
+                        type="number"
+                        name="weightPerBox"
+                        required
+                        value={weightPerBox}
+                        onChange={handleWeightPerBoxChange}
+                      />
+                    </div>
 
                     {/* Total Box */}
                     <div>
@@ -691,6 +730,24 @@ const ProductBoxes = () => {
                         required
                         name="boxQuantity"
                         value={totalBox}
+                      />
+                    </div>
+
+                    {/* Total Box weight */}
+                    <div>
+                      <label
+                        className="text-lg font-semibold"
+                        htmlFor="individualTotalBoxWeight">
+                        Total Box Weight
+                      </label>
+                      <input
+                        className="w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent"
+                        type="number"
+                        min="0"
+                        readOnly
+                        required
+                        name="individualTotalBoxWeight"
+                        value={individualTotalBoxWeight}
                       />
                     </div>
 
@@ -793,7 +850,9 @@ const ProductBoxes = () => {
                 <th>Split Product</th>
                 <th>Split Quantity</th>
                 <th>Product Per Box</th>
+                <th>Weight Per Box</th>
                 <th>Total Box</th>
+                <th>Individual Total Weight</th>
                 <th>Quantity</th>
                 <th>Pallet</th>
                 <th>Truck NO.</th>
@@ -808,7 +867,9 @@ const ProductBoxes = () => {
                     <td>{item?.perBoxProducts}</td>
                     <td>{item?.modelQuantity}</td>
                     <td>{item?.totalPerBoxProduct}</td>
+                    <td>{item?.weightPerBox}</td>
                     <td>{item.totalBox}</td>
+                    <td>{item?.individualTotalBoxWeight}</td>
                     <td>{item.productQuantity}</td>
                     <td>{item.palletNo}</td>
                     <td>{item.truckNumber}</td>

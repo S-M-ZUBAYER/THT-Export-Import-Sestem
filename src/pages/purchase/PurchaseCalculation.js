@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import CarrierTableData from "./CarrierTableData";
+import ShippingDataTable from "./ShippingDataTable";
 
 const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange }) => {
   const [selectedExpenses, setSelectedExpenses] = useState([]);
   const [remarks, setRemarks] = useState({});
   const [dates, setDates] = useState({});
+
+  const [rows, setRows] = useState([
+    { slNo: 1, date: "", containerNo: "", containerTypeSize: "", invoiceNo: "", IPNumber: "", fareAmount: 0, AitVat: 0, totalAmount: 0 }
+  ]);
+  console.log(rows, "rows");
 
   const handleCheckboxChange = (event) => {
     const expenseId = event.target.value;
@@ -88,6 +95,15 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange }) => {
           </div>
         ))}
       </div>
+
+      <CarrierTableData
+        rows={rows}
+        setRows={setRows}
+      ></CarrierTableData>
+
+
+      <ShippingDataTable></ShippingDataTable>
+
       {/* button */}
       <div className="my-6 flex justify-end">
         <Link
