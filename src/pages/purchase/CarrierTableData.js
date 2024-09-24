@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 
-const CarrierTableData = ({ rows, setRows }) => {
+const CarrierTableData = ({ rows, setRows, setContainerServiceProvider, containerServiceProvider }) => {
     // Initial state to hold rows of data
     // const [rows, setRows] = useState([
-    //     { slNo: 1, date: "", containerNo: "", containerTypeSize: "", invoiceNo: "", IPNumber: "", fareAmount: 0, AitVat: 0, totalAmount: 0 }
+    //     { slNo: 1, date: "", containerNo: "", containerTypeSize: "", invoiceNo: "", EPNumber: "", fareAmount: 0, AitVat: 0, totalAmount: 0 }
     // ]);
+
+
 
     // Function to add a new row
     const addRow = (e) => {
@@ -15,7 +17,7 @@ const CarrierTableData = ({ rows, setRows }) => {
             containerNo: "",
             containerTypeSize: "",
             invoiceNo: "",
-            IPNumber: "",
+            EPNumber: "",
             fareAmount: 0,
             AitVat: 0,
             totalAmount: 0,
@@ -44,9 +46,25 @@ const CarrierTableData = ({ rows, setRows }) => {
     const calculateGrandTotal = (field) => {
         return rows.reduce((acc, row) => acc + parseFloat(row[field] || 0), 0).toFixed(2);
     };
+    const handleContainerServiceProviderChange = (e) => {
+        const service = e.target.value;
+        setContainerServiceProvider(service);
+    }
 
     return (
         <div className="p-4">
+            <h1 className="text-3xl underline font-bold mb-6 text-center text-gray-800">Container Carrier Service Details Form</h1>
+            <div className="mb-4">
+                <label className="block font-semibold mb-2">Container Carrier Service Provider</label>
+                <input
+                    type="text"
+                    name="containerCarrier"
+                    value={containerServiceProvider}
+                    onChange={handleContainerServiceProviderChange}
+                    className="w-full p-2 border border-gray-300 rounded"
+                    placeholder="Enter Container Carrier Service Provider"
+                />
+            </div>
             <table className="min-w-full table-auto border-collapse border border-gray-300">
                 <thead>
                     <tr className="bg-gray-200">
@@ -55,7 +73,7 @@ const CarrierTableData = ({ rows, setRows }) => {
                         <th className="border border-gray-300 p-2">Container No</th>
                         <th className="border border-gray-300 p-2">Container Type/Size</th>
                         <th className="border border-gray-300 p-2">Invoice No</th>
-                        <th className="border border-gray-300 p-2">IP Number</th>
+                        <th className="border border-gray-300 p-2">EP Number</th>
                         <th className="border border-gray-300 p-2">Fare Amount</th>
                         <th className="border border-gray-300 p-2">AIT/VAT (5%)</th>
                         <th className="border border-gray-300 p-2">Total Amount/Taka</th>
@@ -104,8 +122,8 @@ const CarrierTableData = ({ rows, setRows }) => {
                                 <input
                                     type="text"
                                     className="w-full p-2 border border-gray-300 rounded"
-                                    value={row.IPNumber}
-                                    onChange={(e) => handleInputChange(index, "IPNumber", e.target.value)}
+                                    value={row.EPNumber}
+                                    onChange={(e) => handleInputChange(index, "EPNumber", e.target.value)}
                                     placeholder="IP Number"
                                 />
                             </td>

@@ -26,6 +26,7 @@ const Purchase = () => {
     useState("");
   const [filteredTruckNumbers, setFilteredTruckNumbers] = useState([]);
   const [finances, setFinances] = useState([]);
+  const [traderServiceProvider, setTraderServiceProvider] = useState("");
 
   // const [productChecks, setProductChecks] = useState([]);
   const [savedExpenses, setSavedExpenses] = useState([]);
@@ -266,7 +267,7 @@ const Purchase = () => {
       purchaseProductInBoxes: selectedProduct,
       particularExpenseNames: savedExpenses,
       totalCost: totalCost,
-      ipNo: ipNo,
+      epNo: ipNo,
       invoiceNo: invoiceNo,
       total: newEx.toString(),
       truckNo: truckNo,
@@ -278,7 +279,6 @@ const Purchase = () => {
     };
 
     console.log(purchaseInfo, "data");
-
     axios
       .post(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
@@ -431,6 +431,28 @@ const Purchase = () => {
               className="bg-base-100 rounded-lg shadow-xl my-5 p-[12px]"
               onSubmit={formSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+                {/* Trade Service Provider */}
+                <div className="">
+                  <div>
+                    <label
+                      className="lebel-text text-lg font-semibold"
+                      htmlFor="traderServiceProvider">
+                      Trade Service Provider
+                    </label>
+                    <input
+                      className="w-full border-[1px] border-info rounded-md p-3 mt-3 bg-transparent"
+                      placeholder="Trade Service Provider Name"
+                      type="text"
+                      name="traderServiceProvider"
+                      value={traderServiceProvider}
+                      required
+                      aria-required
+                      onChange={(e) => setTraderServiceProvider(e.target.value)}
+                    />
+                  </div>
+                </div>
+
                 {/* Shipment Way */}
                 <div className="">
                   <label className="mb-[10px] lebel-text text-lg font-semibold">

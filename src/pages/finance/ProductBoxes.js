@@ -199,22 +199,23 @@ const ProductBoxes = () => {
       // Create a list of promises for all product requests
       const productPromises = productList.map(async (product) => {
         const productData = {
-          productName: product.productName,
-          productModel: product.productModels,
-          productBrand: product.productBrand,
-          quantity: product.productQuantity,
-          splitProductsBox: product.perBoxProducts,
-          splitQuantitySingleProduct: product.modelQuantity,
-          productPerBox: product.productQuantity,
-          weightPerBox,
-          totalBox: product.totalBox,
-          individualTotalBoxWeight,
-          totalPallet: product.palletNo,
-          truckNumber: product.truckNumber,
+          productName: product?.productName,
+          productModel: product?.productModels,
+          productBrand: product?.productBrand,
+          quantity: product?.productQuantity,
+          splitProductsBox: product?.perBoxProducts,
+          splitQuantitySingleProduct: product?.modelQuantity,
+          productPerBox: product?.productQuantity,
+          weightPerBox: parseFloat(product?.weightPerBox),
+          totalBox: product?.totalBox,
+          individualTotalBoxWeight: parseFloat(product?.individualTotalBoxWeight),
+          totalPallet: product?.palletNo,
+          truckNumber: product?.truckNumber,
           date: selectedFixDate,
         };
 
-
+        console.log(productData);
+        return;
         // Send the data to the product API
         const productResponse = await fetch(
           "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes",
@@ -569,6 +570,8 @@ const ProductBoxes = () => {
     const totalWeight = weightPerBox * totalBox; // Total weight = weight per box * number of boxes
     setIndividualTotalBoxWeight(totalWeight);
   };
+  console.log(weightPerBox, individualTotalBoxWeight, "outside");
+
 
   return (
     <div>

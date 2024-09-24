@@ -7,11 +7,26 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange }) => {
   const [selectedExpenses, setSelectedExpenses] = useState([]);
   const [remarks, setRemarks] = useState({});
   const [dates, setDates] = useState({});
+  const [containerServiceProvider, setContainerServiceProvider] = useState("");
 
   const [rows, setRows] = useState([
     { slNo: 1, date: "", containerNo: "", containerTypeSize: "", invoiceNo: "", IPNumber: "", fareAmount: 0, AitVat: 0, totalAmount: 0 }
   ]);
-  console.log(rows, "rows");
+
+  const [formData, setFormData] = useState({
+    shipper: "THT-Space Electrical Company Ltd.",
+    blNo: "",
+    containerNo: "",
+    destination: "",
+    vslVoy: "",
+    etd: "",
+    exchangeRate: "", // Default Exchange Rate USD to BDT
+    charges: [
+      { description: "", amountUSD: 0, amountBDT: 0 },
+    ],
+  });
+  console.log(containerServiceProvider, rows, "rows");
+  console.log(formData, "formData");
 
   const handleCheckboxChange = (event) => {
     const expenseId = event.target.value;
@@ -34,20 +49,6 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange }) => {
     setDates({ ...dates, [expenseId]: event.target.value });
   };
 
-  const handleSave = () => {
-    const selectedExpenseData = selectedExpenses.map((id) => {
-      const expense = expenses.find((expense) => expense.id === Number(id));
-      return {
-        id: expense.id,
-        particularExpenseName: expense.particularExpenseName,
-        particularExpenseCost: expense.particularExpenseCost,
-        remark: remarks[id] || "",
-        date: dates[id] || "",
-      };
-    });
-    onExpenseSave(selectedExpenseData);
-    // console.log(selectedExpenseData);
-  };
 
   const totalCost = selectedExpenses
     .reduce((total, id) => {
@@ -99,10 +100,15 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange }) => {
       <CarrierTableData
         rows={rows}
         setRows={setRows}
+        containerServiceProvider={containerServiceProvider}
+        setContainerServiceProvider={setContainerServiceProvider}
       ></CarrierTableData>
 
 
-      <ShippingDataTable></ShippingDataTable>
+      <ShippingDataTable
+        formData={formData}
+        setFormData={setFormData}
+      ></ShippingDataTable>
 
       {/* button */}
       <div className="my-6 flex justify-end">
@@ -113,7 +119,7 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange }) => {
         </Link>
         <button
           className="rounded-md bg-blue-500 text-white px-4 py-2 mr-2"
-          onClick={handleSave}>
+        >
           Save
         </button>
       </div>

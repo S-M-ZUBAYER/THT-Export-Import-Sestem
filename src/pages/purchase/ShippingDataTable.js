@@ -1,18 +1,7 @@
 import React, { useState } from "react";
 
-const ShippingDataTable = () => {
-    const [formData, setFormData] = useState({
-        shipper: "THT-Space Electrical Company Ltd.",
-        blNo: "",
-        containerNo: "",
-        destination: "",
-        vslVoy: "",
-        etd: "",
-        exchangeRate: 109.18, // Default Exchange Rate USD to BDT
-        charges: [
-            { description: "", amountUSD: 0, amountBDT: 0 },
-        ],
-    });
+const ShippingDataTable = ({ formData, setFormData }) => {
+
 
     // Update form fields
     const handleFieldChange = (e) => {
@@ -48,7 +37,19 @@ const ShippingDataTable = () => {
 
     return (
         <div className="p-4">
-            <h1 className="text-xl font-bold mb-4">Shipping Details Form</h1>
+            <h1 className="text-3xl underline font-bold mb-6 text-center text-gray-800">Sea Freight Shipping Details Form</h1>
+
+            <div className="mb-4">
+                <label className="block font-semibold mb-2">Sea Service Provider</label>
+                <input
+                    type="text"
+                    name="seaServiceProvider"
+                    value={formData.seaServiceProvider}
+                    onChange={handleFieldChange}
+                    className="w-full p-2 border border-gray-300 rounded"
+                    placeholder="Enter Sea Service Provider name"
+                />
+            </div>
 
             {/* Shipper and B/L NO Fields */}
             <div className="grid grid-cols-2 gap-4 mb-4">
@@ -129,6 +130,7 @@ const ShippingDataTable = () => {
                 <input
                     type="number"
                     name="exchangeRate"
+                    placeholder="Enter Exchange Rate"
                     value={formData.exchangeRate}
                     onChange={handleFieldChange}
                     className="w-full p-2 border border-gray-300 rounded"
