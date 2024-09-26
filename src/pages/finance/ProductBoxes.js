@@ -214,8 +214,7 @@ const ProductBoxes = () => {
           date: selectedFixDate,
         };
 
-        console.log(productData);
-        return;
+
         // Send the data to the product API
         const productResponse = await fetch(
           "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes",

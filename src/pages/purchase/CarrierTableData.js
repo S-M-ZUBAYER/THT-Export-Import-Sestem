@@ -1,12 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const CarrierTableData = ({ rows, setRows, setContainerServiceProvider, containerServiceProvider }) => {
-    // Initial state to hold rows of data
-    // const [rows, setRows] = useState([
-    //     { slNo: 1, date: "", containerNo: "", containerTypeSize: "", invoiceNo: "", EPNumber: "", fareAmount: 0, AitVat: 0, totalAmount: 0 }
-    // ]);
-
-
+const CarrierTableData = ({
+    rows, setRows, setContainerServiceProvider, containerServiceProvider, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount }) => {
 
     // Function to add a new row
     const addRow = (e) => {
@@ -17,39 +12,62 @@ const CarrierTableData = ({ rows, setRows, setContainerServiceProvider, containe
             containerNo: "",
             containerTypeSize: "",
             invoiceNo: "",
-            EPNumber: "",
+            epNumber: "",
             fareAmount: 0,
-            AitVat: 0,
-            totalAmount: 0,
+            aitVat: 0,
+            individualTotalAmount: 0,
         };
         setRows([...rows, newRow]);
     };
 
     // Function to handle input change and update the state
     const handleInputChange = (index, field, value) => {
+
         const updatedRows = [...rows];
-        updatedRows[index][field] = value;
+
+        if (field !== "fareAmount") {
+            updatedRows[index][field] = value;
+        }
+
 
         // Calculate the VAT (5%) and total amount dynamically
-        if (field === "fareAmount") {
+        else if (field === "fareAmount") {
+            updatedRows[index][field] = parseFloat(value);
             const fareAmount = parseFloat(value) || 0;
             const vat = fareAmount * 0.05; // Assuming VAT is 5%
-            const totalAmount = fareAmount + vat;
-            updatedRows[index]["AitVat"] = vat.toFixed(2);
-            updatedRows[index]["totalAmount"] = totalAmount.toFixed(2);
+            const individualTotalAmount = fareAmount + vat;
+            updatedRows[index]["aitVat"] = parseFloat(vat.toFixed(2));
+            updatedRows[index]["individualTotalAmount"] = parseFloat(individualTotalAmount.toFixed(2));
         }
 
         setRows(updatedRows);
     };
 
-    // Calculate total fare, vat, and total amount across all rows
-    const calculateGrandTotal = (field) => {
-        return rows.reduce((acc, row) => acc + parseFloat(row[field] || 0), 0).toFixed(2);
-    };
+    // // Calculate total fare, vat, and total amount across all rows
+    // const calculateGrandTotal = (field) => {
+    //     return rows.reduce((acc, row) => acc + parseFloat(row[field] || 0), 0).toFixed(2);
+    // };
     const handleContainerServiceProviderChange = (e) => {
         const service = e.target.value;
         setContainerServiceProvider(service);
     }
+
+    const calculateGrandTotal = (field) => {
+        return rows.reduce((acc, item) => acc + parseFloat(item[field] || 0), 0).toFixed(2);
+    };
+
+    const handleDeleteRow = (index) => {
+        const updatedRows = rows.filter((_, rowIndex) => rowIndex !== index);
+        setRows(updatedRows); // Update the state with the new rows array
+    };
+
+
+    // useEffect to calculate totals when the ContainerExpenseNames changes
+    useEffect(() => {
+        setTotalFareAmount(calculateGrandTotal('fareAmount'));
+        setTotalAitVat(calculateGrandTotal('aitVat'));
+        setTotalCarrierAmount(calculateGrandTotal('individualTotalAmount'));
+    }, [rows]);
 
     return (
         <div className="p-4">
@@ -77,6 +95,7 @@ const CarrierTableData = ({ rows, setRows, setContainerServiceProvider, containe
                         <th className="border border-gray-300 p-2">Fare Amount</th>
                         <th className="border border-gray-300 p-2">AIT/VAT (5%)</th>
                         <th className="border border-gray-300 p-2">Total Amount/Taka</th>
+                        <th className="border border-gray-300 p-2">Actions</th> {/* Added column for actions */}
                     </tr>
                 </thead>
                 <tbody>
@@ -122,9 +141,9 @@ const CarrierTableData = ({ rows, setRows, setContainerServiceProvider, containe
                                 <input
                                     type="text"
                                     className="w-full p-2 border border-gray-300 rounded"
-                                    value={row.EPNumber}
-                                    onChange={(e) => handleInputChange(index, "EPNumber", e.target.value)}
-                                    placeholder="IP Number"
+                                    value={row.epNumber}
+                                    onChange={(e) => handleInputChange(index, "epNumber", e.target.value)}
+                                    placeholder="EP Number"
                                 />
                             </td>
                             <td className="border border-gray-300 p-2">
@@ -136,8 +155,16 @@ const CarrierTableData = ({ rows, setRows, setContainerServiceProvider, containe
                                     placeholder="Fare Amount"
                                 />
                             </td>
-                            <td className="border border-gray-300 p-2 text-right">{row.AitVat}</td>
-                            <td className="border border-gray-300 p-2 text-right">{row.totalAmount}</td>
+                            <td className="border border-gray-300 p-2 text-right">{row.aitVat}</td>
+                            <td className="border border-gray-300 p-2 text-right">{row.individualTotalAmount}</td>
+                            <td className="border border-gray-300 p-2 text-center">
+                                <button
+                                    className="bg-red-500 text-white px-4 py-1 rounded"
+                                    onClick={() => handleDeleteRow(index)} // Delete button with event
+                                >
+                                    Delete
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
@@ -145,17 +172,18 @@ const CarrierTableData = ({ rows, setRows, setContainerServiceProvider, containe
                     <tr className="bg-gray-100">
                         <td className="border border-gray-300 p-2 text-center" colSpan={6}>Gross Total Amount</td>
                         <td className="border border-gray-300 p-2 text-right">
-                            {calculateGrandTotal("fareAmount")}
+                            {totalFareAmount}
                         </td>
                         <td className="border border-gray-300 p-2 text-right">
-                            {calculateGrandTotal("AitVat")}
+                            {totalAitVat}
                         </td>
                         <td className="border border-gray-300 p-2 text-right">
-                            {calculateGrandTotal("totalAmount")}
+                            {totalCarrierAmount}
                         </td>
                     </tr>
                 </tfoot>
             </table>
+
 
             <button
                 className="mt-4 p-2 bg-blue-500 text-white rounded"

@@ -13,7 +13,7 @@ const FinalPurchaseModal = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-6 rounded shadow-lg max-w-3xl w-full">
+            <div className="bg-white p-6 rounded shadow-lg max-w-[100vh] w-full h-[90vh] overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-4 text-center">Edit Purchase Details</h2>
 
                 {/* General Information */}
@@ -54,6 +54,66 @@ const FinalPurchaseModal = ({
                             type="text"
                             name="totalCost"
                             value={selectedPurchase.totalCost}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Shipper</label>
+                        <input
+                            type="text"
+                            name="shipper"
+                            value={selectedPurchase.shipper}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Total Amount (BDT)</label>
+                        <input
+                            type="text"
+                            name="totalAmountBDT"
+                            value={selectedPurchase.totalAmountBDT}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Total Amount (USD)</label>
+                        <input
+                            type="text"
+                            name="totalAmountUSD"
+                            value={selectedPurchase.totalAmountUSD}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Gross Weight</label>
+                        <input
+                            type="text"
+                            name="grossWeight"
+                            value={selectedPurchase.grossWeight}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Net Weight</label>
+                        <input
+                            type="text"
+                            name="netWeight"
+                            value={selectedPurchase.netWeight}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Exchange Rate</label>
+                        <input
+                            type="text"
+                            name="exchangeRate"
+                            value={selectedPurchase.exchangeRate}
                             onChange={handleChange}
                             className="w-full px-4 py-2 border rounded"
                         />
@@ -121,12 +181,12 @@ const FinalPurchaseModal = ({
                         </tr>
                     </thead>
                     <tbody>
-                        {selectedPurchase.ContainerExpenseNames.map((container, index) => (
+                        {selectedPurchase.containerExpenseNames.map((container, index) => (
                             <tr key={index} className="border-b">
                                 <td className="py-2 px-4">{container.containerNo}</td>
                                 <td className="py-2 px-4">{container.containerTypeSize}</td>
                                 <td className="py-2 px-4">{container.fareAmount}</td>
-                                <td className="py-2 px-4">{container.AitVat}</td>
+                                <td className="py-2 px-4">{container.aitVat}</td>
                                 <td className="py-2 px-4">{container.individualTotalAmount}</td>
                             </tr>
                         ))}

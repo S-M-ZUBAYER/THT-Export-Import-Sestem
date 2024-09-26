@@ -16,7 +16,13 @@ const FinalPurchase = () => {
     // Fetch data from API
     useEffect(() => {
         axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
-            .then(response => setPurchases(response.data))
+            .then(response => {
+                const finalPurchases = response.data.filter((purchase) => purchase.status === "purchase"
+                )
+                setPurchases(finalPurchases);
+                setFilteredPurchases(finalPurchases);
+            }
+            )
             .catch(error => toast.error('Failed to fetch data!'));
     }, []);
 
@@ -32,21 +38,31 @@ const FinalPurchase = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setSelectedPurchase({
-            ...selectedPurchase,
+        setSelectedPurchase((prevState) => ({
+            ...prevState,
             [name]: value,
-        });
+            status: "finalPurchase"
+        }));
     };
 
     const handleSave = () => {
-        // Save the updated data to the finance API
-        axios.post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', selectedPurchase)
+        setSelectedPurchase((prevState) => {
+            const updatedPurchase = { ...prevState, status: "finalPurchase" };
+            console.log(updatedPurchase, "selectedPurchase after update");
+            return updatedPurchase;
+        });
+        console.log(selectedPurchase, "selected purchase");
+
+
+        // Now save to the API (you can do this after ensuring the state is correct)
+        axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase', selectedPurchase)
             .then(response => {
                 toast.success('Data saved successfully!');
                 closeModal();
             })
             .catch(error => toast.error('Failed to save data!'));
     };
+
 
     const [searchValue, setSearchValue] = useState('');
 
@@ -70,6 +86,9 @@ const FinalPurchase = () => {
 
         setFilteredPurchases(filteredProducts);
     };
+    console.log(purchases, "purchases");
+
+
     return (
         <div className="container mx-auto px-4">
             <div className="">

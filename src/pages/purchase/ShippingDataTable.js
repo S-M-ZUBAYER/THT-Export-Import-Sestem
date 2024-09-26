@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const ShippingDataTable = ({ formData, setFormData }) => {
+const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD }) => {
 
 
     // Update form fields
@@ -30,10 +30,17 @@ const ShippingDataTable = ({ formData, setFormData }) => {
         });
     };
 
-    // Calculate total USD and BDT
-    const calculateTotal = (field) => {
-        return formData.charges.reduce((acc, charge) => acc + parseFloat(charge[field]), 0).toFixed(2);
-    };
+
+    useEffect(() => {
+        const totalUSD = formData.charges.reduce((acc, charge) => acc + parseFloat(charge.amountUSD || 0), 0).toFixed(2);
+        setShipCostUSD(totalUSD);
+    }, [formData.charges]);
+
+    // UseEffect to calculate TK total
+    useEffect(() => {
+        const totalTK = formData.charges.reduce((acc, charge) => acc + parseFloat(charge.amountBDT || 0), 0).toFixed(2);
+        setShipCostTK(totalTK);
+    }, [formData.charges]);
 
     return (
         <div className="p-4">
@@ -185,8 +192,8 @@ const ShippingDataTable = ({ formData, setFormData }) => {
                 <tfoot>
                     <tr className="bg-gray-100">
                         <td className="border border-gray-300 p-2 font-bold">Total</td>
-                        <td className="border border-gray-300 p-2 text-right font-bold">{calculateTotal("amountUSD")}</td>
-                        <td className="border border-gray-300 p-2 text-right font-bold">{calculateTotal("amountBDT")}</td>
+                        <td className="border border-gray-300 p-2 text-right font-bold">{shipCostUSD}</td>
+                        <td className="border border-gray-300 p-2 text-right font-bold">{shipCostTK}</td>
                         <td></td>
                     </tr>
                 </tfoot>
@@ -197,13 +204,6 @@ const ShippingDataTable = ({ formData, setFormData }) => {
                 onClick={addNewChargeRow}
             >
                 Add New Charge Row
-            </button>
-
-            <button
-                className="bg-green-500 text-white p-2 ml-4 rounded"
-                onClick={() => alert("Form Submitted")}
-            >
-                Submit
             </button>
         </div>
     );

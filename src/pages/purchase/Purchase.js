@@ -48,6 +48,33 @@ const Purchase = () => {
 
   const productData = JSON.stringify(selectedItems);
 
+  // calculation purchase state
+  const [containerServiceProvider, setContainerServiceProvider] = useState("");
+  const [rows, setRows] = useState([
+    { slNo: 1, date: "", containerNo: "", containerTypeSize: "", invoiceNo: "", epNumber: "", fareAmount: 0, aitVat: 0, individualTotalAmount: 0 }
+  ]);
+  const [formData, setFormData] = useState({
+    shipper: "THT-Space Electrical Company Ltd.",
+    blNo: "",
+    containerNo: "",
+    destination: "",
+    vslVoy: "",
+    etd: "",
+    exchangeRate: "", // Default Exchange Rate USD to BDT
+    charges: [
+      { description: "", amountUSD: 0, amountBDT: 0 },
+    ],
+  });
+  const [shipCostTK, setShipCostTK] = useState(0);
+  const [shipCostUSD, setShipCostUSD] = useState(0);
+
+
+  const [totalFareAmount, setTotalFareAmount] = useState(0);
+  const [totalAitVat, setTotalAitVat] = useState(0);
+  const [totalCarrierAmount, setTotalCarrierAmount] = useState(0);
+
+  const [selectedExpensesList, setSelectedExpensesList] = useState([]);
+
   // data get from office_accounts API
   const fetchAccounts = async () => {
     try {
@@ -248,6 +275,7 @@ const Purchase = () => {
 
 
   const handleExpenseSave = (selectedExpenseData) => {
+
     setSavedExpenses(selectedExpenseData);
   };
 
@@ -255,9 +283,28 @@ const Purchase = () => {
     setTotalCost(newTotalCost);
   };
 
+
+  const [allTotalBoxWeight, setAllTotalBoxWeight] = useState(0);
+
+  // Function to sum all individualTotalBoxWeight values
+  const sumIndividualTotalBoxWeight = () => {
+    return selectedProduct.reduce((total, product) => {
+      return total + parseFloat(product?.individualTotalBoxWeight || 0);
+    }, 0);
+  };
   // data send to server
   const formSubmit = (e) => {
     e.preventDefault();
+    let weightPerBoxList = [];
+    let individualTotalBoxWeightList = [];
+
+    selectedProduct.forEach((product) => {
+      weightPerBoxList.push(product?.weightPerBox);
+      individualTotalBoxWeightList.push(product?.individualTotalBoxWeight);
+    });
+
+    // Set the total sum of all individualTotalBoxWeight
+    setAllTotalBoxWeight(sumIndividualTotalBoxWeight());
 
     const newEx = parseFloat(totalCost) + parseFloat(total);
     const purchaseInfo = {
@@ -265,20 +312,56 @@ const Purchase = () => {
       transportWay: transportWay, // id pass
       transportCountryName: transportCountryName, // id pass
       purchaseProductInBoxes: selectedProduct,
+      // purchaseProductInBoxes: [],
       particularExpenseNames: savedExpenses,
+      // particularExpenseNames: [],
       totalCost: totalCost,
-      epNo: ipNo,
       invoiceNo: invoiceNo,
       total: newEx.toString(),
       truckNo: truckNo,
-      grossWeight,
-      netWeight,
       transportCountry: transportCountryName,
       transportPort: selectedTransportCountryPort,
-      date: selectedProductDate
+      date: selectedProductDate,
+      tradeExpanseStatus: false,
+      tradeExpanseDate: "",
+      status: "purchase",
+      finalStatus: "",
+      allTotalBoxWeight: allTotalBoxWeight,
+      traderServiceProvider: traderServiceProvider,
+      netWeight: parseFloat(netWeight),
+      grossWeight: parseFloat(grossWeight),
+      containerServiceProvider: containerServiceProvider,
+      totalFareAmount: parseFloat(totalFareAmount),
+      totalAitVat: parseFloat(totalAitVat),
+      totalCarrierAmount: parseFloat(totalCarrierAmount),
+      carrierExpanseStatus: false,
+      carrierExpanseDate: "string",
+      seaServiceProvider: formData?.seaServiceProvider,
+      shipper: formData?.shipper,
+      blNo: formData?.blNo,
+      containerNo: formData?.containerNo,
+      destination: formData?.destination,
+      vslVoy: formData?.vslVoy,
+      etd: formData?.etd,
+      exchangeRate: formData?.exchangeRate,
+      seaExpanseStatus: false,
+      seaExpanseDate: "",
+      tradeExchangeRate: 0,
+      tradeValue: 0,
+      containerExpenseNames: rows,
+      // containerExpenseNames: [],
+      chargesList: formData?.charges,
+      // chargesList: [],
+      image: "string",
+      totalAmountUSD: parseFloat(shipCostUSD),
+      totalAmountBDT: parseFloat(shipCostTK),
+      candF: 0,
+      epNo: ipNo,
+      // transportCountry: transportCountryName,
     };
 
-    console.log(purchaseInfo, "data");
+    console.log(purchaseInfo);
+
     axios
       .post(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
@@ -319,7 +402,6 @@ const Purchase = () => {
     );
 
     setFilteredData(filteredProducts);
-    console.log(value, filteredProducts);
   };
 
 
@@ -671,9 +753,29 @@ const Purchase = () => {
 
               {/* checking element for calculation */}
               <ExpensesForm
+                rows={rows}
+                setRows={setRows}
+                containerServiceProvider={containerServiceProvider}
+                setContainerServiceProvider={setContainerServiceProvider}
+                formData={formData}
+                setFormData={setFormData}
                 expenses={charges}
                 onExpenseSave={handleExpenseSave}
                 onTotalCostChange={handleTotalCostChange}
+                shipCostTK={shipCostTK}
+                setShipCostTK={setShipCostTK}
+                shipCostUSD={shipCostUSD}
+                setShipCostUSD={setShipCostUSD}
+                totalFareAmount={totalFareAmount}
+                setTotalFareAmount={setTotalFareAmount}
+                totalAitVat={totalAitVat}
+                setTotalAitVat={setTotalAitVat}
+                totalCarrierAmount={totalCarrierAmount}
+                setTotalCarrierAmount={setTotalCarrierAmount}
+                selectedExpensesList={selectedExpensesList}
+                setSelectedExpensesList={setSelectedExpensesList}
+                ipNo={ipNo}
+                invoiceNo={invoiceNo}
               />
             </form>
           </div>

@@ -3,30 +3,43 @@ import { Link } from "react-router-dom";
 import CarrierTableData from "./CarrierTableData";
 import ShippingDataTable from "./ShippingDataTable";
 
-const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange }) => {
+const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRows, containerServiceProvider, setContainerServiceProvider, formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, selectedExpensesList, setSelectedExpensesList, ipNo, invoiceNo }) => {
   const [selectedExpenses, setSelectedExpenses] = useState([]);
   const [remarks, setRemarks] = useState({});
   const [dates, setDates] = useState({});
-  const [containerServiceProvider, setContainerServiceProvider] = useState("");
+  const handleSave = () => {
+    const selectedExpenseData = selectedExpenses.map((id) => {
+      const expense = expenses.find((expense) => expense.id === Number(id));
+      return {
+        id: expense.id,
+        particularExpenseName: expense.particularExpenseName,
+        particularExpenseCost: expense.particularExpenseCost,
+        remark: remarks[id] || "",
+        date: dates[id] || "",
+      };
+    });
+    onExpenseSave(selectedExpenseData);
+    // console.log(selectedExpenseData);
+  };
+  // const [containerServiceProvider, setContainerServiceProvider] = useState("");
 
-  const [rows, setRows] = useState([
-    { slNo: 1, date: "", containerNo: "", containerTypeSize: "", invoiceNo: "", IPNumber: "", fareAmount: 0, AitVat: 0, totalAmount: 0 }
-  ]);
+  // const [rows, setRows] = useState([
+  //   { slNo: 1, date: "", containerNo: "", containerTypeSize: "", invoiceNo: "", IPNumber: "", fareAmount: 0, AitVat: 0, totalAmount: 0 }
+  // ]);
 
-  const [formData, setFormData] = useState({
-    shipper: "THT-Space Electrical Company Ltd.",
-    blNo: "",
-    containerNo: "",
-    destination: "",
-    vslVoy: "",
-    etd: "",
-    exchangeRate: "", // Default Exchange Rate USD to BDT
-    charges: [
-      { description: "", amountUSD: 0, amountBDT: 0 },
-    ],
-  });
-  console.log(containerServiceProvider, rows, "rows");
-  console.log(formData, "formData");
+  // const [formData, setFormData] = useState({
+  //   shipper: "THT-Space Electrical Company Ltd.",
+  //   blNo: "",
+  //   containerNo: "",
+  //   destination: "",
+  //   vslVoy: "",
+  //   etd: "",
+  //   exchangeRate: "", // Default Exchange Rate USD to BDT
+  //   charges: [
+  //     { description: "", amountUSD: 0, amountBDT: 0 },
+  //   ],
+  // });
+
 
   const handleCheckboxChange = (event) => {
     const expenseId = event.target.value;
@@ -39,14 +52,17 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange }) => {
         return prevState.filter((id) => id !== expenseId);
       }
     });
+    handleSave();
   };
 
   const handleRemarkChange = (event, expenseId) => {
     setRemarks({ ...remarks, [expenseId]: event.target.value });
+    handleSave();
   };
 
   const handleDateChange = (event, expenseId) => {
     setDates({ ...dates, [expenseId]: event.target.value });
+    handleSave();
   };
 
 
@@ -102,12 +118,24 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange }) => {
         setRows={setRows}
         containerServiceProvider={containerServiceProvider}
         setContainerServiceProvider={setContainerServiceProvider}
+        totalFareAmount={totalFareAmount}
+        setTotalFareAmount={setTotalFareAmount}
+        totalAitVat={totalAitVat}
+        setTotalAitVat={setTotalAitVat}
+        totalCarrierAmount={totalCarrierAmount}
+        setTotalCarrierAmount={setTotalCarrierAmount}
+        ipNo={ipNo}
+        invoiceNo={invoiceNo}
       ></CarrierTableData>
 
 
       <ShippingDataTable
         formData={formData}
         setFormData={setFormData}
+        shipCostTK={shipCostTK}
+        setShipCostTK={setShipCostTK}
+        shipCostUSD={shipCostUSD}
+        setShipCostUSD={setShipCostUSD}
       ></ShippingDataTable>
 
       {/* button */}
@@ -118,6 +146,7 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange }) => {
           Back
         </Link>
         <button
+          // onClick={handleSave}
           className="rounded-md bg-blue-500 text-white px-4 py-2 mr-2"
         >
           Save
