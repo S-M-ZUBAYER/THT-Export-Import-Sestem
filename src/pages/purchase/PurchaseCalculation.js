@@ -111,6 +111,9 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
             />
           </div>
         ))}
+        <div className="font-bold text-2xl text-center text-sky-400 mt-10">
+          Total Cost(TK): {totalCost}
+        </div>
       </div>
 
       <CarrierTableData
@@ -151,9 +154,6 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
         >
           Save
         </button>
-      </div>
-      <div className="font-bold text-2xl text-center text-sky-400">
-        Total Cost(TK): {totalCost}
       </div>
     </div>
   );

@@ -32,6 +32,7 @@ import NewProductUpdate from "../pages/dataInput/NewProductUpdate";
 import NewBrandUpdate from "../pages/dataInput/NewBrandUpdate";
 import PrintingExInitialData from "../pages/PrintingExportInitialData/PrintingExInitialData";
 import FinalPurchase from "../pages/FinalPurchase/FinalPurchase";
+import FinanceDetails from "../pages/finance/FinanceDetails";
 
 const Routers = () => {
   return (
@@ -64,6 +65,7 @@ const Routers = () => {
         <Route path="/addcharges/:id" element={<AddChargesUpdate />} />
         <Route path="/productinboxes" element={<ProductBoxes />} />
         <Route path="/finance" element={<Finance />} />
+        <Route path="/purchase-details/:id" element={<FinanceDetails />} />
         <Route path="/finaldata" element={<FinalData />} />
       </Route>
       <Route element={<AdminRoute />}>

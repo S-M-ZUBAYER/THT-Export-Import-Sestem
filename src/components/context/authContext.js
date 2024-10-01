@@ -5,6 +5,7 @@ const UserContext = createContext();
 
 const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [financeDetailsData, setFinanceDetailsData] = useState({ finance: "finance" });
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("values"));
@@ -21,8 +22,10 @@ const UserProvider = ({ children }) => {
     setUser(null);
   };
 
+
+
   return (
-    <UserContext.Provider value={{ user, loginUser, logoutUser }}>
+    <UserContext.Provider value={{ user, loginUser, logoutUser, financeDetailsData, setFinanceDetailsData }}>
       {children}
     </UserContext.Provider>
   );
