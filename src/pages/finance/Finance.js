@@ -470,14 +470,24 @@ const Finance = () => {
 
   // Fetch data from API
   useEffect(() => {
-    axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
+    axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance')
       .then(response => {
-        const finalPurchases = response.data.filter((purchase) => purchase.status === "finalPurchase");
-        setPurchases(finalPurchases);
-        setFilteredPurchases(finalPurchases);
+        console.log(response.data);
+
+        setPurchases(response.data);
+        setFilteredPurchases(response.data);
       })
       .catch(error => toast.error('Failed to fetch data!'));
   }, []);
+  // useEffect(() => {
+  //   axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
+  //     .then(response => {
+  //       const finalPurchases = response.data.filter((purchase) => purchase.status === "finalPurchase");
+  //       setPurchases(finalPurchases);
+  //       setFilteredPurchases(finalPurchases);
+  //     })
+  //     .catch(error => toast.error('Failed to fetch data!'));
+  // }, []);
 
   // Handle input change and filter purchases
   const handleSearchChange = (e) => {

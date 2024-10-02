@@ -17,6 +17,8 @@ const FinalPurchase = () => {
     useEffect(() => {
         axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
             .then(response => {
+                console.log(response.data);
+
                 const finalPurchases = response.data.filter((purchase) => purchase.status === "purchase"
                 )
                 setPurchases(finalPurchases);
@@ -46,21 +48,46 @@ const FinalPurchase = () => {
     };
 
     const handleSave = () => {
+
         setSelectedPurchase((prevState) => {
             const updatedPurchase = { ...prevState, status: "finalPurchase" };
-            console.log(updatedPurchase, "selectedPurchase after update");
             return updatedPurchase;
         });
-        console.log(selectedPurchase, "selected purchase");
+        const updatedPurchase = { ...selectedPurchase, status: "finalPurchase" };
+        const updatedFinance = {
+            ...selectedPurchase,
+            status: "finalPurchase",
+            financeContainerExpenseNames: selectedPurchase.containerExpenseNames,
+            financeParticularExpenseNames: selectedPurchase.particularExpenseNames,
+            financeProductInBoxes: selectedPurchase.purchaseProductInBoxes,
+            financeCharges: selectedPurchase.chargesList
+        };
+
+
+        delete updatedFinance.containerExpenseNames;
+        delete updatedFinance.particularExpenseNames;
+        delete updatedFinance.purchaseProductInBoxes;
+        delete updatedFinance.chargesList;
+
+
 
 
         // Now save to the API (you can do this after ensuring the state is correct)
-        axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase', selectedPurchase)
+        axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase', updatedPurchase)
             .then(response => {
                 toast.success('Data saved successfully!');
                 closeModal();
             })
             .catch(error => toast.error('Failed to save data!'));
+
+        // Now save to the API (you can do this after ensuring the state is correct)
+        axios.post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', updatedFinance)
+            .then(response => {
+                toast.success('Data saved successfully!');
+                closeModal();
+            })
+            .catch(error => toast.error('Failed to save data!'));
+
     };
 
 

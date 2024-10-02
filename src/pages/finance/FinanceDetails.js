@@ -5,28 +5,59 @@ import { toast } from 'react-toastify';
 
 const FinanceDetails = () => {
 
-    const { financeDetailsData } = useContext(UserContext);
+    const { financeDetailsData, setFinanceDetailsData } = useContext(UserContext);
     const [invoiceValue, setInvoiceValue] = useState(0);
     console.log(financeDetailsData, "finalData");
 
     const handleToReject = () => {
-        // Create a copy of financeDetailsData and change the status to "purchase"
-        let rejectedData = {
-            ...financeDetailsData, // Copy all properties of financeDetailsData
-            status: "purchase"     // Update the status field to "purchase"
-        };
-
-        console.log(rejectedData, "rejected data"); // Debugging output
-
-        // Now save the updated data to the API
-        axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase', rejectedData)
+        // Fetch purchase details using the invoice number
+        axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
             .then(response => {
-                toast.warn('Data rejected from finance successfully!');
+                console.log(response.data);
+
+                // Find the purchase matching the invoice number from financeDetailsData
+                const finalPurchases = response.data.find(
+                    (purchase) => purchase.invoiceNo === financeDetailsData.invoiceNo
+                );
+
+                if (!finalPurchases) {
+                    toast.error('No purchase found for this invoice number!');
+                    return;
+                }
+
+                // Create rejected data with the updated status
+                let rejectedData = {
+                    ...finalPurchases, // Copy all properties of finalPurchases
+                    status: "purchase" // Update the status to "purchase"
+                };
+
+                console.log(rejectedData, "rejected data"); // Debugging output
+
+                // Update the purchase data by making a PUT request
+                axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase', rejectedData)
+                    .then(() => {
+                        toast.warn('Data rejected from finance successfully!');
+
+                        // After successful PUT, delete the finance entry
+                        return axios.delete(`https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance/${financeDetailsData.id}`);
+                    })
+                    .then(() => {
+                        toast.warn('Finance data deleted successfully!');
+                    })
+                    .catch(error => {
+                        console.error('Error during rejection process:', error);
+                        toast.error('Failed to reject data or delete finance data!');
+                    });
             })
             .catch(error => {
-                toast.error('Failed to reject from finance!');
+                console.error('Error fetching purchase data:', error);
+                toast.error('Failed to fetch purchase data!');
             });
-    }
+    };
+
+
+
+
     useEffect(() => {
         if (financeDetailsData.tradeExchangeRate) {
             setInvoiceValue(financeDetailsData.tradeExchangeRate * financeDetailsData.total)
@@ -57,50 +88,61 @@ const FinanceDetails = () => {
         }
         console.log('Dollar Exchange Rate:', dollarExchangeRate);
 
-
+        // Create a copy of financeDetailsData with updated fields
         let AcceptedData = {
             ...financeDetailsData, // Copy all properties of financeDetailsData
             status: "finance",
             finalStatus: "done",
             tradeExchangeRate: dollarExchangeRate,
-            // Update the key names
+            // Rename fields
             financeContainerExpenseNames: financeDetailsData.containerExpenseNames,
             financeParticularExpenseNames: financeDetailsData.particularExpenseNames,
             financeProductInBoxes: financeDetailsData.purchaseProductInBoxes,
             financeCharges: financeDetailsData.chargesList
         };
 
-        // Remove the old keys if necessary
+        // Remove old fields
         delete AcceptedData.containerExpenseNames;
         delete AcceptedData.particularExpenseNames;
         delete AcceptedData.purchaseProductInBoxes;
         delete AcceptedData.chargesList;
-        console.log(AcceptedData, "AcceptedData data"); // Debugging output 
 
-        // Now save the updated data to the API
+        console.log(AcceptedData, "AcceptedData");
+
+        // Save updated finance data to the API
         axios.post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', AcceptedData)
             .then(response => {
                 toast.success('Accepted by finance successfully!');
+                const financeId = response.data.id; // Assuming response contains the new finance entry ID
 
-                // Assuming the id is part of the AcceptedData
-                const financeId = AcceptedData.id;
+                // Fetch the purchase data
+                return axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase');
+            })
+            .then(response => {
+                console.log(response.data);
 
-                // Perform the delete request after successful post
-                axios.delete(`https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance/${financeId}`)
-                    .then(() => {
-                        toast.warn('Deleted from finance successfully!');
-                        setIsModalOpen(false); // Close the modal after delete success
-                    })
-                    .catch(error => {
-                        toast.error('Failed to delete from finance!');
-                    });
+                // Find the purchase matching the invoice number
+                const deletePurchases = response.data.find(
+                    (purchase) => purchase.invoiceNo === AcceptedData.invoiceNo
+                );
+
+                if (!deletePurchases) {
+                    toast.error('No purchase found for this invoice number!');
+                    return;
+                }
+
+                // Delete the purchase entry
+                return axios.delete(`https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase/${deletePurchases.id}`);
+            })
+            .then(() => {
+                toast.warn('Purchase data deleted successfully!');
             })
             .catch(error => {
-                toast.error('Failed to accept by finance!');
+                console.error('Error during the update process:', error);
+                toast.error('Failed to accept by finance or delete purchase!');
             });
-
-
     };
+
 
     // const handleSave = () => {
     //     setSelectedPurchase((prevState) => {
@@ -121,40 +163,235 @@ const FinanceDetails = () => {
     // };
 
     const handleToTradePay = () => {
-        console.log("TradePay")
+        console.log("TradePay", financeDetailsData.tradeExpanseStatus);
+        if (financeDetailsData.tradeExpanseStatus) {
+            toast.warn("Already Paid Trade Payment");
+            return;
+        }
+        // Basic trade pay data
         let tradePayData = {
             ...financeDetailsData, // Copy all properties of financeDetailsData
             status: "finance",
             tradeExpanseStatus: true,
+            // financeContainerExpenseNames: financeDetailsData.containerExpenseNames,
+            // financeParticularExpenseNames: financeDetailsData.particularExpenseNames,
+            // financeProductInBoxes: financeDetailsData.purchaseProductInBoxes,
+            // financeCharges: financeDetailsData.chargesList
         };
-        // Now save the updated data to the API
-        axios.post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', tradePayData)
-            .then(response => {
-                toast.success('trade by finance successfully!');})
-    }
+        // delete tradePayData.containerExpenseNames;
+        // delete tradePayData.particularExpenseNames;
+        // delete tradePayData.purchaseProductInBoxes;
+        // delete tradePayData.chargesList;
+
+        if (financeDetailsData.seaExpanseStatus && financeDetailsData.carrierExpanseStatus) {
+            // Final trade pay data when both conditions are true
+            let finalTradePayData = {
+                ...financeDetailsData, // Copy all properties of financeDetailsData
+                status: "finance",
+                finalStatus: "Complete",
+                tradeExpanseStatus: true,
+                // financeContainerExpenseNames: financeDetailsData.containerExpenseNames,
+                // financeParticularExpenseNames: financeDetailsData.particularExpenseNames,
+                // financeProductInBoxes: financeDetailsData.purchaseProductInBoxes,
+                // financeCharges: financeDetailsData.chargesList
+            };
+            // delete finalTradePayData.containerExpenseNames;
+            // delete finalTradePayData.particularExpenseNames;
+            // delete finalTradePayData.purchaseProductInBoxes;
+            // delete finalTradePayData.chargesList;
+
+            // Save the updated data to the API
+            axios
+                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', finalTradePayData)
+                .then(response => {
+                    toast.success('Trade by finance successfully!');
+                    setFinanceDetailsData(finalTradePayData);
+                })
+                .catch(error => {
+                    toast.error('Error occurred while processing the trade.');
+                    console.error(error);
+                });
+        } else if (financeDetailsData.seaExpanseStatus || financeDetailsData.carrierExpanseStatus) {
+            // Save the updated data to the API when one of the conditions is true
+            axios
+                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', tradePayData)
+                .then(response => {
+                    toast.success('Trade by finance successfully!');
+                    setFinanceDetailsData(tradePayData);
+                })
+                .catch(error => {
+                    toast.error('Error occurred while processing the trade.');
+                    console.error(error);
+                });
+        }
+        else {
+            // If neither of the conditions is true, create a new entry via POST
+            axios
+                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', tradePayData)
+                .then(response => {
+                    toast.success('Trade by finance successfully!');
+                    setFinanceDetailsData(tradePayData);
+                })
+                .catch(error => {
+                    toast.error('Error occurred while processing the trade.');
+                    console.error(error);
+                });
+        }
+    };
+
+
+
     const handleToShippingPay = () => {
         console.log("ShippingPay")
+        if (financeDetailsData.seaExpanseStatus) {
+            toast.warn("Already Paid Sea Payment");
+            return;
+        }
         let ShippingPayData = {
             ...financeDetailsData, // Copy all properties of financeDetailsData
             seaExpanseStatus: true,
+            // financeContainerExpenseNames: financeDetailsData.containerExpenseNames,
+            // financeParticularExpenseNames: financeDetailsData.particularExpenseNames,
+            // financeProductInBoxes: financeDetailsData.purchaseProductInBoxes,
+            // financeCharges: financeDetailsData.chargesList
         };
-        // Now save the updated data to the API
-        axios.post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', ShippingPayData)
-            .then(response => {
-                toast.success('ship by finance successfully!');
-            })
+        // delete ShippingPayData.containerExpenseNames;
+        // delete ShippingPayData.particularExpenseNames;
+        // delete ShippingPayData.purchaseProductInBoxes;
+        // delete ShippingPayData.chargesList;
+
+        if (financeDetailsData.tradeExpanseStatus && financeDetailsData.carrierExpanseStatus) {
+
+            // Final trade pay data when both conditions are true
+            let finalShippingPayData = {
+                ...financeDetailsData, // Copy all properties of financeDetailsData
+                status: "finance",
+                finalStatus: "Complete",
+                seaExpanseStatus: true,
+                // financeContainerExpenseNames: financeDetailsData.containerExpenseNames,
+                // financeParticularExpenseNames: financeDetailsData.particularExpenseNames,
+                // financeProductInBoxes: financeDetailsData.purchaseProductInBoxes,
+                // financeCharges: financeDetailsData.chargesList
+            };
+            // delete finalShippingPayData.containerExpenseNames;
+            // delete finalShippingPayData.particularExpenseNames;
+            // delete finalShippingPayData.purchaseProductInBoxes;
+            // delete finalShippingPayData.chargesList;
+
+            // Save the updated data to the API
+            axios
+                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', finalShippingPayData)
+                .then(response => {
+                    toast.success('Sea Cost pay by finance successfully!');
+                    setFinanceDetailsData(finalShippingPayData);
+                })
+                .catch(error => {
+                    toast.error('Error occurred while processing the trade.');
+                    console.error(error);
+                });
+        } else if (financeDetailsData.tradeExpanseStatus || financeDetailsData.carrierExpanseStatus) {
+            // Save the updated data to the API when one of the conditions is true
+            axios
+                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', ShippingPayData)
+                .then(response => {
+                    toast.success('Sea Cost pay by finance successfully!');
+                    setFinanceDetailsData(ShippingPayData);
+                })
+                .catch(error => {
+                    toast.error('Error occurred while processing the trade.');
+                    console.error(error);
+                });
+        }
+
+        // else {
+
+        //     // If neither of the conditions is true, create a new entry via POST
+        //     axios
+        //         .post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', ShippingPayData)
+        //         .then(response => {
+        //             toast.success('Trade by finance successfully!');
+        //             setFinanceDetailsData(ShippingPayData);
+        //         })
+        //         .catch(error => {
+        //             toast.error('Error occurred while processing the trade.');
+        //             console.error(error);
+        //         });
+        // }
     }
     const handleToContainerPay = () => {
-        console.log("ContainerPay")
+        console.log(financeDetailsData.carrierExpanseStatus, "ContainerPay", financeDetailsData)
+        if (financeDetailsData.carrierExpanseStatus) {
+            toast.warn("Already Paid Container Payment");
+            return;
+        }
         let containerPayData = {
-            ...financeDetailsData, 
+            ...financeDetailsData,
             carrierExpanseStatus: true,
-        };
-        // Now save the updated data to the API
-        axios.post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', containerPayData)
-            .then(response => {
-                toast.success('carrier by finance successfully!');
-            })
+            // financeContainerExpenseNames: financeDetailsData.containerExpenseNames,
+            // financeParticularExpenseNames: financeDetailsData.particularExpenseNames,
+            // financeProductInBoxes: financeDetailsData.purchaseProductInBoxes,
+            // financeCharges: financeDetailsData.chargesList
+        }
+        // delete containerPayData.containerExpenseNames;
+        // delete containerPayData.particularExpenseNames;
+        // delete containerPayData.purchaseProductInBoxes;
+        // delete containerPayData.chargesList;
+
+        if (financeDetailsData.seaExpanseStatus && financeDetailsData.tradeExpanseStatus) {
+            // Final trade pay data when both conditions are true
+            let finalCarrierPayData = {
+                ...financeDetailsData, // Copy all properties of financeDetailsData
+                status: "finance",
+                finalStatus: "Complete",
+                carrierExpanseStatus: true,
+                // financeContainerExpenseNames: financeDetailsData.containerExpenseNames,
+                // financeParticularExpenseNames: financeDetailsData.particularExpenseNames,
+                // financeProductInBoxes: financeDetailsData.purchaseProductInBoxes,
+                // financeCharges: financeDetailsData.chargesList
+            };
+            // delete finalCarrierPayData.containerExpenseNames;
+            // delete finalCarrierPayData.particularExpenseNames;
+            // delete finalCarrierPayData.purchaseProductInBoxes;
+            // delete finalCarrierPayData.chargesList;
+
+            // Save the updated data to the API
+            axios
+                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', finalCarrierPayData)
+                .then(response => {
+                    toast.success('Carrier pay by finance successfully!');
+                    setFinanceDetailsData(finalCarrierPayData);
+                })
+                .catch(error => {
+                    toast.error('Error occurred while processing the trade.');
+                    console.error(error);
+                });
+        } else if (financeDetailsData.seaExpanseStatus || financeDetailsData.tradeExpanseStatus) {
+            // Save the updated data to the API when one of the conditions is true
+            axios
+                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', containerPayData)
+                .then(response => {
+                    toast.success('Carrier pay by finance successfully!');
+                    setFinanceDetailsData(containerPayData);
+                })
+                .catch(error => {
+                    toast.error('Error occurred while processing the trade.');
+                    console.error(error);
+                });
+        }
+        // else {
+
+        //     // If neither of the conditions is true, create a new entry via POST
+        //     axios
+        //         .post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', containerPayData)
+        //         .then(response => {
+        //             toast.success('Carrier pay by finance successfully!');
+        //             setFinanceDetailsData(containerPayData);
+        //         })
+        //         .catch(error => {
+        //             toast.error('Error occurred while processing the trade.');
+        //             console.error(error);
+        //         });
+        // }
     }
 
     return (
