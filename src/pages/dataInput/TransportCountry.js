@@ -13,11 +13,11 @@ const override = {
 };
 
 const TransportCountry = () => {
-  const navigate = useNavigate();
   const [countries, setCountries] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [filteredCountries, setFilteredCountries] = useState([]); // State for filtered countries
   const [loading, setLoading] = useState(true);
+  const [lastId, setLastId] = useState('');
   const [formData, setFormData] = useState({
     countryName: "",
     countryPort: "",
@@ -45,6 +45,7 @@ const TransportCountry = () => {
       );
       // Sort data in descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
+      setLastId(sortedData[0].id + 1);
       setCountries(sortedData);
       setFilteredCountries(sortedData); // Set filtered countries to full list initially
       setLoading(false);
@@ -91,7 +92,18 @@ const TransportCountry = () => {
           toast.success("Successfully Uploaded to server", {
             position: "top-center",
           });
-          navigate("/exportimport");
+          setFilteredCountries([
+            {
+              id: lastId,
+              ...formData
+            },
+            ...filteredCountries]
+          )
+          setFormData({
+            countryName: "",
+            countryPort: "",
+          })
+
           // console.log(res);
         })
         .catch((err) =>
@@ -159,7 +171,7 @@ const TransportCountry = () => {
               />
             </div>
             <div className="mt-5 flex justify-end gap-y-4">
-              <Link to="/exportimport" className="btn btn-info px-10 mx-5">
+              <Link to="/dashboard" className="btn btn-info px-10 mx-5">
                 Back
               </Link>
               <button

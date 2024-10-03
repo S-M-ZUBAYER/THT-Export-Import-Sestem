@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 import { ClipLoader } from "react-spinners";
@@ -17,6 +17,7 @@ const Accounts = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [filteredAccounts, setFilteredAccounts] = useState([]);
+  const [lastId, setLastId] = useState('');
 
   const [formData, setFormData] = useState([
     {
@@ -28,7 +29,6 @@ const Accounts = () => {
     },
   ]);
 
-  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const Accounts = () => {
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts"
       );
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
-
+      setLastId(sortedData[0].id + 1);
       // Use forEach instead of map for side effects (deleting)
       sortedData.forEach(product => {
         if (product?.productQuantity === 0) {
@@ -112,8 +112,14 @@ const Accounts = () => {
             position: "top-center",
           }
         );
-
-        navigate("/exportimport");
+        setFilteredAccounts([
+          {
+            id: lastId,
+            usedProduct: 0,
+            ...formData
+          },
+          ...filteredAccounts]
+        )
       })
       .catch((err) =>
         toast.error("Error coming from server please try again later", {
@@ -318,7 +324,7 @@ const Accounts = () => {
             </div>
             <div className="mt-4 mr-7 flex justify-end">
               <Link
-                to="/exportimport"
+                to="/dashboard"
                 className="btn btn-info px-10 mx-5  mb-4">
                 Back
               </Link>

@@ -21,24 +21,7 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
     onExpenseSave(selectedExpenseData);
     // console.log(selectedExpenseData);
   };
-  // const [containerServiceProvider, setContainerServiceProvider] = useState("");
 
-  // const [rows, setRows] = useState([
-  //   { slNo: 1, date: "", containerNo: "", containerTypeSize: "", invoiceNo: "", IPNumber: "", fareAmount: 0, AitVat: 0, totalAmount: 0 }
-  // ]);
-
-  // const [formData, setFormData] = useState({
-  //   shipper: "THT-Space Electrical Company Ltd.",
-  //   blNo: "",
-  //   containerNo: "",
-  //   destination: "",
-  //   vslVoy: "",
-  //   etd: "",
-  //   exchangeRate: "", // Default Exchange Rate USD to BDT
-  //   charges: [
-  //     { description: "", amountUSD: 0, amountBDT: 0 },
-  //   ],
-  // });
 
 
   const handleCheckboxChange = (event) => {
@@ -144,7 +127,7 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
       {/* button */}
       <div className="my-6 flex justify-end">
         <Link
-          to="/exportimport"
+          to="/dashboard"
           className="rounded-md bg-sky-800 text-white px-4 py-2 mx-2">
           Back
         </Link>

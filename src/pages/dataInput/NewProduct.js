@@ -93,7 +93,7 @@ const NewProduct = () => {
           }
         )
         .then((res) => {
-          toast.success("Successfully Data Uploaded", {
+          toast.success("Successfully Add New Product Name", {
             position: "top-center",
           });
           setBtnLoading(false);

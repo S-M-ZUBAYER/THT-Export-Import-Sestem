@@ -15,6 +15,7 @@ const override = {
 const TransportRoutes = () => {
   const [transports, setTransports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [lastId, setLastId] = useState('');
   const [formTransportData, setFormTransportData] = useState({
     transportWay: "",
     transportCost: "",
@@ -42,6 +43,7 @@ const TransportRoutes = () => {
       );
       // data see in table descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
+      setLastId(sortedData[0].id + 1);
       setTransports(sortedData);
       setLoading(false);
     } catch (error) {
@@ -73,7 +75,13 @@ const TransportRoutes = () => {
           toast.success("Successfully Uploaded to server", {
             position: "top-center",
           });
-          navigate("/exportimport");
+          setTransports([
+            {
+              id: lastId,
+              ...formTransportData
+            },
+            ...transports]
+          )
           // console.log(res);
         })
         .catch((err) =>
@@ -126,23 +134,9 @@ const TransportRoutes = () => {
                 required
               />
             </div>
-            {/* <div className="mt-3">
-              <label className="text-lg font-semibold" htmlFor="productBrand">
-                Transport Way Cost
-              </label>
-              <input
-                className="w-full border-2 border-gray-100 rounded-xl p-4 mt-3 bg-transparent"
-                placeholder="Enter Transport Cost"
-                type="number"
-                name="transportCost"
-                id="transportCost"
-                onChange={handleChange}
-                required
-                min="0"
-              />
-            </div> */}
+
             <div className="mt-5 flex justify-end gap-y-4">
-              <Link to="/exportimport" className="btn btn-info px-10 mx-5">
+              <Link to="/dashboard" className="btn btn-info px-10 mx-5">
                 Back
               </Link>
               <button
@@ -180,7 +174,7 @@ const TransportRoutes = () => {
                 <tr>
                   <th className="sticky top-0 bg-gray-200">ID</th>
                   <th className="sticky top-0 bg-gray-200">Transport Way</th>
-                    <th className="sticky top-0 bg-gray-200 flex justify-end">Action</th>
+                  <th className="sticky top-0 bg-gray-200 flex justify-end">Action</th>
                   {/* <th className="sticky top-0 bg-gray-200">Actions</th> */}
                 </tr>
               </thead>
@@ -190,21 +184,10 @@ const TransportRoutes = () => {
                     <td>{product.id}</td>
                     <td>{product.transportWay}</td>
                     <td className="space-x-10 flex justify-end">
-                      {/* <Link to={`/newbrand/${product.id}`}>
-                        <AiOutlineEdit className="w-6 h-6 text-purple-600" />
-                      </Link> */}
                       <button onClick={() => handleDelete(product.id)}>
                         <AiOutlineDelete className="w-6 h-6 text-red-600" />
                       </button>
                     </td>
-                    {/* <td className="flex justify-around items-center">
-                      <Link to={`/datainput/${product.id}`}>
-                        <AiOutlineEdit className="w-6 h-6 text-purple-600" />
-                      </Link>
-                      <button onClick={() => handleDelete(product.id)}>
-                        <AiOutlineDelete className="w-6 h-6 text-red-600" />
-                      </button>
-                    </td> */}
                   </tr>
                 ))}
               </tbody>

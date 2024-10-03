@@ -35,7 +35,7 @@ const Navbar = () => {
               tabIndex={0}
               className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-slate-200 rounded-box w-52 font-bold ">
               <li>
-                <NavLink to="/exportimport">Accounts</NavLink>
+                <NavLink to="/dashboard">Accounts</NavLink>
               </li>
               <li>
                 <NavLink to="/warehouse">Warehouse</NavLink>
@@ -54,7 +54,7 @@ const Navbar = () => {
             <li>
               <NavLink
                 className="hover:font-bold hover:text-white"
-                to="/exportimport">
+                to="/dashboard">
                 Accounts
               </NavLink>
             </li>

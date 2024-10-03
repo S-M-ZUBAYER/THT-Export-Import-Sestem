@@ -18,13 +18,12 @@ const NewBrand = () => {
   const [btnLoading, setBtnLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const navigate = useNavigate();
+  const [lastId, setLastId] = useState('');
 
   const [formData, setFormData] = useState({
     productName: "",
     productBrand: "",
   });
-
   const handleChange = (event) => {
     setFormData({
       ...formData,
@@ -58,6 +57,7 @@ const NewBrand = () => {
     }
   };
 
+
   // products brand fetch from server
   const fetchProducts = async () => {
     try {
@@ -66,6 +66,7 @@ const NewBrand = () => {
       );
       // data see in table descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
+      setLastId(sortedData[0].id + 1);
       setProducts(sortedData);
       setFilteredProducts(sortedData);
       setLoading(false);
@@ -108,8 +109,14 @@ const NewBrand = () => {
         toast.success("Successfully Data Uploaded", {
           position: "top-center",
         });
+        setFilteredProducts([
+          {
+            id: lastId,
+            ...formData
+          },
+          ...filteredProducts]
+        )
         setBtnLoading(false);
-        navigate("/admin");
       })
       .catch((err) =>
         toast.error("Error coming from server please try again later", {
@@ -118,9 +125,9 @@ const NewBrand = () => {
 
       );
 
-    // console.log(formData);
-  };
 
+  };
+  console.log(filteredProducts, "products");
   // product delete from server and also frontend
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(
@@ -144,7 +151,7 @@ const NewBrand = () => {
   return (
     <div className="mb-6">
       <h1 className="text-4xl font-bold text-violet-500 text-center mt-5">
-        New Product Entry Form
+        New Product Entry Form With Brand
       </h1>
       <div className="flex justify-center items-center">
         <form onSubmit={handleSubmit} className="w-[70%]">

@@ -17,8 +17,6 @@ const FinalPurchase = () => {
     useEffect(() => {
         axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
             .then(response => {
-                console.log(response.data);
-
                 const finalPurchases = response.data.filter((purchase) => purchase.status === "purchase"
                 )
                 setPurchases(finalPurchases);
@@ -48,46 +46,50 @@ const FinalPurchase = () => {
     };
 
     const handleSave = () => {
-
-        setSelectedPurchase((prevState) => {
-            const updatedPurchase = { ...prevState, status: "finalPurchase" };
-            return updatedPurchase;
-        });
-        const updatedPurchase = { ...selectedPurchase, status: "finalPurchase" };
-        const updatedFinance = {
-            ...selectedPurchase,
-            status: "finalPurchase",
-            financeContainerExpenseNames: selectedPurchase.containerExpenseNames,
-            financeParticularExpenseNames: selectedPurchase.particularExpenseNames,
-            financeProductInBoxes: selectedPurchase.purchaseProductInBoxes,
-            financeCharges: selectedPurchase.chargesList
-        };
-
-
-        delete updatedFinance.containerExpenseNames;
-        delete updatedFinance.particularExpenseNames;
-        delete updatedFinance.purchaseProductInBoxes;
-        delete updatedFinance.chargesList;
+        const confirmSave = window.confirm("Do you want to Save this data to check finance?");
+        if (confirmSave) {
+            setSelectedPurchase((prevState) => {
+                const updatedPurchase = { ...prevState, status: "finalPurchase" };
+                return updatedPurchase;
+            });
+            const updatedPurchase = { ...selectedPurchase, status: "finalPurchase" };
+            const updatedFinance = {
+                ...selectedPurchase,
+                status: "finalPurchase",
+                financeContainerExpenseNames: selectedPurchase.containerExpenseNames,
+                financeParticularExpenseNames: selectedPurchase.particularExpenseNames,
+                financeProductInBoxes: selectedPurchase.purchaseProductInBoxes,
+                financeCharges: selectedPurchase.chargesList
+            };
 
 
+            delete updatedFinance.containerExpenseNames;
+            delete updatedFinance.particularExpenseNames;
+            delete updatedFinance.purchaseProductInBoxes;
+            delete updatedFinance.chargesList;
 
 
-        // Now save to the API (you can do this after ensuring the state is correct)
-        axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase', updatedPurchase)
-            .then(response => {
-                toast.success('Data saved successfully!');
-                closeModal();
-            })
-            .catch(error => toast.error('Failed to save data!'));
 
-        // Now save to the API (you can do this after ensuring the state is correct)
-        axios.post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', updatedFinance)
-            .then(response => {
-                toast.success('Data saved successfully!');
-                closeModal();
-            })
-            .catch(error => toast.error('Failed to save data!'));
 
+            // Now save to the API (you can do this after ensuring the state is correct)
+            axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase', updatedPurchase)
+                .then(response => {
+                    toast.success('Purchase Data Updated successfully!');
+                    const purchaseList = purchases.filter(purchase => purchase.id !== updatedPurchase.id);
+                    setFilteredPurchases(purchaseList);
+                    setPurchases(purchaseList)
+                    closeModal();
+                })
+                .catch(error => toast.error('Failed to save data!'));
+
+            // Now save to the API (you can do this after ensuring the state is correct)
+            axios.post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', updatedFinance)
+                .then(response => {
+                    toast.success('Data store as finance successfully!');
+                    closeModal();
+                })
+                .catch(error => toast.error('Failed to save data!'));
+        }
     };
 
 
@@ -98,7 +100,6 @@ const FinalPurchase = () => {
     const handleSearchChange = (e) => {
         const value = e.target.value.toLowerCase(); // Use the current input value
         setSearchValue(value);
-        console.log(purchases, "purchases");
 
         // Use `value` directly in the filter instead of `searchValue`
         const filteredProducts = purchases.filter((account) =>
@@ -107,20 +108,18 @@ const FinalPurchase = () => {
             account.transportCountry.toLowerCase().includes(value) ||
             account.date.toLowerCase().includes(value) ||
             account.invoiceNo.toLowerCase().includes(value) ||
-            account.EpNo.toLowerCase().includes(value)
+            account.epNo.toLowerCase().includes(value)
         );
-        console.log(filteredProducts, "filteredProducts");
-
         setFilteredPurchases(filteredProducts);
     };
-    console.log(purchases, "purchases");
 
+    console.log(filteredPurchases, 'prouct');
 
     return (
         <div className="container mx-auto px-4">
             <div className="">
                 <h1 className="flex justify-center items-center text-4xl my-4 uppercase text-info font-bold">
-                    Shipment Details Show And Update
+                    Shipment Details Show And Update From Purchase
                 </h1>
                 <p className="text-red-600 text-sm text-center font-medium">
                     ** Please Fillup this form carefully & check all fields. You can't modify it later. **
@@ -145,10 +144,12 @@ const FinalPurchase = () => {
                     <table className="min-w-full bg-white">
                         <thead>
                             <tr className="w-full bg-gray-200 text-left">
-                                <th className="py-2 px-4">ID</th>
-                                <th className="py-2 px-4">Transport Way</th>
+                                <th className="py-2 px-4">Date</th>
+                                <th className="py-2 px-4">Truck No</th>
+                                <th className="py-2 px-4">Port</th>
                                 <th className="py-2 px-4">Country</th>
                                 <th className="py-2 px-4">Invoice No</th>
+                                <th className="py-2 px-4">Total Weight</th>
                                 <th className="py-2 px-4">Total Cost</th>
                                 <th className="py-2 px-4">Action</th>
                             </tr>
@@ -157,10 +158,12 @@ const FinalPurchase = () => {
                             {filteredPurchases.length > 0 ? (
                                 filteredPurchases.map((purchase) => (
                                     <tr key={purchase.id} className="border-b">
-                                        <td className="py-2 px-4">{purchase.id}</td>
-                                        <td className="py-2 px-4">{purchase.transportWay}</td>
+                                        <td className="py-2 px-4">{purchase.date}</td>
+                                        <td className="py-2 px-4">{purchase.truckNo}</td>
+                                        <td className="py-2 px-4">{purchase.transportPort}</td>
                                         <td className="py-2 px-4">{purchase.transportCountryName}</td>
                                         <td className="py-2 px-4">{purchase.invoiceNo}</td>
+                                        <td className="py-2 px-4">{purchase.allTotalBoxWeight}</td>
                                         <td className="py-2 px-4">{purchase.totalCost}</td>
                                         <td className="py-2 px-4">
                                             <button
@@ -182,73 +185,7 @@ const FinalPurchase = () => {
                         </tbody>
                     </table>
 
-                    {/* Modal for Editing Purchase Details */}
-                    {/* {isModalOpen && selectedPurchase && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-                            <div className="bg-white p-6 rounded shadow-lg max-w-lg w-full">
-                                <h2 className="text-xl font-bold mb-4">Edit Purchase Details</h2>
 
-                                <div className="mb-4">
-                                    <label className="block font-medium">Transport Way</label>
-                                    <input
-                                        type="text"
-                                        name="transportWay"
-                                        value={selectedPurchase.transportWay}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border rounded"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block font-medium">Country</label>
-                                    <input
-                                        type="text"
-                                        name="transportCountryName"
-                                        value={selectedPurchase.transportCountryName}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border rounded"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block font-medium">Invoice No</label>
-                                    <input
-                                        type="text"
-                                        name="invoiceNo"
-                                        value={selectedPurchase.invoiceNo}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border rounded"
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label className="block font-medium">Total Cost</label>
-                                    <input
-                                        type="text"
-                                        name="totalCost"
-                                        value={selectedPurchase.totalCost}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-2 border rounded"
-                                    />
-                                </div>
-
-                                <div className="flex justify-end">
-                                    <button
-                                        onClick={closeModal}
-                                        className="bg-gray-500 text-white font-bold py-2 px-4 rounded mr-2"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        onClick={handleSave}
-                                        className="bg-green-500 text-white font-bold py-2 px-4 rounded"
-                                    >
-                                        Save
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )} */}
                     {/* Modal Component */}
                     <FinalPurchaseModal
                         isOpen={isModalOpen}

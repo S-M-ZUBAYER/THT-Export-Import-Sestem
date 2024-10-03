@@ -181,43 +181,6 @@ const Purchase = () => {
     fetchPurchase();
   }, []);
 
-  // useEffect(() => {
-  // hide table data if it's selected works it
-  // console.log(boxData, "Box data");
-
-  // if (boxData?.length > 0 && purchase?.length >= 0) {
-
-  // setFilteredData(boxData);
-  // const api2Ids = purchase?.map((item) => item?.officeAccount).flat();
-  // const api2IdsPasrse = api2Ids?.map((a) => JSON.parse(a)).flat();
-  // const filteredBoxData = boxData?.filter(
-  //   (item) => !api2IdsPasrse.includes(item.id)
-  // );
-
-  // setFilteredData(filteredBoxData);
-  // }
-
-  // hide truck number if truck number selected
-  //   if (boxData.length > 0 && finances.length >= 0) {
-  //     const productInBoxData = boxData;
-  //     const financeApiData = finances;
-
-  //     const productInBoxTruckNumbers = productInBoxData.map(
-  //       (item) => item.truckNumber
-  //     );
-  //     // console.log(productInBoxTruckNumbers);
-  //     const financeTruckNumbers = financeApiData?.map((item) => item.truckNo);
-  //     // console.log(financeTruckNumbers);
-  //     const commonTruckNumbers = productInBoxTruckNumbers?.filter((truckNo) =>
-  //       financeTruckNumbers?.includes(truckNo)
-  //     );
-  //     // console.log(commonTruckNumbers);
-  //     const filteredTruckNumbers = productInBoxTruckNumbers?.filter(
-  //       (truckNo) => !commonTruckNumbers?.includes(truckNo)
-  //     );
-  //     setFilteredTruckNumbers(filteredTruckNumbers);
-  //   }
-  // }, [boxData, purchase, finances]);
 
   const [selectedProduct, setSelectedProduct] = useState([])
 
@@ -292,6 +255,11 @@ const Purchase = () => {
       return total + parseFloat(product?.individualTotalBoxWeight || 0);
     }, 0);
   };
+  useEffect(() => {
+    // Set the total sum of all individualTotalBoxWeight
+    setAllTotalBoxWeight(sumIndividualTotalBoxWeight());
+  }, [selectedProduct])
+
   // data send to server
   const formSubmit = (e) => {
     e.preventDefault();
@@ -302,11 +270,7 @@ const Purchase = () => {
       weightPerBoxList.push(product?.weightPerBox);
       individualTotalBoxWeightList.push(product?.individualTotalBoxWeight);
     });
-
-    // Set the total sum of all individualTotalBoxWeight
-    setAllTotalBoxWeight(sumIndividualTotalBoxWeight());
-
-    const newEx = parseFloat(totalCost) + parseFloat(total);
+    const newEx = parseFloat(total);
     const purchaseInfo = {
       id: 0,
       transportWay: transportWay, // id pass
@@ -362,6 +326,7 @@ const Purchase = () => {
 
     console.log(purchaseInfo);
 
+
     axios
       .post(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
@@ -376,7 +341,7 @@ const Purchase = () => {
         toast.success("Successfully Uploaded to server", {
           position: "top-center",
         });
-        navigate("/finance");
+        navigate("/finalPurchase");
       })
       .catch((err) =>
         toast.error("This error coming from server please try again later!!", {

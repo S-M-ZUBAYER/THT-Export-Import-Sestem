@@ -80,7 +80,7 @@ const Export = () => {
       </div>
       <div className="mt-5 flex items-center justify-center">
         <button className="btn btn-info btn-sm">
-          <Link to="/exportimport">Back to Home</Link>
+          <Link to="/dashboard">Back to Home</Link>
         </button>
       </div>
     </div>

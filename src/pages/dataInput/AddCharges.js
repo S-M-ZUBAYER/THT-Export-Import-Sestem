@@ -96,8 +96,6 @@ const AddCharges = () => {
             position: "top-center",
           });
           fetchAccounts();
-          navigate("/exportimport");
-          // console.log(res);
         })
         .catch((err) =>
           toast.error("Error coming from server please try again later", {

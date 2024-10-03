@@ -18,6 +18,7 @@ const DataInput = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [lastId, setLastId] = useState('');
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -79,6 +80,7 @@ const DataInput = () => {
       );
       // Sort data in descending order
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
+      setLastId(sortedData[0].id + 1);
       setProducts(sortedData);
       setFilteredProducts(sortedData); // Initially set filtered products to the full list
       setLoading(false);
@@ -148,10 +150,16 @@ const DataInput = () => {
           }
         )
         .then((res) => {
-          toast.success("Successfully Data Uploaded", {
+          toast.success("Successfully Add New Product Full Information", {
             position: "top-center",
           });
-          navigate("/exportimport");
+          setFilteredProducts([
+            {
+              id: lastId,
+              ...formData
+            },
+            ...filteredProducts]
+          )
           fetchProducts(); // Assuming res.data doesn't have the new record
           setFormData({
             productName: "",
@@ -194,41 +202,11 @@ const DataInput = () => {
   return (
     <div className="mb-6">
       <h1 className="text-4xl font-bold text-violet-500 text-center mt-5">
-        New Product Entry Form
+        New Product Full Information Entry Form
       </h1>
       <div className="flex justify-center items-center">
         <form onSubmit={handleSubmit} className="w-[70%]">
           <div className="mt-8">
-            {/* product Name & brand*/}
-            {/* <div className="mt-3">
-              <label className="text-lg font-semibold" htmlFor="productName">
-                Product Name
-              </label>
-              <input
-                className="w-full border-2 border-gray-100 rounded-xl p-[10px] mt-1 bg-transparent"
-                placeholder="Enter Product Name"
-                type="text"
-                name="productName"
-                id="productName"
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="mt-3">
-              <label className="text-lg font-semibold" htmlFor="productBrand">
-                Product Brand
-              </label>
-              <input
-                className="w-full border-2 border-gray-100 rounded-xl p-[10px] mt-1 bg-transparent"
-                placeholder="Enter Product Brand"
-                type="text"
-                name="productBrand"
-                id="productBrand"
-                onChange={handleChange}
-                required
-              />
-            </div> */}
-
             {/* product name */}
             <div className="mt-3 flex flex-col">
               <label
@@ -325,7 +303,7 @@ const DataInput = () => {
               )}
             </div>
             <div className="mt-5 flex justify-end gap-y-4">
-              <Link to="/exportimport" className="btn btn-info px-10 mx-5">
+              <Link to="/dashboard" className="btn btn-info px-10 mx-5">
                 Back
               </Link>
               <button
