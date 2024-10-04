@@ -299,7 +299,7 @@ const Purchase = () => {
       totalAitVat: parseFloat(totalAitVat),
       totalCarrierAmount: parseFloat(totalCarrierAmount),
       carrierExpanseStatus: false,
-      carrierExpanseDate: "string",
+      carrierExpanseDate: "",
       seaServiceProvider: formData?.seaServiceProvider,
       shipper: formData?.shipper,
       blNo: formData?.blNo,
@@ -316,7 +316,7 @@ const Purchase = () => {
       // containerExpenseNames: [],
       chargesList: formData?.charges,
       // chargesList: [],
-      image: "string",
+      image: "",
       totalAmountUSD: parseFloat(shipCostUSD),
       totalAmountBDT: parseFloat(shipCostTK),
       candF: 0,
@@ -619,7 +619,7 @@ const Purchase = () => {
                 <div className="">
                   <div>
                     <label className="text-lg font-semibold" htmlFor="ipNo">
-                      Invoice Value
+                      Invoice Value(USD)
                     </label>
                     <input
                       className="w-full border-[1px] border-info rounded-md p-3 mt-3 bg-transparent"

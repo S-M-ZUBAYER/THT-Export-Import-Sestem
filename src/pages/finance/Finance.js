@@ -9,7 +9,8 @@ const Finance = () => {
   const [purchases, setPurchases] = useState([]);
   const [filteredPurchases, setFilteredPurchases] = useState([]);
   const [searchValue, setSearchValue] = useState('');
-  const { financeDetailsData, setFinanceDetailsData } = useContext(UserContext)
+  const { financeDetailsData, setFinanceDetailsData } = useContext(UserContext);
+  const [financeDataLoading, setFinanceDataLoading] = useState(true);
   console.log(financeDetailsData, "financeDetails");
 
   // Fetch data from API
@@ -20,6 +21,7 @@ const Finance = () => {
 
         setPurchases(response.data);
         setFilteredPurchases(response.data);
+        setFinanceDataLoading(false);
       })
       .catch(error => toast.error('Failed to fetch data!'));
   }, []);
@@ -84,7 +86,7 @@ const Finance = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredPurchases.length > 0 ? (
+              {financeDataLoading ? "Loading" : filteredPurchases.length > 0 ? (
                 filteredPurchases.map((purchase) => (
                   <tr key={purchase.id} className="border-b">
                     <td className="py-2 px-4">{purchase.id}</td>

@@ -68,246 +68,296 @@ const FinanceDetails = () => {
         }
     }, [])
 
-    // State to control modal visibility
-    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // State to handle the dollar exchange rate input
-    const [dollarExchangeRate, setDollarExchangeRate] = useState('');
-
-    // Function to open modal
-    const handleToUpdate = () => {
-        setIsModalOpen(true);
-    };
-
-    // Function to close modal
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
 
     // Function to handle update logic
     const handleUpdate = () => {
-        if (!dollarExchangeRate) {
-            toast.error("Please Input Exchange Rate first");
-            return;
+        const confirmAccept = window.confirm(
+            "Are you sure, you want to Accept as final Data?"
+        );
+        if (confirmAccept) {
+            // // Fetch the purchase data
+            // axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
+            //     .then(response => {
+            //         console.log(response.data);
+
+            //         // Find the purchase matching the invoice number
+            //         const deletePurchases = response.data.find(
+            //             (purchase) => purchase.invoiceNo === financeDetailsData.invoiceNo
+            //         );
+
+            //         if (!deletePurchases) {
+            //             toast.error('No purchase found for this invoice number!');
+            //             return;
+            //         }
+
+            //         // Delete the purchase entry
+            //         return axios.delete(`https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase/${deletePurchases.id}`);
+            //     })
+            //     .then(() => {
+            //         toast.warn('Purchase data deleted successfully!');
+            //     })
+            //     .catch(error => {
+            //         console.error('Error during the update process:', error);
+            //         toast.error('Failed to accept by finance or delete purchase!');
+            //     });
+
+            // Create a copy of financeDetailsData with updated fields
+            if (!financeDetailsData.tradeExpanseStatus || !financeDetailsData.seaExpanseStatus || !financeDetailsData.carrierExpanseStatus) {
+                toast.error("All Payment are not paid at all. Please payment first");
+                return;
+
+            }
+
+            let AcceptedData = {
+                ...financeDetailsData, // Copy all properties of financeDetailsData
+                status: "finalData",
+                finalStatus: "finalData",
+
+            };
+            // Save updated finance data to the API
+            axios.post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', AcceptedData)
+                .then(response => {
+                    toast.success('Accepted by finance successfully!');
+
+                    // Fetch the purchase data
+                    return axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase');
+                })
+                .then(response => {
+                    console.log(response.data);
+
+                    // Find the purchase matching the invoice number
+                    const deletePurchases = response.data.find(
+                        (purchase) => purchase.invoiceNo === AcceptedData.invoiceNo
+                    );
+
+                    if (!deletePurchases) {
+                        toast.error('No purchase found for this invoice number!');
+                        return;
+                    }
+
+                    // Delete the purchase entry
+                    return axios.delete(`https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase/${deletePurchases.id}`);
+                })
+                .then(() => {
+                    toast.warn('Purchase data deleted successfully!');
+                })
+                .catch(error => {
+                    console.error('Error during the update process:', error);
+                    toast.error('Failed to accept by finance or delete purchase!');
+                });
         }
-        console.log('Dollar Exchange Rate:', dollarExchangeRate);
 
-        // Create a copy of financeDetailsData with updated fields
-        let AcceptedData = {
-            ...financeDetailsData, // Copy all properties of financeDetailsData
-            status: "finance",
-            finalStatus: "done",
-            tradeExchangeRate: dollarExchangeRate,
-            // Rename fields
-            financeContainerExpenseNames: financeDetailsData.containerExpenseNames,
-            financeParticularExpenseNames: financeDetailsData.particularExpenseNames,
-            financeProductInBoxes: financeDetailsData.purchaseProductInBoxes,
-            financeCharges: financeDetailsData.chargesList
-        };
-
-        // Remove old fields
-        delete AcceptedData.containerExpenseNames;
-        delete AcceptedData.particularExpenseNames;
-        delete AcceptedData.purchaseProductInBoxes;
-        delete AcceptedData.chargesList;
-
-        console.log(AcceptedData, "AcceptedData");
-
-        // Save updated finance data to the API
-        axios.post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', AcceptedData)
-            .then(response => {
-                toast.success('Accepted by finance successfully!');
-
-                // Fetch the purchase data
-                return axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase');
-            })
-            .then(response => {
-                console.log(response.data);
-
-                // Find the purchase matching the invoice number
-                const deletePurchases = response.data.find(
-                    (purchase) => purchase.invoiceNo === AcceptedData.invoiceNo
-                );
-
-                if (!deletePurchases) {
-                    toast.error('No purchase found for this invoice number!');
-                    return;
-                }
-
-                // Delete the purchase entry
-                return axios.delete(`https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase/${deletePurchases.id}`);
-            })
-            .then(() => {
-                toast.warn('Purchase data deleted successfully!');
-            })
-            .catch(error => {
-                console.error('Error during the update process:', error);
-                toast.error('Failed to accept by finance or delete purchase!');
-            });
     };
 
 
+    const [isDateInputVisible, setDateInputVisible] = useState(false);
+    const [selectedDate, setSelectedDate] = useState('');
+    const [tradeExchangeRate, setTradeExchangeRate] = useState('');
+    const [isTradeRateInputVisible, setTradeRateInputVisible] = useState(false);
 
     const handleToTradePay = () => {
+        const confirmTradePay = window.confirm(
+            "Are you sure, you want to Confirm the trade pay"
+        );
         console.log("TradePay", financeDetailsData.tradeExpanseStatus);
-        if (financeDetailsData.tradeExpanseStatus) {
-            toast.warn("Already Paid Trade Payment");
-            return;
-        }
-        // Basic trade pay data
-        let tradePayData = {
-            ...financeDetailsData, // Copy all properties of financeDetailsData
-            status: "finance",
-            tradeExpanseStatus: true,
-        };
 
+        if (confirmTradePay) {
+            if (financeDetailsData.tradeExpanseStatus) {
+                toast.warn("Already Paid Trade Payment");
+                return;
+            }
 
-        if (financeDetailsData.seaExpanseStatus && financeDetailsData.carrierExpanseStatus) {
-            // Final trade pay data when both conditions are true
-            let finalTradePayData = {
+            if (!tradeExchangeRate) {
+                toast.error("Please input Trade Exchange Rate before proceeding.");
+                return;
+            }
+
+            // Basic trade pay data with exchange rate
+            let tradePayData = {
                 ...financeDetailsData, // Copy all properties of financeDetailsData
                 status: "finance",
-                finalStatus: "Complete",
                 tradeExpanseStatus: true,
+                tradeExpanseDate: selectedDate,
+                tradeExchangeRate: tradeExchangeRate, // Add trade exchange rate
             };
 
-            // Save the updated data to the API
-            axios
-                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', finalTradePayData)
-                .then(response => {
-                    toast.success('Trade by finance successfully!');
-                    setFinanceDetailsData(finalTradePayData);
-                })
-                .catch(error => {
-                    toast.error('Error occurred while processing the trade.');
-                    console.error(error);
-                });
-        } else if (financeDetailsData.seaExpanseStatus || financeDetailsData.carrierExpanseStatus) {
-            // Save the updated data to the API when one of the conditions is true
-            axios
-                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', tradePayData)
-                .then(response => {
-                    toast.success('Trade by finance successfully!');
-                    setFinanceDetailsData(tradePayData);
-                })
-                .catch(error => {
-                    toast.error('Error occurred while processing the trade.');
-                    console.error(error);
-                });
-        }
-        else {
-            // If neither of the conditions is true, create a new entry via POST
-            axios
-                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', tradePayData)
-                .then(response => {
-                    toast.success('Trade by finance successfully!');
-                    setFinanceDetailsData(tradePayData);
-                })
-                .catch(error => {
-                    toast.error('Error occurred while processing the trade.');
-                    console.error(error);
-                });
+            if (financeDetailsData.seaExpanseStatus && financeDetailsData.carrierExpanseStatus) {
+                // Final trade pay data when both conditions are true
+                let finalTradePayData = {
+                    ...financeDetailsData,
+                    status: "finance",
+                    finalStatus: "Complete",
+                    tradeExpanseStatus: true,
+                    tradeExpanseDate: selectedDate,
+                    tradeExchangeRate: tradeExchangeRate, // Add trade exchange rate
+                };
+
+                axios
+                    .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', finalTradePayData)
+                    .then(response => {
+                        toast.success('Trade by finance successfully!');
+                        setFinanceDetailsData(finalTradePayData);
+                    })
+                    .catch(error => {
+                        toast.error('Error occurred while processing the trade.');
+                        console.error(error);
+                    });
+            } else if (financeDetailsData.seaExpanseStatus || financeDetailsData.carrierExpanseStatus) {
+                // Save the updated data to the API when one of the conditions is true
+                axios
+                    .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', tradePayData)
+                    .then(response => {
+                        toast.success('Trade by finance successfully!');
+                        setFinanceDetailsData(tradePayData);
+                    })
+                    .catch(error => {
+                        toast.error('Error occurred while processing the trade.');
+                        console.error(error);
+                    });
+            } else {
+                // If neither of the conditions is true, create a new entry via POST
+                axios
+                    .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', tradePayData)
+                    .then(response => {
+                        toast.success('Trade by finance successfully!');
+                        setFinanceDetailsData(tradePayData);
+                    })
+                    .catch(error => {
+                        toast.error('Error occurred while processing the trade.');
+                        console.error(error);
+                    });
+            }
         }
     };
 
-
-
     const handleToShippingPay = () => {
-        console.log("ShippingPay")
-        if (financeDetailsData.seaExpanseStatus) {
-            toast.warn("Already Paid Sea Payment");
-            return;
-        }
-        let ShippingPayData = {
-            ...financeDetailsData, // Copy all properties of financeDetailsData
-            seaExpanseStatus: true,
-        };
+        const confirmShippingPay = window.confirm(
+            "Are you sure, you want to Confirm the shipping pay"
+        );
+        console.log("ShippingPay");
+        if (confirmShippingPay) {
+            if (financeDetailsData.seaExpanseStatus) {
+                toast.warn("Already Paid Sea Payment");
+                return;
+            }
 
+            if (!selectedDate) {
+                toast.error("Please select a date before proceeding.");
+                return;
+            }
 
-        if (financeDetailsData.tradeExpanseStatus && financeDetailsData.carrierExpanseStatus) {
-
-            // Final trade pay data when both conditions are true
-            let finalShippingPayData = {
-                ...financeDetailsData, // Copy all properties of financeDetailsData
-                status: "finance",
-                finalStatus: "Complete",
+            let ShippingPayData = {
+                ...financeDetailsData,
                 seaExpanseStatus: true,
+                seaExpanseDate: selectedDate // Add the selected date here
             };
 
+            if (financeDetailsData.tradeExpanseStatus && financeDetailsData.carrierExpanseStatus) {
+                let finalShippingPayData = {
+                    ...financeDetailsData,
+                    status: "finance",
+                    finalStatus: "Complete",
+                    seaExpanseStatus: true,
+                    seaExpanseDate: selectedDate // Add the selected date here
+                };
 
-            // Save the updated data to the API
-            axios
-                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', finalShippingPayData)
-                .then(response => {
-                    toast.success('Sea Cost pay by finance successfully!');
-                    setFinanceDetailsData(finalShippingPayData);
-                })
-                .catch(error => {
-                    toast.error('Error occurred while processing the trade.');
-                    console.error(error);
-                });
-        } else if (financeDetailsData.tradeExpanseStatus || financeDetailsData.carrierExpanseStatus) {
-            // Save the updated data to the API when one of the conditions is true
-            axios
-                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', ShippingPayData)
-                .then(response => {
-                    toast.success('Sea Cost pay by finance successfully!');
-                    setFinanceDetailsData(ShippingPayData);
-                })
-                .catch(error => {
-                    toast.error('Error occurred while processing the trade.');
-                    console.error(error);
-                });
+                axios
+                    .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', finalShippingPayData)
+                    .then(response => {
+                        toast.success('Sea Cost pay by finance successfully!');
+                        setFinanceDetailsData(finalShippingPayData);
+                    })
+                    .catch(error => {
+                        toast.error('Error occurred while processing the trade.');
+                        console.error(error);
+                    });
+            } else {
+                axios
+                    .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', ShippingPayData)
+                    .then(response => {
+                        toast.success('Sea Cost pay by finance successfully!');
+                        setFinanceDetailsData(ShippingPayData);
+                    })
+                    .catch(error => {
+                        toast.error('Error occurred while processing the trade.');
+                        console.error(error);
+                    });
+            }
         }
+    };
 
-    }
     const handleToContainerPay = () => {
-        console.log(financeDetailsData.carrierExpanseStatus, "ContainerPay", financeDetailsData)
-        if (financeDetailsData.carrierExpanseStatus) {
-            toast.warn("Already Paid Container Payment");
-            return;
-        }
-        let containerPayData = {
-            ...financeDetailsData,
-            carrierExpanseStatus: true,
-        }
+        const confirmCarrierPay = window.confirm(
+            "Are you sure, you want to Confirm the Carrier pay"
+        );
+        console.log(financeDetailsData.carrierExpanseStatus, "ContainerPay", financeDetailsData);
 
-        if (financeDetailsData.seaExpanseStatus && financeDetailsData.tradeExpanseStatus) {
-            // Final trade pay data when both conditions are true
-            let finalCarrierPayData = {
-                ...financeDetailsData, // Copy all properties of financeDetailsData
-                status: "finance",
-                finalStatus: "Complete",
+        if (confirmCarrierPay) {
+
+            if (financeDetailsData.carrierExpanseStatus) {
+                toast.warn("Already Paid Container Payment");
+                return;
+            }
+
+            if (!selectedDate) {
+                toast.error("Please select a date before proceeding.");
+                return;
+            }
+
+            let containerPayData = {
+                ...financeDetailsData,
                 carrierExpanseStatus: true,
+                carrierExpanseDate: selectedDate // Add the selected date here
+            }
 
-            };
+            if (financeDetailsData.seaExpanseStatus && financeDetailsData.tradeExpanseStatus) {
+                // Final trade pay data when both conditions are true
+                let finalCarrierPayData = {
+                    ...financeDetailsData,
+                    status: "finance",
+                    finalStatus: "Complete",
+                    carrierExpanseStatus: true,
+                    carrierExpanseDate: selectedDate // Add the selected date here
+                };
 
-            // Save the updated data to the API
-            axios
-                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', finalCarrierPayData)
-                .then(response => {
-                    toast.success('Carrier pay by finance successfully!');
-                    setFinanceDetailsData(finalCarrierPayData);
-                })
-                .catch(error => {
-                    toast.error('Error occurred while processing the trade.');
-                    console.error(error);
-                });
-        } else if (financeDetailsData.seaExpanseStatus || financeDetailsData.tradeExpanseStatus) {
-            // Save the updated data to the API when one of the conditions is true
-            axios
-                .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', containerPayData)
-                .then(response => {
-                    toast.success('Carrier pay by finance successfully!');
-                    setFinanceDetailsData(containerPayData);
-                })
-                .catch(error => {
-                    toast.error('Error occurred while processing the trade.');
-                    console.error(error);
-                });
+                axios
+                    .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', finalCarrierPayData)
+                    .then(response => {
+                        toast.success('Carrier pay by finance successfully!');
+                        setFinanceDetailsData(finalCarrierPayData);
+                    })
+                    .catch(error => {
+                        toast.error('Error occurred while processing the trade.');
+                        console.error(error);
+                    });
+            } else if (financeDetailsData.seaExpanseStatus || financeDetailsData.tradeExpanseStatus) {
+                // Save the updated data to the API when one of the conditions is true
+                axios
+                    .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', containerPayData)
+                    .then(response => {
+                        toast.success('Carrier pay by finance successfully!');
+                        setFinanceDetailsData(containerPayData);
+                    })
+                    .catch(error => {
+                        toast.error('Error occurred while processing the trade.');
+                        console.error(error);
+                    });
+            } else {
+                // If neither of the conditions is true, create a new entry via POST
+                axios
+                    .put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', containerPayData)
+                    .then(response => {
+                        toast.success('Carrier Paid by finance successfully!');
+                        setFinanceDetailsData(containerPayData);
+                    })
+                    .catch(error => {
+                        toast.error('Error occurred while processing the trade.');
+                        console.error(error);
+                    });
+            }
         }
-
-    }
+    };
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
@@ -324,10 +374,26 @@ const FinanceDetails = () => {
                     <div><strong>Total Box Weight:</strong> {financeDetailsData.allTotalBoxWeight}</div>
                     <div><strong>Net Weight:</strong> {financeDetailsData.netWeight}</div>
                     <div><strong>Truck No:</strong> {financeDetailsData.truckNo}</div>
+                    <div><strong>Invoice Value:</strong> {financeDetailsData.total} USD</div>
+                    {
+                        financeDetailsData.tradeExchangeRate > 0 &&
+                        <>
+                            <div><strong>Trade Exchange Rate:</strong> {financeDetailsData.tradeExchangeRate}</div>
+                            <div><strong>Invoice Value:</strong> {financeDetailsData.total * financeDetailsData.tradeExchangeRate} TK</div>
+                        </>
+                    }
+
+
                 </div>
 
                 {/* Particular Expense Names */}
                 <h3 className="text-xl font-bold mb-4 text-center underline">Particular Expenses</h3>
+                {
+                    financeDetailsData.tradeExpanseDate > 0
+                    &&
+                    <div className="my-2"><strong>Trade Payment Data:</strong> {financeDetailsData.tradeExpanseDate
+                    }</div>
+                }
                 <table className="min-w-full bg-white mb-6">
                     <thead>
                         <tr className="bg-gray-200">
@@ -338,7 +404,7 @@ const FinanceDetails = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {financeDetailsData.financeParticularExpenseNames.map((expense, index) => (
+                        {financeDetailsData.financeParticularExpenseNames && financeDetailsData.financeParticularExpenseNames.map((expense, index) => (
                             <tr key={index} className="border-b">
                                 <td className="py-2 px-4">{expense.date}</td>
                                 <td className="py-2 px-4">{expense.particularExpenseName}</td>
@@ -349,17 +415,62 @@ const FinanceDetails = () => {
                     </tbody>
                     <tfoot>
                         <tr className="bg-gray-100 font-semibold text-gray-700">
-                            <td colSpan="3" className="py-2 px-4 text-left">Total Amount</td>
+                            <td colSpan="3" className="py-2 px-4 text-left">Total Individual Cost</td>
                             <td className="py-2 px-4">{financeDetailsData.totalCost}</td>
                         </tr>
+                        {
+                            financeDetailsData.tradeExchangeRate > 0 &&
+                            <>
+                                <tr className=" bg-orange-100 font-base text-gray-700 border-b">
+                                    <td colSpan="3" className="py-2 px-4 text-left">C&F Commission 0.20%</td>
+                                    <td className="py-2 px-4">{((financeDetailsData.total) * financeDetailsData.tradeExchangeRate
+                                        * 0.20) / 100}</td>
+                                </tr>
+                                <tr className=" bg-orange-100 font-base text-gray-700 border-b">
+                                    <td colSpan="3" className="py-2 px-4 text-left">Total Amount</td>
+                                    <td className="py-2 px-4">{parseFloat(financeDetailsData.totalCost) + (((financeDetailsData.total) * financeDetailsData.tradeExchangeRate
+                                        * 0.20) / 100)}</td>
+                                </tr>
+                            </>
+                        }
+
+
                     </tfoot>
+
                 </table>
                 <div className="text-right mb-5">
                     {
-                        financeDetailsData.tradeExpanseStatus ?
+                        financeDetailsData.tradeExpanseStatus ? (
                             <button className="bg-green-500 text-white px-4 py-2 rounded">Paid</button>
-                            :
-                            <button onClick={handleToTradePay} className="bg-blue-500 text-white px-4 py-2 rounded">Trade Pay</button>
+                        ) : (
+                            <div>
+                                <button onClick={() => setTradeRateInputVisible(!isTradeRateInputVisible)} className="bg-blue-500 text-white px-4 py-2 rounded">
+                                    Trade Pay
+                                </button>
+                                {isTradeRateInputVisible && (
+                                    <div className="mt-4">
+                                        <label>Exchange Rate: </label>
+                                        <input
+                                            type="number"
+                                            value={tradeExchangeRate}
+                                            onChange={(e) => setTradeExchangeRate(e.target.value)}
+                                            className="border px-4 py-2 rounded"
+                                            placeholder="Enter Trade Exchange Rate"
+                                        />
+                                        <label>Date: </label>
+                                        <input
+                                            type="date"
+                                            value={selectedDate}
+                                            onChange={(e) => setSelectedDate(e.target.value)}
+                                            className="border px-4 py-2 rounded"
+                                        />
+                                        <button onClick={handleToTradePay} className="bg-green-500 text-white px-4 py-2 rounded ml-4">
+                                            Confirm Payment
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )
                     }
                 </div>
                 {/* Purchase Product in Boxes */}
@@ -378,7 +489,7 @@ const FinanceDetails = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {financeDetailsData.financeProductInBoxes.map((product, index) => (
+                        {financeDetailsData.financeProductInBoxes && financeDetailsData.financeProductInBoxes.map((product, index) => (
                             <tr key={index} className="border-b">
                                 <td className="py-2 px-4">{product.productName}</td>
                                 <td className="py-2 px-4">{product.productModel}</td>
@@ -395,6 +506,12 @@ const FinanceDetails = () => {
 
                 {/* Container Expense Names */}
                 <h3 className="text-xl font-bold mb-4 text-center underline"><span>{financeDetailsData?.containerServiceProvider}</span> CARRIER SERVICE</h3>
+                {
+                    financeDetailsData.carrierExpanseDate
+                    &&
+                    <div className="my-2"><strong>Carrier Payment Data:</strong> {financeDetailsData.carrierExpanseDate
+                    }</div>
+                }
                 <table className="min-w-full bg-white mb-6 shadow-md rounded-lg overflow-hidden">
                     <thead>
                         <tr className="bg-gray-200 text-left text-gray-700 font-semibold">
@@ -410,7 +527,7 @@ const FinanceDetails = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {financeDetailsData.financeContainerExpenseNames.map((container, index) => (
+                        {financeDetailsData.financeContainerExpenseNames && financeDetailsData.financeContainerExpenseNames.map((container, index) => (
                             <tr key={index} className="border-b hover:bg-gray-100">
                                 <td className="py-2 px-4">{container.slNo}</td>
                                 <td className="py-2 px-4">{container.date}</td>
@@ -435,10 +552,29 @@ const FinanceDetails = () => {
                 </table>
                 <div className="text-right mb-5">
                     {
-                        financeDetailsData.carrierExpanseStatus ?
+                        financeDetailsData.carrierExpanseStatus ? (
                             <button className="bg-green-500 text-white px-4 py-2 rounded">Paid</button>
-                            :
-                            <button onClick={handleToContainerPay} className="bg-blue-500 text-white px-4 py-2 rounded">Container Pay</button>
+                        ) : (
+                            <div>
+                                <button onClick={() => setDateInputVisible(!isDateInputVisible)} className="bg-blue-500 text-white px-4 py-2 rounded">
+                                    Container Pay
+                                </button>
+                                {isDateInputVisible && (
+                                    <div className="mt-4">
+                                        <label>Select Date: </label>
+                                        <input
+                                            type="date"
+                                            value={selectedDate}
+                                            onChange={(e) => setSelectedDate(e.target.value)}
+                                            className="border px-4 py-2 rounded"
+                                        />
+                                        <button onClick={handleToContainerPay} className="bg-green-500 text-white px-4 py-2 rounded ml-4">
+                                            Confirm Payment
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )
                     }
                 </div>
 
@@ -453,6 +589,10 @@ const FinanceDetails = () => {
                     <div><strong>VSL/VOY:</strong> {financeDetailsData.vslVoy}</div>
                     <div><strong>ETD CGP:</strong> {financeDetailsData.etd}</div>
                     <div><strong>Sea Exchange Rate:</strong> {financeDetailsData.exchangeRate}</div>
+                    {
+                        financeDetailsData.seaExpanseDate &&
+                        <div><strong>Shipment Payment Data:</strong> {financeDetailsData.seaExpanseDate}</div>
+                    }
                 </div>
                 <table class="min-w-full border-collapse border border-gray-300 shadow-lg my-5">
                     <thead class="bg-blue-100">
@@ -464,7 +604,7 @@ const FinanceDetails = () => {
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        {financeDetailsData.financeCharges.length > 0 && financeDetailsData.financeCharges.map((charge, index) => (
+                        {financeDetailsData.financeCharges && financeDetailsData.financeCharges.map((charge, index) => (
                             <tr key={charge.id} class={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-blue-50`}>
                                 <td class="border border-gray-300 px-6 py-4 text-sm text-gray-900">{charge.id}</td>
                                 <td class="border border-gray-300 px-6 py-4 text-sm text-gray-900">{charge.description}</td>
@@ -483,64 +623,38 @@ const FinanceDetails = () => {
                 </table>
                 <div className="text-right mb-10">
                     {
-                        financeDetailsData.seaExpanseStatus ?
+                        financeDetailsData.seaExpanseStatus ? (
                             <button className="bg-green-500 text-white px-4 py-2 rounded">Paid</button>
-                            :
-                            <button onClick={handleToShippingPay} className="bg-blue-500 text-white px-4 py-2 rounded">Shipping Pay</button>
+                        ) : (
+                            <div>
+                                <button onClick={() => setDateInputVisible(!isDateInputVisible)} className="bg-blue-500 text-white px-4 py-2 rounded">
+                                    Shipping Pay
+                                </button>
+                                {isDateInputVisible && (
+                                    <div className="mt-4">
+                                        <label>Select Date: </label>
+                                        <input
+                                            type="date"
+                                            value={selectedDate}
+                                            onChange={(e) => setSelectedDate(e.target.value)}
+                                            className="border px-4 py-2 rounded"
+                                        />
+                                        <button onClick={handleToShippingPay} className="bg-green-500 text-white px-4 py-2 rounded ml-4">
+                                            Confirm Payment
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )
                     }
-
                 </div>
 
                 {/* Payment Options */}
                 <div className="flex justify-end mb-4">
                     <button onClick={handleToReject} className="bg-red-500 text-white px-4 py-2 rounded mr-5">Reject</button>
-                    <button onClick={handleToUpdate} className="bg-yellow-500 text-white px-4 py-2 rounded">Update</button>
+                    <button onClick={handleUpdate} className="bg-yellow-500 text-white px-4 py-2 rounded">Update</button>
                 </div>
 
-                {/* Dollar Exchange Rate Modal */}
-                {
-                    isModalOpen && (
-                        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-                            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-                                {/* Modal Header */}
-                                <h2 className="text-xl font-semibold mb-4">Update Dollar Exchange Rate</h2>
-
-                                {/* Input Field */}
-                                <div className="mb-4">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Dollar Exchange Rate
-                                    </label>
-                                    <input
-                                        type="number"
-                                        className="border border-gray-300 p-2 rounded w-full"
-                                        placeholder="Enter Dollar Exchange Rate"
-                                        value={dollarExchangeRate}
-                                        onChange={(e) => setDollarExchangeRate(e.target.value)}
-                                    />
-                                </div>
-
-                                {/* Modal Actions */}
-                                <div className="flex justify-end space-x-4">
-                                    {/* Close button */}
-                                    <button
-                                        className="bg-gray-400 text-white py-2 px-4 rounded"
-                                        onClick={handleCloseModal}
-                                    >
-                                        Close
-                                    </button>
-
-                                    {/* Update button */}
-                                    <button
-                                        className="bg-green-500 text-white py-2 px-4 rounded"
-                                        onClick={handleUpdate}
-                                    >
-                                        Update
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )
-                }
             </div>
         </div>
 

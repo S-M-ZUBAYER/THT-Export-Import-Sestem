@@ -17,7 +17,6 @@ const AddCharges = () => {
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [filteredCharges, setFilteredCharges] = useState([]); // State for filtered charges
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     particularExpenseName: "",
