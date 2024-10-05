@@ -68,8 +68,9 @@ const FinalData = () => {
       );
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
       console.log(sortedData, "final data");
-
-      setFinances(sortedData);
+      const finalData = response.data.filter((data) => data.status === "finalData"
+      )
+      setFinances(finalData);
       setLoading(false);
     } catch (error) {
       toast.error("Error from server to get data!!");

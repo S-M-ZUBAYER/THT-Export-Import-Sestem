@@ -263,93 +263,119 @@ const Purchase = () => {
   // data send to server
   const formSubmit = (e) => {
     e.preventDefault();
-    let weightPerBoxList = [];
-    let individualTotalBoxWeightList = [];
+    const confirmPurchase = window.confirm(
+      "Are you sure, you want to confirm these data as next step?"
+    );
+    if (confirmPurchase) {
+      let weightPerBoxList = [];
+      let individualTotalBoxWeightList = [];
 
-    selectedProduct.forEach((product) => {
-      weightPerBoxList.push(product?.weightPerBox);
-      individualTotalBoxWeightList.push(product?.individualTotalBoxWeight);
-    });
-    const newEx = parseFloat(total);
-    const purchaseInfo = {
-      id: 0,
-      transportWay: transportWay, // id pass
-      transportCountryName: transportCountryName, // id pass
-      purchaseProductInBoxes: selectedProduct,
-      // purchaseProductInBoxes: [],
-      particularExpenseNames: savedExpenses,
-      // particularExpenseNames: [],
-      totalCost: totalCost,
-      invoiceNo: invoiceNo,
-      total: newEx.toString(),
-      truckNo: truckNo,
-      transportCountry: transportCountryName,
-      transportPort: selectedTransportCountryPort,
-      date: selectedProductDate,
-      tradeExpanseStatus: false,
-      tradeExpanseDate: "",
-      status: "purchase",
-      finalStatus: "",
-      allTotalBoxWeight: allTotalBoxWeight,
-      traderServiceProvider: traderServiceProvider,
-      netWeight: parseFloat(netWeight),
-      grossWeight: parseFloat(grossWeight),
-      containerServiceProvider: containerServiceProvider,
-      totalFareAmount: parseFloat(totalFareAmount),
-      totalAitVat: parseFloat(totalAitVat),
-      totalCarrierAmount: parseFloat(totalCarrierAmount),
-      carrierExpanseStatus: false,
-      carrierExpanseDate: "",
-      seaServiceProvider: formData?.seaServiceProvider,
-      shipper: formData?.shipper,
-      blNo: formData?.blNo,
-      containerNo: formData?.containerNo,
-      destination: formData?.destination,
-      vslVoy: formData?.vslVoy,
-      etd: formData?.etd,
-      exchangeRate: formData?.exchangeRate,
-      seaExpanseStatus: false,
-      seaExpanseDate: "",
-      tradeExchangeRate: 0,
-      tradeValue: 0,
-      containerExpenseNames: rows,
-      // containerExpenseNames: [],
-      chargesList: formData?.charges,
-      // chargesList: [],
-      image: "",
-      totalAmountUSD: parseFloat(shipCostUSD),
-      totalAmountBDT: parseFloat(shipCostTK),
-      candF: 0,
-      epNo: ipNo,
-      // transportCountry: transportCountryName,
-    };
+      selectedProduct.forEach((product) => {
+        weightPerBoxList.push(product?.weightPerBox);
+        individualTotalBoxWeightList.push(product?.individualTotalBoxWeight);
+      });
+      const newEx = parseFloat(total);
+      const purchaseInfo = {
+        id: 0,
+        transportWay: transportWay, // id pass
+        transportCountryName: transportCountryName, // id pass
+        purchaseProductInBoxes: selectedProduct,
+        // purchaseProductInBoxes: [],
+        particularExpenseNames: savedExpenses,
+        // particularExpenseNames: [],
+        totalCost: totalCost,
+        invoiceNo: invoiceNo,
+        total: newEx.toString(),
+        truckNo: truckNo,
+        transportCountry: transportCountryName,
+        transportPort: selectedTransportCountryPort,
+        date: selectedProductDate,
+        tradeExpanseStatus: false,
+        tradeExpanseDate: "",
+        status: "purchase",
+        finalStatus: "",
+        allTotalBoxWeight: allTotalBoxWeight,
+        traderServiceProvider: traderServiceProvider,
+        netWeight: parseFloat(netWeight),
+        grossWeight: parseFloat(grossWeight),
+        containerServiceProvider: containerServiceProvider,
+        totalFareAmount: parseFloat(totalFareAmount),
+        totalAitVat: parseFloat(totalAitVat),
+        totalCarrierAmount: parseFloat(totalCarrierAmount),
+        carrierExpanseStatus: false,
+        carrierExpanseDate: "",
+        seaServiceProvider: formData?.seaServiceProvider,
+        shipper: formData?.shipper,
+        blNo: formData?.blNo,
+        containerNo: formData?.containerNo,
+        destination: formData?.destination,
+        vslVoy: formData?.vslVoy,
+        etd: formData?.etd,
+        exchangeRate: formData?.exchangeRate,
+        seaExpanseStatus: false,
+        seaExpanseDate: "",
+        tradeExchangeRate: 0,
+        tradeValue: 0,
+        containerExpenseNames: rows,
+        // containerExpenseNames: [],
+        chargesList: formData?.charges,
+        // chargesList: [],
+        image: "",
+        totalAmountUSD: parseFloat(shipCostUSD),
+        totalAmountBDT: parseFloat(shipCostTK),
+        candF: 0,
+        epNo: ipNo,
+        // transportCountry: transportCountryName,
+      };
 
-    console.log(purchaseInfo);
+      console.log(purchaseInfo);
+      axios
+        .post(
+          "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
+          purchaseInfo,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        )
+        .then(async (res) => {
+          toast.success("Successfully Uploaded to server", {
+            position: "top-center",
+          });
 
+          // Create an array of delete promises for all selected products
+          const deletePromises = selectedProduct.map((product) =>
+            axios.delete(
+              `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes/${product.id}`
+            )
+          );
 
-    axios
-      .post(
-        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
-        purchaseInfo,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      )
-      .then((res) => {
-        toast.success("Successfully Uploaded to server", {
-          position: "top-center",
-        });
-        navigate("/finalPurchase");
-      })
-      .catch((err) =>
-        toast.error("This error coming from server please try again later!!", {
-          position: "top-center",
+          // Wait for all delete requests to complete
+          await Promise.all(deletePromises);
+
+          // Update the state after the delete operations are complete
+          setBoxData((prevBoxData) =>
+            prevBoxData.filter((data) => !selectedProduct.some((product) => product.id === data.id))
+          );
+
+          setFilteredData((prevFilteredData) =>
+            prevFilteredData.filter((data) => !selectedProduct.some((product) => product.id === data.id))
+          );
+
+          // Navigate after the operations are done
+          navigate("/finalPurchase");
         })
+        .catch((err) =>
+          toast.error("This error coming from server please try again later!!", {
+            position: "top-center",
+          })
+        );
 
-      );
-  };
+
+    };
+  }
+
   const [searchValue, setSearchValue] = useState('');
 
   // Handle input change and filter products

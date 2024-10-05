@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { logDOM } from '@testing-library/react';
 import FinalPurchaseModal from './FinalPurchaseModal';
+import { ClipLoader } from 'react-spinners';
 
 
 
@@ -12,6 +13,7 @@ const FinalPurchase = () => {
     const [filteredPurchases, setFilteredPurchases] = useState([]);
     const [selectedPurchase, setSelectedPurchase] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [finalPurchaseLoading, setFinalPurchaseLoading] = useState(true);
 
     // Fetch data from API
     useEffect(() => {
@@ -21,9 +23,11 @@ const FinalPurchase = () => {
                 )
                 setPurchases(finalPurchases);
                 setFilteredPurchases(finalPurchases);
+                setFinalPurchaseLoading(false);
             }
             )
             .catch(error => toast.error('Failed to fetch data!'));
+        setFinalPurchaseLoading(false);
     }, []);
 
     const openModal = (purchase) => {
@@ -113,7 +117,12 @@ const FinalPurchase = () => {
         setFilteredPurchases(filteredProducts);
     };
 
-    console.log(filteredPurchases, 'prouct');
+    // loader css style
+    const override = {
+        display: "block",
+        margin: "25px auto",
+    };
+    ;
 
     return (
         <div className="container mx-auto px-4">
@@ -155,7 +164,17 @@ const FinalPurchase = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredPurchases.length > 0 ? (
+                            {finalPurchaseLoading ? <div>
+                                <ClipLoader
+                                    color={"#36d7b7"}
+                                    loading={finalPurchaseLoading}
+                                    size={50}
+                                    cssOverride={override}
+                                />
+                                <p className="text-center font-extralight text-xl text-green-400">
+                                    Please wait ....
+                                </p>
+                            </div> : filteredPurchases.length > 0 ? (
                                 filteredPurchases.map((purchase) => (
                                     <tr key={purchase.id} className="border-b">
                                         <td className="py-2 px-4">{purchase.date}</td>

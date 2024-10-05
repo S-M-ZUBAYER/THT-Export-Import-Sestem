@@ -25,6 +25,11 @@ const navLinks = [
     icon: <MdOutlineProductionQuantityLimits />, // Export icon
   },
   {
+    path: "/AddC&FLevel",
+    display: "Add C&F Level",
+    icon: <MdOutlineProductionQuantityLimits />, // Export icon
+  },
+  {
     path: "/newbrand",
     display: "Add New Brand",
     icon: <TbBrandElectronicArts />, // Import icon

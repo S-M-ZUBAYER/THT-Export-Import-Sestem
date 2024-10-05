@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../../components/context/authContext';
+import { ClipLoader } from 'react-spinners';
 
 const Finance = () => {
   const [purchases, setPurchases] = useState([]);
@@ -17,10 +18,11 @@ const Finance = () => {
   useEffect(() => {
     axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance')
       .then(response => {
-        console.log(response.data);
+        const finance = response.data.filter((purchase) => purchase.status !== "finalData"
+        )
 
-        setPurchases(response.data);
-        setFilteredPurchases(response.data);
+        setPurchases(finance);
+        setFilteredPurchases(finance);
         setFinanceDataLoading(false);
       })
       .catch(error => toast.error('Failed to fetch data!'));
@@ -34,6 +36,11 @@ const Finance = () => {
   //     })
   //     .catch(error => toast.error('Failed to fetch data!'));
   // }, []);
+  // loader css style
+  const override = {
+    display: "block",
+    margin: "25px auto",
+  };
 
   // Handle input change and filter purchases
   const handleSearchChange = (e) => {
@@ -86,7 +93,19 @@ const Finance = () => {
               </tr>
             </thead>
             <tbody>
-              {financeDataLoading ? "Loading" : filteredPurchases.length > 0 ? (
+              {financeDataLoading ? (
+                <div >
+                  <ClipLoader
+                    color={"#36d7b7"}
+                    loading={financeDataLoading}
+                    size={50}
+                    cssOverride={override}
+                  />
+                  <p className="text-center font-extralight text-xl text-green-400">
+                    Please wait ....
+                  </p>
+                </div>
+              ) : filteredPurchases.length > 0 ? (
                 filteredPurchases.map((purchase) => (
                   <tr key={purchase.id} className="border-b">
                     <td className="py-2 px-4">{purchase.id}</td>

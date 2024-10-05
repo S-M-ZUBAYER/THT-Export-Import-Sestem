@@ -7,7 +7,28 @@ const FinanceDetails = () => {
 
     const { financeDetailsData, setFinanceDetailsData } = useContext(UserContext);
     const [invoiceValue, setInvoiceValue] = useState(0);
+    const [cfLevel, setCfLevel] = useState('');
+    const [newCfLevel, setNewCfLevel] = useState('');
+
     console.log(financeDetailsData, "finalData");
+
+    // Fetch C&F Levels on component mount
+    useEffect(() => {
+        const fetchCFLevels = async () => {
+            try {
+                const response = await axios.get(
+                    "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase_account"
+                );
+                setCfLevel(parseFloat(response.data[0].addChargesId));
+            } catch (error) {
+                toast.error("Failed to fetch data");
+            }
+        };
+
+        fetchCFLevels();
+    }, []);
+
+
 
     const handleToReject = () => {
         const confirmReject = window.confirm("Are you sure Do you want to reject this export information?");
@@ -178,6 +199,7 @@ const FinanceDetails = () => {
                 ...financeDetailsData, // Copy all properties of financeDetailsData
                 status: "finance",
                 tradeExpanseStatus: true,
+                candF: parseFloat(newCfLevel),
                 tradeExpanseDate: selectedDate,
                 tradeExchangeRate: tradeExchangeRate, // Add trade exchange rate
             };
@@ -188,6 +210,7 @@ const FinanceDetails = () => {
                     ...financeDetailsData,
                     status: "finance",
                     finalStatus: "Complete",
+                    candF: parseFloat(newCfLevel),
                     tradeExpanseStatus: true,
                     tradeExpanseDate: selectedDate,
                     tradeExchangeRate: tradeExchangeRate, // Add trade exchange rate
@@ -359,6 +382,21 @@ const FinanceDetails = () => {
         }
     };
 
+    const handleToTradeExchangeRate = (e) => {
+        const newRate = e.target.value;
+        setTradeExchangeRate(newRate);
+
+        // Calculate the new C&F level based on the exchange rate
+        const calculatedCfLevel = ((financeDetailsData.total * newRate * 0.20) / 100);
+
+        // Conditional logic to update C&F level
+        if (calculatedCfLevel > cfLevel) {
+            setNewCfLevel(cfLevel);
+        } else {
+            setNewCfLevel(calculatedCfLevel);
+        }
+    };
+
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <div className="max-w-4xl mx-auto bg-white shadow-md rounded-md p-6">
@@ -388,13 +426,8 @@ const FinanceDetails = () => {
 
                 {/* Particular Expense Names */}
                 <h3 className="text-xl font-bold mb-4 text-center underline">Particular Expenses</h3>
-                {
-                    financeDetailsData.tradeExpanseDate > 0
-                    &&
-                    <div className="my-2"><strong>Trade Payment Data:</strong> {financeDetailsData.tradeExpanseDate
-                    }</div>
-                }
                 <table className="min-w-full bg-white mb-6">
+
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="py-2 px-4">Date</th>
@@ -423,13 +456,11 @@ const FinanceDetails = () => {
                             <>
                                 <tr className=" bg-orange-100 font-base text-gray-700 border-b">
                                     <td colSpan="3" className="py-2 px-4 text-left">C&F Commission 0.20%</td>
-                                    <td className="py-2 px-4">{((financeDetailsData.total) * financeDetailsData.tradeExchangeRate
-                                        * 0.20) / 100}</td>
+                                    <td className="py-2 px-4">{financeDetailsData?.candF ? financeDetailsData?.candF : newCfLevel}</td>
                                 </tr>
                                 <tr className=" bg-orange-100 font-base text-gray-700 border-b">
                                     <td colSpan="3" className="py-2 px-4 text-left">Total Amount</td>
-                                    <td className="py-2 px-4">{parseFloat(financeDetailsData.totalCost) + (((financeDetailsData.total) * financeDetailsData.tradeExchangeRate
-                                        * 0.20) / 100)}</td>
+                                    <td className="py-2 px-4">{parseFloat(financeDetailsData.totalCost) + parseFloat(financeDetailsData?.candF ? financeDetailsData?.candF : newCfLevel)}</td>
                                 </tr>
                             </>
                         }
@@ -438,7 +469,13 @@ const FinanceDetails = () => {
                     </tfoot>
 
                 </table>
-                <div className="text-right mb-5">
+                <div className="text-right flex justify-between mb-16">
+                    {
+                        financeDetailsData.tradeExpanseDate
+                        &&
+                        <div className="my-2"><strong>Trade Service Payment Data:</strong> {financeDetailsData.tradeExpanseDate
+                        }</div>
+                    }
                     {
                         financeDetailsData.tradeExpanseStatus ? (
                             <button className="bg-green-500 text-white px-4 py-2 rounded">Paid</button>
@@ -453,7 +490,7 @@ const FinanceDetails = () => {
                                         <input
                                             type="number"
                                             value={tradeExchangeRate}
-                                            onChange={(e) => setTradeExchangeRate(e.target.value)}
+                                            onChange={handleToTradeExchangeRate}
                                             className="border px-4 py-2 rounded"
                                             placeholder="Enter Trade Exchange Rate"
                                         />
@@ -506,12 +543,6 @@ const FinanceDetails = () => {
 
                 {/* Container Expense Names */}
                 <h3 className="text-xl font-bold mb-4 text-center underline"><span>{financeDetailsData?.containerServiceProvider}</span> CARRIER SERVICE</h3>
-                {
-                    financeDetailsData.carrierExpanseDate
-                    &&
-                    <div className="my-2"><strong>Carrier Payment Data:</strong> {financeDetailsData.carrierExpanseDate
-                    }</div>
-                }
                 <table className="min-w-full bg-white mb-6 shadow-md rounded-lg overflow-hidden">
                     <thead>
                         <tr className="bg-gray-200 text-left text-gray-700 font-semibold">
@@ -550,7 +581,13 @@ const FinanceDetails = () => {
                         </tr>
                     </tfoot>
                 </table>
-                <div className="text-right mb-5">
+                <div className="text-right mb-16 flex justify-between">
+                    {
+                        financeDetailsData.carrierExpanseDate
+                        &&
+                        <div className="my-2"><strong>Carrier Payment Data:</strong> {financeDetailsData.carrierExpanseDate
+                        }</div>
+                    }
                     {
                         financeDetailsData.carrierExpanseStatus ? (
                             <button className="bg-green-500 text-white px-4 py-2 rounded">Paid</button>
@@ -589,10 +626,6 @@ const FinanceDetails = () => {
                     <div><strong>VSL/VOY:</strong> {financeDetailsData.vslVoy}</div>
                     <div><strong>ETD CGP:</strong> {financeDetailsData.etd}</div>
                     <div><strong>Sea Exchange Rate:</strong> {financeDetailsData.exchangeRate}</div>
-                    {
-                        financeDetailsData.seaExpanseDate &&
-                        <div><strong>Shipment Payment Data:</strong> {financeDetailsData.seaExpanseDate}</div>
-                    }
                 </div>
                 <table class="min-w-full border-collapse border border-gray-300 shadow-lg my-5">
                     <thead class="bg-blue-100">
@@ -621,7 +654,11 @@ const FinanceDetails = () => {
                         </tr>
                     </tfoot>
                 </table>
-                <div className="text-right mb-10">
+                <div className="text-right mb-16 flex justify-between">
+                    {
+                        financeDetailsData.seaExpanseDate &&
+                        <div><strong>Shipment Payment Data:</strong> {financeDetailsData.seaExpanseDate}</div>
+                    }
                     {
                         financeDetailsData.seaExpanseStatus ? (
                             <button className="bg-green-500 text-white px-4 py-2 rounded">Paid</button>
@@ -651,8 +688,14 @@ const FinanceDetails = () => {
 
                 {/* Payment Options */}
                 <div className="flex justify-end mb-4">
-                    <button onClick={handleToReject} className="bg-red-500 text-white px-4 py-2 rounded mr-5">Reject</button>
-                    <button onClick={handleUpdate} className="bg-yellow-500 text-white px-4 py-2 rounded">Update</button>
+                    {
+                        (!financeDetailsData.tradeExpanseStatus || !financeDetailsData.seaExpanseStatus || !financeDetailsData.carrierExpanseStatus) ?
+                            <button onClick={handleToReject} className="bg-red-500 text-white px-4 py-2 rounded mr-5">Reject</button> : ""
+                    }
+                    {
+                        financeDetailsData.finalStatus === "finalData" ? "" :
+                            <button onClick={handleUpdate} className="bg-yellow-500 text-white px-4 py-2 rounded">Update</button>
+                    }
                 </div>
 
             </div>

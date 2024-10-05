@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CarrierTableData from "./CarrierTableData";
 import ShippingDataTable from "./ShippingDataTable";
@@ -19,10 +19,19 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
       };
     });
     onExpenseSave(selectedExpenseData);
-    // console.log(selectedExpenseData);
   };
 
+  useEffect(() => {
+    handleSave();
+    const totalCost = selectedExpenses
+      .reduce((total, id) => {
+        const expense = expenses.find((expense) => expense.id === Number(id));
+        return total + parseFloat(expense.particularExpenseCost);
+      }, 0)
+      .toFixed(2);
 
+    onTotalCostChange(totalCost);
+  }, [selectedExpenses, remarks, dates]);
 
   const handleCheckboxChange = (event) => {
     const expenseId = event.target.value;
@@ -35,19 +44,21 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
         return prevState.filter((id) => id !== expenseId);
       }
     });
-    handleSave();
   };
 
   const handleRemarkChange = (event, expenseId) => {
-    setRemarks({ ...remarks, [expenseId]: event.target.value });
-    handleSave();
+    setRemarks((prevRemarks) => ({
+      ...prevRemarks,
+      [expenseId]: event.target.value,
+    }));
   };
 
   const handleDateChange = (event, expenseId) => {
-    setDates({ ...dates, [expenseId]: event.target.value });
-    handleSave();
+    setDates((prevDates) => ({
+      ...prevDates,
+      [expenseId]: event.target.value,
+    }));
   };
-
 
   const totalCost = selectedExpenses
     .reduce((total, id) => {
@@ -56,7 +67,6 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
     }, 0)
     .toFixed(2);
   onTotalCostChange(totalCost);
-
   return (
     <div className="p-4">
       <div className=" overflow-x-auto add__scrollbar">
