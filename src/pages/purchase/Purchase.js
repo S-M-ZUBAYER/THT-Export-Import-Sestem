@@ -39,9 +39,23 @@ const Purchase = () => {
   const [netWeight, setNetWeight] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState([]);
-  // const [error, setError] = useState("");
   const [filteredData, setFilteredData] = useState([]);
   const [selectedProductDate, setSelectedProductDate] = useState("");
+  const [zone, setZone] = useState("");
+  const [loadfrom, setLoadfrom] = useState("");
+  const [expNo, setExpNo] = useState("");
+  const [consigneeName, setConsigneeName] = useState("");
+  const [consigneeAddress, setConsigneeAddress] = useState("");
+  const [sCCMT, setSCCMT] = useState("");
+  const [enterpriseEmp, setEnterpriseEmp] = useState("");
+  const [verifyingEmp, setVerifyingEmp] = useState("");
+  const [permitEmp, setPermitEmp] = useState("");
+  const [permitedDate, setPermitedDate] = useState("");
+  const [invoiceDate, setInvoiceDate] = useState("");
+  const [ExpDate, setExpDate] = useState("");
+  const [bankName, setBankName] = useState("");
+  const [cmValue, setCMValue] = useState("");
+
   // const filteredTruckNumbersRef = useRef([]);
 
   const navigate = useNavigate();
@@ -235,6 +249,48 @@ const Purchase = () => {
   const handleNetWeight = (event) => {
     setNetWeight(event.target.value);
   };
+  const handleToZone = (event) => {
+    setZone(event.target.value);
+  };
+  const handleToLoadfrom = (event) => {
+    setLoadfrom(event.target.value);
+  };
+  const handleToExpNo = (event) => {
+    setExpNo(event.target.value);
+  };
+  const handleToConsigneeName = (event) => {
+    setConsigneeName(event.target.value);
+  };
+  const handleToConsigneeAddress = (event) => {
+    setConsigneeAddress(event.target.value);
+  };
+  const handleToSCCMT = (event) => {
+    setSCCMT(event.target.value);
+  };
+  const handleToEnterpriseEmp = (event) => {
+    setEnterpriseEmp(event.target.value);
+  };
+  const handleToVerifyingEmp = (event) => {
+    setVerifyingEmp(event.target.value);
+  };
+  const handleToPermitEmp = (event) => {
+    setPermitEmp(event.target.value);
+  };
+  const handleToBankName = (event) => {
+    setBankName(event.target.value);
+  };
+  const handleToCMValue = (event) => {
+    setCMValue(event.target.value);
+  };
+  const handlePermitTillDateChange = (event) => {
+    setPermitedDate(event.target.value);
+  };
+  const handleInvoiceDateChange = (event) => {
+    setInvoiceDate(event.target.value);
+  };
+  const handleExportDateChange = (event) => {
+    setExpDate(event.target.value);
+  };
 
 
   const handleExpenseSave = (selectedExpenseData) => {
@@ -325,10 +381,25 @@ const Purchase = () => {
         totalAmountBDT: parseFloat(shipCostTK),
         candF: 0,
         epNo: ipNo,
+        zone: zone,
+        loadfrom: loadfrom,
+        expNo: expNo,
+        permitedDate: permitedDate,
+        invoiceDate: invoiceDate,
+        ExpDate: ExpDate,
+        cmValue: cmValue,
+        consigneeName: consigneeName,
+        consigneeAddress: consigneeAddress,
+        bankName: bankName,
+        sCCMT: sCCMT,
+        enterpriseEmp: enterpriseEmp,
+        verifyingEmp: verifyingEmp,
+        permitEmp: permitEmp,
         // transportCountry: transportCountryName,
       };
 
       console.log(purchaseInfo);
+      return;
       axios
         .post(
           "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
@@ -505,27 +576,6 @@ const Purchase = () => {
               onSubmit={formSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
 
-                {/* Trade Service Provider */}
-                <div className="">
-                  <div>
-                    <label
-                      className="lebel-text text-lg font-semibold"
-                      htmlFor="traderServiceProvider">
-                      Trade Service Provider
-                    </label>
-                    <input
-                      className="w-full border-[1px] border-info rounded-md p-3 mt-3 bg-transparent"
-                      placeholder="Trade Service Provider Name"
-                      type="text"
-                      name="traderServiceProvider"
-                      value={traderServiceProvider}
-                      required
-                      aria-required
-                      onChange={(e) => setTraderServiceProvider(e.target.value)}
-                    />
-                  </div>
-                </div>
-
                 {/* Shipment Way */}
                 <div className="">
                   <label className="mb-[10px] lebel-text text-lg font-semibold">
@@ -641,6 +691,22 @@ const Purchase = () => {
                 </div>
 
 
+                {/* Invoice Date */}
+                <div className="form-control lg:pr-2 text-center flex flex-col justify-center items-center">
+                  <label className="text-center mb-2">
+                    <span className="lebel-text text-lg font-semibold">Invoice Date</span>
+                  </label>
+                  <input
+                    type="date"
+                    onChange={handleInvoiceDateChange}
+                    name="date"
+                    required
+                    aria-required
+                    value={invoiceDate}
+                    className="border-2 select-info rounded-md text-lg p-[6px]"
+                  />
+                </div>
+
                 {/* Total Expense */}
                 <div className="">
                   <div>
@@ -740,8 +806,262 @@ const Purchase = () => {
                 </div>
 
 
-              </div>
+                {/* New from here  */}
+                {/* Truck No. */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="zone">
+                    Zone
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="zone"
+                      value={zone}
+                      name="zone"
+                      required
+                      placeholder="Enter or pick Zone Name" // Associate the input with the datalist for filtering
+                      onChange={handleToZone}
+                    />
+                  </div>
+                </div>
+                {/* Place Of Load. */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="loadfrom">
+                    Place Of Load
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="loadPlace"
+                      value={loadfrom}
+                      name="loadfrom"
+                      required
+                      placeholder="Enter The Place Of Load" // Associate the input with the datalist for filtering
+                      onChange={handleToLoadfrom}
+                    />
+                  </div>
+                </div>
+                {/* Export No. */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="expNo">
+                    Export No
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="expNo"
+                      value={expNo}
+                      name="expNo"
+                      required
+                      placeholder="Enter The Place Of Load" // Associate the input with the datalist for filtering
+                      onChange={handleToExpNo}
+                    />
+                  </div>
+                </div>
+                {/* Consignee Name. */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="consigneeName">
+                    Consignee Name
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="consigneeName"
+                      value={consigneeName}
+                      name="consigneeName"
+                      required
+                      placeholder="Enter The Consignee Name" // Associate the input with the datalist for filtering
+                      onChange={handleToConsigneeName}
+                    />
+                  </div>
+                </div>
+                {/* consignee Address. */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="consigneeAddress">
+                    Consignee Address
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="consigneeAddress"
+                      value={consigneeAddress}
+                      name="consigneeAddress"
+                      required
+                      placeholder="Enter The Place Of Load" // Associate the input with the datalist for filtering
+                      onChange={handleToConsigneeAddress}
+                    />
+                  </div>
+                </div>
 
+                {/* sCCMT. */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="sCCMT">
+                    LC/No./TT/P.S/SC/CMT
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="sCCMT"
+                      value={sCCMT}
+                      name="sCCMT"
+                      required
+                      placeholder="Enter The Place Of Load" // Associate the input with the datalist for filtering
+                      onChange={handleToSCCMT}
+                    />
+                  </div>
+                </div>
+                {/* Enterprise Employee. */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="enterpriseEmp">
+                    Enterprise Employee
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="enterpriseEmp"
+                      value={enterpriseEmp}
+                      name="enterpriseEmp"
+                      required
+                      placeholder="Enter The Enterprise Employee" // Associate the input with the datalist for filtering
+                      onChange={handleToEnterpriseEmp}
+                    />
+                  </div>
+                </div>
+                {/* CM Value. */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="cmValue">
+                    CM Value
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="cmValue"
+                      value={cmValue}
+                      name="cmValue"
+                      required
+                      placeholder="Enter The CM Value" // Associate the input with the datalist for filtering
+                      onChange={handleToCMValue}
+                    />
+                  </div>
+                </div>
+                {/* Verifying Officer. */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="verifyingEmp">
+                    Verifying Officer
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="verifyingEmp"
+                      value={verifyingEmp}
+                      name="verifyingEmp"
+                      required
+                      placeholder="Enter The Verifying Officer Name" // Associate the input with the datalist for filtering
+                      onChange={handleToVerifyingEmp}
+                    />
+                  </div>
+                </div>
+                {/* Permit Officer. */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="permitEmp">
+                    Permit Officer
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="permitEmp"
+                      value={permitEmp}
+                      name="verifyingEmp"
+                      required
+                      placeholder="Enter The Permit Officer Name" // Associate the input with the datalist for filtering
+                      onChange={handleToPermitEmp}
+                    />
+                  </div>
+                </div>
+                {/* Bank Name. */}
+                <div className="">
+                  <label className="text-lg font-semibold" htmlFor="bankName">
+                    Bank Name
+                  </label>
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      className="input input-info w-full"
+                      id="bankName"
+                      value={bankName}
+                      name="bankName"
+                      required
+                      placeholder="Enter The Bank Name" // Associate the input with the datalist for filtering
+                      onChange={handleToBankName}
+                    />
+                  </div>
+                </div>
+
+                {/* Permit Till date */}
+                <div className="form-control lg:pr-2 text-center flex flex-col justify-center items-center">
+                  <label className="text-center mb-2">
+                    <span className="lebel-text text-lg font-semibold">Permit Till Date</span>
+                  </label>
+                  <input
+                    type="date"
+                    onChange={handlePermitTillDateChange}
+                    name="date"
+                    required
+                    aria-required
+                    value={permitedDate}
+                    className="border-2 select-info rounded-md text-lg p-[6px]"
+                  />
+                </div>
+
+                {/* Export Date */}
+                <div className="form-control lg:pr-2 text-center flex flex-col justify-center items-center">
+                  <label className="text-center mb-2">
+                    <span className="lebel-text text-lg font-semibold">Export Date</span>
+                  </label>
+                  <input
+                    type="date"
+                    onChange={handleExportDateChange}
+                    name="date"
+                    required
+                    aria-required
+                    value={ExpDate}
+                    className="border-2 select-info rounded-md text-lg p-[6px]"
+                  />
+                </div>
+
+
+              </div>
+              {/* Trade Service Provider */}
+              <h1 className="text-3xl underline font-bold mt-10 mb-6 text-center text-gray-800">Trade Overseas Service Details Form</h1>
+              <div className="">
+                <div>
+                  <label
+                    className="lebel-text text-lg font-semibold"
+                    htmlFor="traderServiceProvider">
+                    Trade Service Provider
+                  </label>
+                  <input
+                    className="w-full border-[1px] border-info rounded-md p-3 mt-3 bg-transparent"
+                    placeholder="Trade Service Provider Name"
+                    type="text"
+                    name="traderServiceProvider"
+                    value={traderServiceProvider}
+                    required
+                    aria-required
+                    onChange={(e) => setTraderServiceProvider(e.target.value)}
+                  />
+                </div>
+              </div>
               {/* checking element for calculation */}
               <ExpensesForm
                 rows={rows}

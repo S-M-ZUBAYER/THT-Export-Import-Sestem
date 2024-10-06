@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 const CarrierTableData = ({
-    rows, setRows, setContainerServiceProvider, containerServiceProvider, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount }) => {
+    rows, setRows, setContainerServiceProvider, containerServiceProvider, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, invoiceNo, ipNo }) => {
+    console.log(invoiceNo, ipNo, "ip in");
 
     // Function to add a new row
     const addRow = (e) => {
@@ -133,7 +134,7 @@ const CarrierTableData = ({
                                     type="text"
                                     className="w-full p-2 border border-gray-300 rounded"
                                     value={row.invoiceNo}
-                                    onChange={(e) => handleInputChange(index, "invoiceNo", e.target.value)}
+                                    onChange={(e) => handleInputChange(index, "invoiceNo", invoiceNo)}
                                     placeholder="Invoice No"
                                 />
                             </td>
@@ -142,7 +143,7 @@ const CarrierTableData = ({
                                     type="text"
                                     className="w-full p-2 border border-gray-300 rounded"
                                     value={row.epNumber}
-                                    onChange={(e) => handleInputChange(index, "epNumber", e.target.value)}
+                                    onChange={(e) => handleInputChange(index, "epNumber", ipNo)}
                                     placeholder="EP Number"
                                 />
                             </td>
