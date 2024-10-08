@@ -127,7 +127,6 @@ const NewBrand = () => {
 
 
   };
-  console.log(filteredProducts, "products");
   // product delete from server and also frontend
   const handleDelete = async (id) => {
     const confirmDelete = window.confirm(

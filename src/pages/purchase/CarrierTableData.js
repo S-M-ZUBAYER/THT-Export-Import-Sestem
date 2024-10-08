@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 
 const CarrierTableData = ({
     rows, setRows, setContainerServiceProvider, containerServiceProvider, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, invoiceNo, ipNo }) => {
-    console.log(invoiceNo, ipNo, "ip in");
 
     // Function to add a new row
     const addRow = (e) => {

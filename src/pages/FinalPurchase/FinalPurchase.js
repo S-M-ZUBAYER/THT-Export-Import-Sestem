@@ -17,18 +17,22 @@ const FinalPurchase = () => {
 
     // Fetch data from API
     useEffect(() => {
+        setFinalPurchaseLoading(true); // Start loading before making the request
         axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
             .then(response => {
-                const finalPurchases = response.data.filter((purchase) => purchase.status === "purchase"
-                )
+                const sortedData = response?.data.sort((a, b) => b.id - a.id);
+                const finalPurchases = sortedData.filter(purchase => purchase.status === "purchase");
                 setPurchases(finalPurchases);
                 setFilteredPurchases(finalPurchases);
-                setFinalPurchaseLoading(false);
-            }
-            )
-            .catch(error => toast.error('Failed to fetch data!'));
-        setFinalPurchaseLoading(false);
+            })
+            .catch(error => {
+                toast.error('Failed to fetch data!');
+            })
+            .finally(() => {
+                setFinalPurchaseLoading(false); // Ensure loading is stopped after both success or failure
+            });
     }, []);
+
 
     const openModal = (purchase) => {
         setSelectedPurchase(purchase);
@@ -52,6 +56,8 @@ const FinalPurchase = () => {
     const handleSave = () => {
         const confirmSave = window.confirm("Do you want to Save this data to check finance?");
         if (confirmSave) {
+            console.log(selectedPurchase, "pur");
+
             setSelectedPurchase((prevState) => {
                 const updatedPurchase = { ...prevState, status: "finalPurchase" };
                 return updatedPurchase;
@@ -72,6 +78,8 @@ const FinalPurchase = () => {
             delete updatedFinance.purchaseProductInBoxes;
             delete updatedFinance.chargesList;
 
+
+            console.log(updatedPurchase, updatedFinance, "dat");
 
 
 
@@ -98,8 +106,6 @@ const FinalPurchase = () => {
 
 
     const [searchValue, setSearchValue] = useState('');
-
-
     // Handle input change and filter products
     const handleSearchChange = (e) => {
         const value = e.target.value.toLowerCase(); // Use the current input value
@@ -150,65 +156,67 @@ const FinalPurchase = () => {
                     </div>
 
                     {/* Purchases Table */}
-                    <table className="min-w-full bg-white">
-                        <thead>
-                            <tr className="w-full bg-gray-200 text-left">
-                                <th className="py-2 px-4">Date</th>
-                                <th className="py-2 px-4">Truck No</th>
-                                <th className="py-2 px-4">Port</th>
-                                <th className="py-2 px-4">Country</th>
-                                <th className="py-2 px-4">Invoice No</th>
-                                <th className="py-2 px-4">Total Weight</th>
-                                <th className="py-2 px-4">Total Cost</th>
-                                <th className="py-2 px-4">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {finalPurchaseLoading ? <div>
-                                <ClipLoader
-                                    color={"#36d7b7"}
-                                    loading={finalPurchaseLoading}
-                                    size={50}
-                                    cssOverride={override}
-                                />
-                                <p className="text-center font-extralight text-xl text-green-400">
-                                    Please wait ....
-                                </p>
-                            </div> : filteredPurchases.length > 0 ? (
-                                filteredPurchases.map((purchase) => (
-                                    <tr key={purchase.id} className="border-b">
-                                        <td className="py-2 px-4">{purchase.date}</td>
-                                        <td className="py-2 px-4">{purchase.truckNo}</td>
-                                        <td className="py-2 px-4">{purchase.transportPort}</td>
-                                        <td className="py-2 px-4">{purchase.transportCountryName}</td>
-                                        <td className="py-2 px-4">{purchase.invoiceNo}</td>
-                                        <td className="py-2 px-4">{purchase.allTotalBoxWeight}</td>
-                                        <td className="py-2 px-4">{purchase.totalCost}</td>
-                                        <td className="py-2 px-4">
-                                            <button
-                                                onClick={() => openModal(purchase)}
-                                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded"
-                                            >
-                                                Details
-                                            </button>
+                    {finalPurchaseLoading ? <div>
+                        <ClipLoader
+                            color={"#36d7b7"}
+                            loading={finalPurchaseLoading}
+                            size={50}
+                            cssOverride={override}
+                        />
+                        <p className="text-center font-extralight text-xl text-green-400">
+                            Please wait ....
+                        </p>
+                    </div> :
+                        <table className="min-w-full bg-white">
+                            <thead>
+                                <tr className="w-full bg-gray-200 text-left">
+                                    <th className="py-2 px-4">Date</th>
+                                    <th className="py-2 px-4">Truck No</th>
+                                    <th className="py-2 px-4">Port</th>
+                                    <th className="py-2 px-4">Country</th>
+                                    <th className="py-2 px-4">Invoice No</th>
+                                    <th className="py-2 px-4">Total Weight</th>
+                                    <th className="py-2 px-4">Total Cost</th>
+                                    <th className="py-2 px-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredPurchases.length > 0 ? (
+                                    filteredPurchases.map((purchase) => (
+                                        <tr key={purchase.id} className="border-b">
+                                            <td className="py-2 px-4">{purchase.date}</td>
+                                            <td className="py-2 px-4">{purchase.truckNo}</td>
+                                            <td className="py-2 px-4">{purchase.transportPort}</td>
+                                            <td className="py-2 px-4">{purchase.transportCountryName}</td>
+                                            <td className="py-2 px-4">{purchase.invoiceNo}</td>
+                                            <td className="py-2 px-4">{purchase.allTotalBoxWeight}</td>
+                                            <td className="py-2 px-4">{purchase.totalCost}</td>
+                                            <td className="py-2 px-4">
+                                                <button
+                                                    onClick={() => openModal(purchase)}
+                                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded"
+                                                >
+                                                    Details
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="6" className="text-center py-4">
+                                            No matching records found.
                                         </td>
                                     </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="6" className="text-center py-4">
-                                        No matching records found.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                                )}
+                            </tbody>
+                        </table>}
 
 
                     {/* Modal Component */}
                     <FinalPurchaseModal
                         isOpen={isModalOpen}
                         selectedPurchase={selectedPurchase}
+                        setSelectedPurchase={setSelectedPurchase}
                         handleChange={handleChange}
                         handleSave={handleSave}
                         closeModal={closeModal}

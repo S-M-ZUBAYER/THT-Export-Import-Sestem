@@ -20,7 +20,7 @@ const PrintingExInitialData = () => {
     const [company, setCompany] = useState("");
 
 
-    console.log(mark, receiptNumber, totalPallet, totalBoxPallet, language, location, company, "check");
+
 
 
     useEffect(() => {
@@ -33,12 +33,12 @@ const PrintingExInitialData = () => {
                 "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes"
             );
             const sortedData = response?.data.sort((a, b) => b.id - a.id); // Sort data by descending order
-            console.log(sortedData, "productInBox");
             setBoxData(sortedData);
             setFilteredData(sortedData);
             setLoading(false);
         } catch (error) {
             toast.error("Error from server to get data!!");
+            setLoading(false);
         }
     };
 
@@ -56,7 +56,6 @@ const PrintingExInitialData = () => {
         );
 
         setFilteredData(filteredProducts);
-        console.log(value, filteredProducts);
     };
 
     // Handle selecting/deselecting items

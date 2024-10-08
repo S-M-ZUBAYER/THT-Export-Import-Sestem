@@ -67,6 +67,7 @@ const Routers = () => {
         <Route path="/productinboxes" element={<ProductBoxes />} />
         <Route path="/finance" element={<Finance />} />
         <Route path="/purchase-details/:id" element={<FinanceDetails />} />
+        <Route path="/finance-details/:id" element={<FinanceDetails />} />
         <Route path="/finaldata" element={<FinalData />} />
       </Route>
       <Route element={<AdminRoute />}>

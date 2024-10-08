@@ -1,40 +1,100 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { MdOutlineCancel } from "react-icons/md";
 
 const FinalPurchaseModal = ({
     isOpen,
     selectedPurchase,
+    setSelectedPurchase,
     handleChange,
     handleSave,
     closeModal,
 }) => {
+
+    const [editedProductInBoxesData, setEditedProductInBoxesData] = useState(selectedPurchase ? selectedPurchase?.purchaseProductInBoxes : []);
+
     if (!isOpen || !selectedPurchase) {
         return null;
     }
-    console.log(selectedPurchase, "from edit page");
+    console.log(selectedPurchase);
+    // State to manage the edited values for each product
+
+    const handleInputChange = (index, field, value) => {
+        // Clone the original data from selectedPurchase.purchaseProductInBoxes
+        const originalData = [...selectedPurchase.purchaseProductInBoxes];
+
+        // Create a copy of the edited data
+        const updatedData = [...editedProductInBoxesData];
+
+        // If there's no data for this index in editedProductInBoxesData, initialize it with the original product data
+        if (!updatedData[index]) {
+            updatedData[index] = { ...originalData[index] };
+        }
+
+        // Update only the specific field with the new value
+        updatedData[index] = {
+            ...updatedData[index],
+            [field]: value
+        };
+
+        // Set the updated data in the editedProductInBoxesData state
+        setEditedProductInBoxesData(updatedData);
+
+        // Merge the original data with the updated data, ensuring the unedited objects retain their original values
+        const mergedData = originalData.map((item, i) => updatedData[i] ? updatedData[i] : item);
+
+        // Update the parent state with the merged data
+        setSelectedPurchase((prev) => ({
+            ...prev,
+            purchaseProductInBoxes: mergedData // Update the correct field in the parent state
+        }));
+    };
+
+
+    console.log(selectedPurchase, typeof (editedData), "new table data");
+
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="bg-white p-6 rounded shadow-lg max-w-[100vh] w-full h-[90vh] overflow-y-auto">
-                <h2 className="text-2xl font-bold mb-4 text-center">Edit Purchase Details</h2>
+                <div className="grid grid-cols-12 ">
+
+                    <h2 className="text-2xl font-bold mb-4 text-center col-span-11">Edit Purchase Details</h2>
+
+                    <div className="flex justify-end">
+
+                        <MdOutlineCancel className=" text-4xl font-bold text-red-400 hover:cursor-pointer" onClick={closeModal} />
+                    </div>
+
+                </div>
 
                 {/* General Information */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label className="block font-medium">Transport Way</label>
-                        <input
-                            type="text"
-                            name="transportWay"
-                            value={selectedPurchase.transportWay}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 border rounded"
-                        />
-                    </div>
                     <div>
                         <label className="block font-medium">Country</label>
                         <input
                             type="text"
                             name="transportCountryName"
                             value={selectedPurchase.transportCountryName}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Port</label>
+                        <input
+                            type="text"
+                            name="transportPort"
+                            value={selectedPurchase.transportPort}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Shipment Way</label>
+                        <input
+                            type="text"
+                            name="transportWay"
+                            value={selectedPurchase.transportWay}
                             onChange={handleChange}
                             className="w-full px-4 py-2 border rounded"
                         />
@@ -50,42 +110,31 @@ const FinalPurchaseModal = ({
                         />
                     </div>
                     <div>
+                        <label className="block font-medium">Invoice Value(USD)</label>
+                        <input
+                            type="text"
+                            name="total"
+                            value={selectedPurchase.total}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Invoice Date</label>
+                        <input
+                            type="text"
+                            name="invoiceDate"
+                            value={selectedPurchase.invoiceDate}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
                         <label className="block font-medium">EP No</label>
                         <input
                             type="text"
                             name="epNo"
                             value={selectedPurchase.epNo}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 border rounded"
-                        />
-                    </div>
-                    <div>
-                        <label className="block font-medium">Gross Weight</label>
-                        <input
-                            type="text"
-                            name="grossWeight"
-                            value={selectedPurchase.grossWeight}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 border rounded"
-                        />
-                    </div>
-                    <div>
-                        <label className="block font-medium">Total Box Weight</label>
-                        <input
-                            type="text"
-                            name="allTotalBoxWeight"
-                            value={selectedPurchase.allTotalBoxWeight}
-                            onChange={handleChange}
-                            readOnly
-                            className="w-full px-4 py-2 border rounded"
-                        />
-                    </div>
-                    <div>
-                        <label className="block font-medium">Net Weight</label>
-                        <input
-                            type="text"
-                            name="netWeight"
-                            value={selectedPurchase.netWeight}
                             onChange={handleChange}
                             className="w-full px-4 py-2 border rounded"
                         />
@@ -100,10 +149,185 @@ const FinalPurchaseModal = ({
                             className="w-full px-4 py-2 border rounded"
                         />
                     </div>
+                    <div>
+                        <label className="block font-medium">Zone</label>
+                        <input
+                            type="text"
+                            name="zone"
+                            value={selectedPurchase.zone}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Place Of Load</label>
+                        <input
+                            type="text"
+                            name="loadfrom"
+                            value={selectedPurchase.loadfrom}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Permit Till Date</label>
+                        <input
+                            type="text"
+                            name="permitedDate"
+                            value={selectedPurchase.permitedDate}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Export No</label>
+                        <input
+                            type="text"
+                            name="expNo"
+                            value={selectedPurchase.expNo}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Export Date</label>
+                        <input
+                            type="text"
+                            name="expDate"
+                            value={selectedPurchase.expDate}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">CM Value</label>
+                        <input
+                            type="text"
+                            name="cmValue"
+                            value={selectedPurchase.cmValue}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Consignee Name</label>
+                        <input
+                            type="text"
+                            name="consigneeName"
+                            value={selectedPurchase.consigneeName}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Consignee Address</label>
+                        <input
+                            type="text"
+                            name="consigneeAddress"
+                            value={selectedPurchase.consigneeAddress}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Bank Name</label>
+                        <input
+                            type="text"
+                            name="bankName"
+                            value={selectedPurchase.bankName}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">LC/No./TT/P.S/SC/CMT</label>
+                        <input
+                            type="text"
+                            name="sccmt"
+                            value={selectedPurchase.sccmt}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Enterprise Employee</label>
+                        <input
+                            type="text"
+                            name="enterpriseEmp"
+                            value={selectedPurchase.enterpriseEmp}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Verifying Officer</label>
+                        <input
+                            type="text"
+                            name="verifyingEmp"
+                            value={selectedPurchase.verifyingEmp}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Permit Officer</label>
+                        <input
+                            type="text"
+                            name="permitEmp"
+                            value={selectedPurchase.permitEmp}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Total Box Weight</label>
+                        <input
+                            type="number"
+                            name="allTotalBoxWeight"
+                            value={selectedPurchase.allTotalBoxWeight}
+                            onChange={handleChange}
+                            readOnly
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
 
                 </div>
                 {/* Particular Expense Names */}
-                <h3 className="text-xl font-bold mb-4 text-center underline">Particular Expenses</h3>
+                <h3 className="text-xl font-bold mb-4 text-center underline"><span>{selectedPurchase?.traderServiceProvider}</span> Particular Expenses</h3>
+
+                <div>
+                    <label className="block font-medium">Trade Service Provider</label>
+                    <input
+                        type="text"
+                        name="traderServiceProvider"
+                        value={selectedPurchase.traderServiceProvider}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border rounded"
+                    />
+                </div>
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label className="block font-medium">Net Weight</label>
+                        <input
+                            type="number"
+                            name="netWeight"
+                            value={selectedPurchase.netWeight}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Gross Weight</label>
+                        <input
+                            type="number"
+                            name="grossWeight"
+                            value={selectedPurchase.grossWeight}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                </div>
+
                 <table className="min-w-full bg-white mb-6">
                     <thead>
                         <tr className="bg-gray-200">
@@ -133,7 +357,7 @@ const FinalPurchaseModal = ({
 
                 {/* Purchase Product in Boxes */}
                 <h3 className="text-xl font-bold mb-4 text-center underline">Products In Boxes</h3>
-                <table className="min-w-full bg-white mb-6">
+                {/* <table className="min-w-full bg-white mb-6">
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="py-2 px-4">Product Name</th>
@@ -160,6 +384,72 @@ const FinalPurchaseModal = ({
                             </tr>
                         ))}
                     </tbody>
+                </table> */}
+
+                <table className="min-w-full bg-white mb-6">
+                    <thead>
+                        <tr className="bg-gray-200">
+                            <th className="py-2 px-1">HS Code</th>
+                            <th className="py-2 px-1">Product Name</th>
+                            <th className="py-2 px-1">Model</th>
+                            <th className="py-2 px-1">Quantity</th>
+                            <th className="py-2 px-1">Truck No</th>
+                            <th className="py-2 px-1">Pallet No</th>
+                            <th className="py-2 px-1">Total Box</th>
+                            <th className="py-2 px-1">Box weight</th>
+                            <th className="py-2 px-1">Total weight</th>
+                            <th className="py-2 px-1">FOB/CIF/
+                                CFR/C&F(US$)</th>
+                            <th className="py-2 px-1">FOB/CIF/
+                                CFR/C&F(USD)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {selectedPurchase.purchaseProductInBoxes && selectedPurchase.purchaseProductInBoxes.map((product, index) => (
+                            <tr key={index} className="border-b">
+                                <td className="py-2 px-1">
+                                    <input
+                                        type="text"
+                                        value={editedProductInBoxesData[index]?.hscode || product.hscode}
+                                        onChange={(e) => handleInputChange(index, 'hscode', e.target.value)}
+                                        className="border rounded px-1"
+                                    />
+                                </td>
+                                <td className="py-2 px-1">{product.productName}</td>
+                                <td className="py-2 px-1">{product.productModel}</td>
+                                <td className="py-2 px-1">{product.quantity}</td>
+                                <td className="py-2 px-1">{product.truckNumber}</td>
+                                <td className="py-2 px-1">{product.totalPallet}</td>
+                                <td className="py-2 px-1">{product.totalBox}</td>
+                                <td className="py-2 px-1">{product.weightPerBox}</td>
+                                <td className="py-2 px-1">{product.individualTotalBoxWeight}</td>
+                                <td className="py-2 px-1">
+                                    <input
+                                        type="text"
+                                        value={editedProductInBoxesData[index]?.c_FUS || product.c_FUS}
+                                        onChange={(e) => handleInputChange(index, 'c_FUS', e.target.value)}
+                                        className="border rounded px-1"
+                                    />
+                                </td>
+                                <td className="py-2 px-1">
+                                    <input
+                                        type="text"
+                                        value={editedProductInBoxesData[index]?.c_FUSD || product.c_FUSD}
+                                        onChange={(e) => handleInputChange(index, 'c_FUSD', e.target.value)}
+                                        className="border rounded px-1"
+                                    />
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                    <tfoot>
+                        <tr className="bg-gray-100 font-semibold text-gray-700">
+                            <td colSpan="8" className="py-2 px-4 text-left">All Total Weight</td>
+                            <td className="py-2 px-4 text-start">{selectedPurchase.allTotalBoxWeight}</td>
+                            <td className="py-2 px-4"></td>
+                            <td className="py-2 px-4"></td>
+                        </tr>
+                    </tfoot>
                 </table>
 
                 {/* Container Expense Names */}
@@ -216,66 +506,69 @@ const FinalPurchaseModal = ({
                         className="w-full px-4 py-2 border rounded"
                     />
                 </div>
-                <div>
-                    <label className="block font-medium">B/L No </label>
-                    <input
-                        type="text"
-                        name="blNo"
-                        value={selectedPurchase.blNo}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border rounded"
-                    />
-                </div>
-                <div>
-                    <label className="block font-medium">Container No </label>
-                    <input
-                        type="text"
-                        name="containerNo"
-                        value={selectedPurchase.containerNo}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border rounded"
-                    />
-                </div>
-                <div>
-                    <label className="block font-medium">Destination</label>
-                    <input
-                        type="text"
-                        name="destination"
-                        value={selectedPurchase.destination}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border rounded"
-                    />
-                </div>
-                <div>
-                    <label className="block font-medium">VSL/VOY</label>
-                    <input
-                        type="text"
-                        name="vslVoy"
-                        value={selectedPurchase.vslVoy}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border rounded"
-                    />
-                </div>
-                <div>
-                    <label className="block font-medium">ETD CGP</label>
-                    <input
-                        type="text"
-                        name="etd"
-                        value={selectedPurchase.etd}
-                        onChange={handleChange}
-                        className="w-full px-4 py-2 border rounded"
-                    />
-                </div>
-                <div>
-                    <label className="block font-medium">Sea Exchange Rate</label>
-                    <input
-                        type="text"
-                        name="exchangeRate"
-                        value={selectedPurchase.exchangeRate}
-                        onChange={handleChange}
-                        readOnly
-                        className="w-full px-4 py-2 border rounded"
-                    />
+                <div className="grid grid-cols-2 gap-4 mb-6">
+
+                    <div>
+                        <label className="block font-medium">B/L No </label>
+                        <input
+                            type="text"
+                            name="blNo"
+                            value={selectedPurchase.blNo}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Container No </label>
+                        <input
+                            type="text"
+                            name="containerNo"
+                            value={selectedPurchase.containerNo}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Destination</label>
+                        <input
+                            type="text"
+                            name="destination"
+                            value={selectedPurchase.destination}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">VSL/VOY</label>
+                        <input
+                            type="text"
+                            name="vslVoy"
+                            value={selectedPurchase.vslVoy}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">ETD CGP</label>
+                        <input
+                            type="text"
+                            name="etd"
+                            value={selectedPurchase.etd}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">Sea Exchange Rate</label>
+                        <input
+                            type="number"
+                            name="exchangeRate"
+                            value={selectedPurchase.exchangeRate}
+                            onChange={handleChange}
+                            readOnly
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
                 </div>
                 <table class="min-w-full border-collapse border border-gray-300 shadow-lg my-5">
                     <thead class="bg-blue-100">

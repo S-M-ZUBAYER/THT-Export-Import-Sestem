@@ -83,6 +83,14 @@ const ProductBoxes = () => {
       return;
     }
 
+    // Check if productList is empty
+    if (!selectedFixDate) {
+      toast.error("Please Select the Fix date first Please.", {
+        position: "top-center",
+      });
+      return;
+    }
+
     try {
       // Create a list of promises for all product requests
       const productPromises = productList.map(async (product) => {
@@ -447,7 +455,7 @@ const ProductBoxes = () => {
 
   // Function to calculate total box weight
   const calculateindividualTotalBoxWeight = (weightPerBox, totalBox) => {
-    const totalWeight = weightPerBox * totalBox; // Total weight = weight per box * number of boxes
+    const totalWeight = (weightPerBox * totalBox).toFixed(2); // Total weight = weight per box * number of boxes
     setIndividualTotalBoxWeight(totalWeight);
   };
 

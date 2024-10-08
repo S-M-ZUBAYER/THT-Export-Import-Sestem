@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import CarrierTableData from "./CarrierTableData";
 import ShippingDataTable from "./ShippingDataTable";
 
-const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRows, containerServiceProvider, setContainerServiceProvider, formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, selectedExpensesList, setSelectedExpensesList, ipNo, invoiceNo }) => {
+const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRows, containerServiceProvider, setContainerServiceProvider, formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, selectedExpensesList, setSelectedExpensesList, ipNo, invoiceNo, transportCountry, transportPort }) => {
   const [selectedExpenses, setSelectedExpenses] = useState([]);
   const [remarks, setRemarks] = useState({});
   const [dates, setDates] = useState({});
@@ -67,6 +67,9 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
     }, 0)
     .toFixed(2);
   onTotalCostChange(totalCost);
+
+
+
   return (
     <div className="p-4">
       <div className=" overflow-x-auto add__scrollbar">
@@ -132,6 +135,8 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
         setShipCostTK={setShipCostTK}
         shipCostUSD={shipCostUSD}
         setShipCostUSD={setShipCostUSD}
+        transportCountry={transportCountry}
+        transportPort={transportPort}
       ></ShippingDataTable>
 
       {/* button */}

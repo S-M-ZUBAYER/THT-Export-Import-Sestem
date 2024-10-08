@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { UserContext } from '../../components/context/authContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const FinanceDetails = () => {
 
@@ -9,6 +10,7 @@ const FinanceDetails = () => {
     const [invoiceValue, setInvoiceValue] = useState(0);
     const [cfLevel, setCfLevel] = useState('');
     const [newCfLevel, setNewCfLevel] = useState('');
+    const navigate = useNavigate();
 
     console.log(financeDetailsData, "finalData");
 
@@ -66,6 +68,7 @@ const FinanceDetails = () => {
                         })
                         .then(() => {
                             toast.warn('Finance data deleted successfully!');
+                            navigate("/finalPurchase");
                         })
                         .catch(error => {
                             console.error('Error during rejection process:', error);
@@ -515,30 +518,46 @@ const FinanceDetails = () => {
                 <table className="min-w-full bg-white mb-6">
                     <thead>
                         <tr className="bg-gray-200">
-                            <th className="py-2 px-4">Product Name</th>
-                            <th className="py-2 px-4">Model</th>
-                            <th className="py-2 px-4">Quantity</th>
-                            <th className="py-2 px-4">Truck No</th>
-                            <th className="py-2 px-4">Pallet No</th>
-                            <th className="py-2 px-4">Total Box</th>
-                            <th className="py-2 px-4">Box weight</th>
-                            <th className="py-2 px-4">Total weight</th>
+                            <th className="py-2 px-1">HS Code</th>
+                            <th className="py-2 px-1">Product Name</th>
+                            <th className="py-2 px-1">Model</th>
+                            <th className="py-2 px-1">Quantity</th>
+                            <th className="py-2 px-1">Truck No</th>
+                            <th className="py-2 px-1">Pallet No</th>
+                            <th className="py-2 px-1">Total Box</th>
+                            <th className="py-2 px-1">Box weight</th>
+                            <th className="py-2 px-1">Total weight</th>
+                            <th className="py-2 px-1">FOB/CIF/
+                                CFR/C&F(US$)</th>
+                            <th className="py-2 px-1">FOB/CIF/
+                                CFR/C&F(USD)</th>
                         </tr>
                     </thead>
                     <tbody>
                         {financeDetailsData.financeProductInBoxes && financeDetailsData.financeProductInBoxes.map((product, index) => (
                             <tr key={index} className="border-b">
-                                <td className="py-2 px-4">{product.productName}</td>
-                                <td className="py-2 px-4">{product.productModel}</td>
-                                <td className="py-2 px-4">{product.quantity}</td>
-                                <td className="py-2 px-4">{product.truckNumber}</td>
-                                <td className="py-2 px-4">{product.totalPallet}</td>
-                                <td className="py-2 px-4">{product.totalBox}</td>
-                                <td className="py-2 px-4">{product.weightPerBox}</td>
-                                <td className="py-2 px-4">{product.individualTotalBoxWeight}</td>
+                                <td className="py-2 px-1">{product.hscode}</td>
+                                <td className="py-2 px-1">{product.productName}</td>
+                                <td className="py-2 px-1">{product.productModel}</td>
+                                <td className="py-2 px-1">{product.quantity}</td>
+                                <td className="py-2 px-1">{product.truckNumber}</td>
+                                <td className="py-2 px-1">{product.totalPallet}</td>
+                                <td className="py-2 px-1">{product.totalBox}</td>
+                                <td className="py-2 px-1">{product.weightPerBox}</td>
+                                <td className="py-2 px-1">{product.individualTotalBoxWeight}</td>
+                                <td className="py-2 px-1">{product.c_FUS}</td>
+                                <td className="py-2 px-1">{product.c_FUSD}</td>
                             </tr>
                         ))}
                     </tbody>
+                    <tfoot>
+                        <tr className="bg-gray-100 font-semibold text-gray-700">
+                            <td colSpan="8" className="py-2 px-4 text-left">All Total Weight</td>
+                            <td className="py-2 px-4 text-start">{financeDetailsData.allTotalBoxWeight}</td>
+                            <td className="py-2 px-4"></td>
+                            <td className="py-2 px-4"></td>
+                        </tr>
+                    </tfoot>
                 </table>
 
                 {/* Container Expense Names */}
@@ -546,29 +565,29 @@ const FinanceDetails = () => {
                 <table className="min-w-full bg-white mb-6 shadow-md rounded-lg overflow-hidden">
                     <thead>
                         <tr className="bg-gray-200 text-left text-gray-700 font-semibold">
-                            <th className="py-2 px-4">S/L No</th>
-                            <th className="py-2 px-4">Date</th>
-                            <th className="py-2 px-4">Container No</th>
-                            <th className="py-2 px-4">Container T/S</th>
-                            <th className="py-2 px-4">Invoice No</th>
-                            <th className="py-2 px-4">EP NO</th>
-                            <th className="py-2 px-4">Fare Amount</th>
-                            <th className="py-2 px-4">Ait/Vat 5%</th>
-                            <th className="py-2 px-4">Total Amount/TK</th>
+                            <th className="py-2 px-2">S/L No</th>
+                            <th className="py-2 px-2">Date</th>
+                            <th className="py-2 px-2">Container No</th>
+                            <th className="py-2 px-2">Container T/S</th>
+                            <th className="py-2 px-2">Invoice No</th>
+                            <th className="py-2 px-2">EP NO</th>
+                            <th className="py-2 px-2">Fare Amount</th>
+                            <th className="py-2 px-2">Ait/Vat 5%</th>
+                            <th className="py-2 px-2">Total Amount/TK</th>
                         </tr>
                     </thead>
                     <tbody>
                         {financeDetailsData.financeContainerExpenseNames && financeDetailsData.financeContainerExpenseNames.map((container, index) => (
                             <tr key={index} className="border-b hover:bg-gray-100">
-                                <td className="py-2 px-4">{container.slNo}</td>
-                                <td className="py-2 px-4">{container.date}</td>
-                                <td className="py-2 px-4">{container.containerNo}</td>
-                                <td className="py-2 px-4">{container.containerTypeSize}</td>
-                                <td className="py-2 px-4">{container.invoiceNo}</td>
-                                <td className="py-2 px-4">{container.epNumber}</td>
-                                <td className="py-2 px-4">{container.fareAmount}</td>
-                                <td className="py-2 px-4">{container.aitVat}</td>
-                                <td className="py-2 px-4">{container.individualTotalAmount}</td>
+                                <td className="py-2 px-2">{container.slNo}</td>
+                                <td className="py-2 px-2">{container.date}</td>
+                                <td className="py-2 px-2">{container.containerNo}</td>
+                                <td className="py-2 px-2">{container.containerTypeSize}</td>
+                                <td className="py-2 px-2">{container.invoiceNo}</td>
+                                <td className="py-2 px-2">{container.epNumber}</td>
+                                <td className="py-2 px-2">{container.fareAmount}</td>
+                                <td className="py-2 px-2">{container.aitVat}</td>
+                                <td className="py-2 px-2">{container.individualTotalAmount}</td>
                             </tr>
                         ))}
                     </tbody>

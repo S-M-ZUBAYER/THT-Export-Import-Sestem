@@ -67,8 +67,7 @@ const FinalData = () => {
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance"
       );
       const sortedData = response?.data.sort((a, b) => b.id - a.id);
-      console.log(sortedData, "final data");
-      const finalData = response.data.filter((data) => data.status === "finalData"
+      const finalData = sortedData.filter((data) => data.status === "finalData"
       )
       setFinances(finalData);
       setLoading(false);

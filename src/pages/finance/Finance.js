@@ -12,21 +12,26 @@ const Finance = () => {
   const [searchValue, setSearchValue] = useState('');
   const { financeDetailsData, setFinanceDetailsData } = useContext(UserContext);
   const [financeDataLoading, setFinanceDataLoading] = useState(true);
-  console.log(financeDetailsData, "financeDetails");
 
   // Fetch data from API
   useEffect(() => {
+    setFinanceDataLoading(true); // Start loading before making the request
     axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance')
       .then(response => {
-        const finance = response.data.filter((purchase) => purchase.status !== "finalData"
-        )
+        const sortedData = response?.data.sort((a, b) => b.id - a.id);
+        const finance = sortedData.filter(purchase => purchase.status !== "finalData");
 
         setPurchases(finance);
         setFilteredPurchases(finance);
-        setFinanceDataLoading(false);
       })
-      .catch(error => toast.error('Failed to fetch data!'));
+      .catch(error => {
+        toast.error('Failed to fetch data!');
+      })
+      .finally(() => {
+        setFinanceDataLoading(false); // Ensure loading is stopped after both success or failure
+      });
   }, []);
+
   // useEffect(() => {
   //   axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
   //     .then(response => {
@@ -81,7 +86,19 @@ const Finance = () => {
           </div>
 
           {/* Purchases Table */}
-          <table className="min-w-full bg-white">
+          {financeDataLoading ? (
+            <div >
+              <ClipLoader
+                color={"#36d7b7"}
+                loading={financeDataLoading}
+                size={50}
+                cssOverride={override}
+              />
+              <p className="text-center font-extralight text-xl text-green-400">
+                Please wait ....
+              </p>
+            </div>
+          ) : <table className="min-w-full bg-white">
             <thead>
               <tr className="w-full bg-gray-200 text-left">
                 <th className="py-2 px-4">ID</th>
@@ -93,19 +110,7 @@ const Finance = () => {
               </tr>
             </thead>
             <tbody>
-              {financeDataLoading ? (
-                <div >
-                  <ClipLoader
-                    color={"#36d7b7"}
-                    loading={financeDataLoading}
-                    size={50}
-                    cssOverride={override}
-                  />
-                  <p className="text-center font-extralight text-xl text-green-400">
-                    Please wait ....
-                  </p>
-                </div>
-              ) : filteredPurchases.length > 0 ? (
+              {filteredPurchases.length > 0 ? (
                 filteredPurchases.map((purchase) => (
                   <tr key={purchase.id} className="border-b">
                     <td className="py-2 px-4">{purchase.id}</td>
@@ -116,7 +121,7 @@ const Finance = () => {
                     <td className="py-2 px-4">
                       <Link
                         onClick={() => setFinanceDetailsData(purchase)}
-                        to={`/purchase-details/${purchase.id}`}
+                        to={`/finance-details/${purchase.id}`}
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded"
                       >
                         Details
@@ -132,7 +137,7 @@ const Finance = () => {
                 </tr>
               )}
             </tbody>
-          </table>
+          </table>}
         </div>
       </div>
     </div>

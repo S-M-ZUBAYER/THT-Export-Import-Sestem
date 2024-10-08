@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
-const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD }) => {
-
+const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, transportPort, transportCountry }) => {
 
     // Update form fields
     const handleFieldChange = (e) => {
         const { name, value } = e.target;
+
         setFormData({ ...formData, [name]: value });
     };
 
@@ -32,6 +32,11 @@ const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, s
 
 
     useEffect(() => {
+        setFormData({
+            ...formData, destination: `${transportPort}, ${transportCountry}`
+        });
+    }, [transportCountry, transportPort]);
+    useEffect(() => {
         const totalUSD = formData.charges.reduce((acc, charge) => acc + parseFloat(charge.amountUSD || 0), 0).toFixed(2);
         setShipCostUSD(totalUSD);
     }, [formData.charges]);
@@ -41,6 +46,7 @@ const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, s
         const totalTK = formData.charges.reduce((acc, charge) => acc + parseFloat(charge.amountBDT || 0), 0).toFixed(2);
         setShipCostTK(totalTK);
     }, [formData.charges]);
+
 
     return (
         <div className="p-4">
@@ -101,10 +107,11 @@ const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, s
                     <input
                         type="text"
                         name="destination"
-                        value={formData.destination}
-                        onChange={handleFieldChange}
+                        value={`${transportPort}, ${transportCountry}`}
+                        onClick={handleFieldChange}
                         className="w-full p-2 border border-gray-300 rounded"
                         placeholder="Enter Destination"
+                        readOnly
                     />
                 </div>
                 <div>
