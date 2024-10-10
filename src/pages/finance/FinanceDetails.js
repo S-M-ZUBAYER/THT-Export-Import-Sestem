@@ -8,29 +8,47 @@ const FinanceDetails = () => {
 
     const { financeDetailsData, setFinanceDetailsData } = useContext(UserContext);
     const [invoiceValue, setInvoiceValue] = useState(0);
-    const [cfLevel, setCfLevel] = useState('');
     const [newCfLevel, setNewCfLevel] = useState('');
     const navigate = useNavigate();
 
-    console.log(financeDetailsData, "finalData");
 
     // Fetch C&F Levels on component mount
+    const [serviceProvider, setServiceProvider] = useState([]);
+    const [selectedServiceProvider, setSelectedServiceProvider] = useState({});
     useEffect(() => {
-        const fetchCFLevels = async () => {
+        const fetchTradeServiceProvider = async () => {
             try {
+                // Fetch trade service provider data from the API
                 const response = await axios.get(
-                    "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase_account"
+                    "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/trade_service"
                 );
-                setCfLevel(parseFloat(response.data[0].addChargesId));
+
+                // Set service provider data
+                setServiceProvider(response.data);
+
+                // Find the provider that matches the traderServiceProvider in financeDetailsData
+                const provider = response.data.find(
+                    (data) => data.name = financeDetailsData.traderServiceProvider
+                );
+                // Set the selected service provider if found
+                if (provider) {
+                    setSelectedServiceProvider(provider);
+                } else {
+                    toast.error("No matching service provider found");
+                }
+
             } catch (error) {
                 toast.error("Failed to fetch data");
+                console.error("Error fetching trade service provider data:", error);
             }
         };
 
-        fetchCFLevels();
-    }, []);
+        fetchTradeServiceProvider();
+    }, [financeDetailsData.traderServiceProvider]);
 
 
+
+    console.log(financeDetailsData.traderServiceProvider, "provider");
 
     const handleToReject = () => {
         const confirmReject = window.confirm("Are you sure Do you want to reject this export information?");
@@ -38,7 +56,6 @@ const FinanceDetails = () => {
         if (confirmReject) {
             axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
                 .then(response => {
-                    console.log(response.data);
 
                     // Find the purchase matching the invoice number from financeDetailsData
                     const finalPurchases = response.data.find(
@@ -56,7 +73,6 @@ const FinanceDetails = () => {
                         status: "purchase" // Update the status to "purchase"
                     };
 
-                    console.log(rejectedData, "rejected data"); // Debugging output
 
                     // Update the purchase data by making a PUT request
                     axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase', rejectedData)
@@ -181,10 +197,10 @@ const FinanceDetails = () => {
     const [isTradeRateInputVisible, setTradeRateInputVisible] = useState(false);
 
     const handleToTradePay = () => {
+
         const confirmTradePay = window.confirm(
             "Are you sure, you want to Confirm the trade pay"
         );
-        console.log("TradePay", financeDetailsData.tradeExpanseStatus);
 
         if (confirmTradePay) {
             if (financeDetailsData.tradeExpanseStatus) {
@@ -391,31 +407,102 @@ const FinanceDetails = () => {
 
         // Calculate the new C&F level based on the exchange rate
         const calculatedCfLevel = ((financeDetailsData.total * newRate * 0.20) / 100);
-
         // Conditional logic to update C&F level
-        if (calculatedCfLevel > cfLevel) {
-            setNewCfLevel(cfLevel);
-        } else {
-            setNewCfLevel(calculatedCfLevel);
+        if (selectedServiceProvider.status === 'fix') {
+            setNewCfLevel(selectedServiceProvider.level);
         }
+        else {
+            if (calculatedCfLevel > parseFloat(selectedServiceProvider.level)) {
+                setNewCfLevel(selectedServiceProvider.level);
+            } else {
+                setNewCfLevel(calculatedCfLevel);
+            }
+        }
+
     };
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            <div className="max-w-4xl mx-auto bg-white shadow-md rounded-md p-6">
-                <h1 className="text-xl font-bold mb-4">Shipment and Invoice Details</h1>
+            <div className="max-w-[1300px] mx-auto bg-white shadow-md rounded-md p-6">
+                <h1 className="text-xl font-bold mb-4 text-center underline">Shipment and Invoice Details</h1>
 
                 {/* General Information */}
-                <div className="space-y-4">
-                    <div><strong>Transport Way:</strong> {financeDetailsData.transportWay}</div>
-                    <div><strong>Country:</strong> {financeDetailsData.transportCountryName}</div>
-                    <div><strong>Invoice No:</strong> {financeDetailsData.invoiceNo}</div>
-                    <div><strong>EP No:</strong> {financeDetailsData.epNo}</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 bg-white">
+                    <div>
+                        <strong>Country:</strong> {financeDetailsData.transportCountryName}
+                    </div>
+                    <div>
+                        <strong>Port:</strong> {financeDetailsData.transportPort}
+                    </div>
+                    <div>
+                        <strong>Transport Way:</strong> {financeDetailsData.transportWay}
+                    </div>
+                    <div>
+                        <strong>Invoice No:</strong> {financeDetailsData.invoiceNo}
+                    </div>
+                    <div>
+                        <strong>Invoice Value (USD):</strong> {financeDetailsData.total}
+                    </div>
+                    <div>
+                        <strong>Invoice Date:</strong> {financeDetailsData.invoiceDate}
+                    </div>
+                    <div>
+                        <strong>EP No:</strong> {financeDetailsData.epNo}
+                    </div>
+                    <div>
+                        <strong>Truck No:</strong> {financeDetailsData.truckNo}
+                    </div>
+                    <div>
+                        <strong>Zone:</strong> {financeDetailsData.zone}
+                    </div>
+                    <div>
+                        <strong>Place Of Load:</strong> {financeDetailsData.loadFrom}
+                    </div>
+                    <div>
+                        <strong>Permit Till Date:</strong> {financeDetailsData.permitedDate}
+                    </div>
+                    <div>
+                        <strong>Export No:</strong> {financeDetailsData.expNo}
+                    </div>
+                    <div>
+                        <strong>Export Date:</strong> {financeDetailsData.expDate}
+                    </div>
+                    <div>
+                        <strong>CM Value:</strong> {financeDetailsData.cmValue}
+                    </div>
+                    <div>
+                        <strong>Consignee Name:</strong> {financeDetailsData.consigneeName}
+                    </div>
+                    <div>
+                        <strong>Consignee Address:</strong> {financeDetailsData.consigneeAddress}
+                    </div>
+                    <div>
+                        <strong>Bank Name:</strong> {financeDetailsData.bankName}
+                    </div>
+                    <div>
+                        <strong>LC/No./TT/P.S/SC/CMT:</strong> {financeDetailsData.sccmt}
+                    </div>
+                    <div>
+                        <strong>Enterprise Employee:</strong> {financeDetailsData.enterpriseEmp}
+                    </div>
+                    <div>
+                        <strong>Verifying Officer:</strong> {financeDetailsData.verifyingEmp}
+                    </div>
+                    <div>
+                        <strong>Permit Officer:</strong> {financeDetailsData.permitEmp}
+                    </div>
+                    <div>
+                        <strong>Total Box Weight:</strong> {financeDetailsData.allTotalBoxWeight}
+                    </div>
+                </div>
+
+
+                {/* Particular Expense Names */}
+                <h3 className="text-xl font-bold mb-4 text-center underline mt-8"><span>{financeDetailsData.traderServiceProvider
+                }</span> Particular Expenses</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 bg-white">
                     <div><strong>Gross Weight:</strong> {financeDetailsData.grossWeight}</div>
-                    <div><strong>Total Box Weight:</strong> {financeDetailsData.allTotalBoxWeight}</div>
                     <div><strong>Net Weight:</strong> {financeDetailsData.netWeight}</div>
-                    <div><strong>Truck No:</strong> {financeDetailsData.truckNo}</div>
-                    <div><strong>Invoice Value:</strong> {financeDetailsData.total} USD</div>
                     {
                         financeDetailsData.tradeExchangeRate > 0 &&
                         <>
@@ -423,12 +510,7 @@ const FinanceDetails = () => {
                             <div><strong>Invoice Value:</strong> {financeDetailsData.total * financeDetailsData.tradeExchangeRate} TK</div>
                         </>
                     }
-
-
                 </div>
-
-                {/* Particular Expense Names */}
-                <h3 className="text-xl font-bold mb-4 text-center underline">Particular Expenses</h3>
                 <table className="min-w-full bg-white mb-6">
 
                     <thead>
@@ -637,15 +719,30 @@ const FinanceDetails = () => {
 
                 {/* Ocean info */}
                 <h3 className="text-xl font-bold mb-4 text-center underline"><span>{financeDetailsData.seaServiceProvider}</span> FREIGHT SERVICE</h3>
-                <div className="space-y-4">
-                    <div><strong>Shipper:</strong> {financeDetailsData.shipper}</div>
-                    <div><strong>B/L No:</strong> {financeDetailsData.blNo}</div>
-                    <div><strong>Container No:</strong> {financeDetailsData.containerNo}</div>
-                    <div><strong>Destination:</strong> {financeDetailsData.destination}</div>
-                    <div><strong>VSL/VOY:</strong> {financeDetailsData.vslVoy}</div>
-                    <div><strong>ETD CGP:</strong> {financeDetailsData.etd}</div>
-                    <div><strong>Sea Exchange Rate:</strong> {financeDetailsData.exchangeRate}</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 bg-white">
+                    <div>
+                        <strong>Shipper:</strong> {financeDetailsData.shipper}
+                    </div>
+                    <div>
+                        <strong>B/L No:</strong> {financeDetailsData.blNo}
+                    </div>
+                    <div>
+                        <strong>Container No:</strong> {financeDetailsData.containerNo}
+                    </div>
+                    <div>
+                        <strong>Destination:</strong> {financeDetailsData.destination}
+                    </div>
+                    <div>
+                        <strong>VSL/VOY:</strong> {financeDetailsData.vslVoy}
+                    </div>
+                    <div>
+                        <strong>ETD CGP:</strong> {financeDetailsData.etd}
+                    </div>
+                    <div>
+                        <strong>Sea Exchange Rate:</strong> {financeDetailsData.exchangeRate}
+                    </div>
                 </div>
+
                 <table class="min-w-full border-collapse border border-gray-300 shadow-lg my-5">
                     <thead class="bg-blue-100">
                         <tr>
@@ -718,7 +815,7 @@ const FinanceDetails = () => {
                 </div>
 
             </div>
-        </div>
+        </div >
 
     );
 };

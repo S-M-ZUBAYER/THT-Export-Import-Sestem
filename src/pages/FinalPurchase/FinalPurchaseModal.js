@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { MdOutlineCancel } from "react-icons/md";
+import { toast } from 'react-toastify';
 
 const FinalPurchaseModal = ({
     isOpen,
@@ -11,6 +13,22 @@ const FinalPurchaseModal = ({
 }) => {
 
     const [editedProductInBoxesData, setEditedProductInBoxesData] = useState(selectedPurchase ? selectedPurchase?.purchaseProductInBoxes : []);
+    const [serviceProvider, setServiceProvider] = useState([]);
+    useEffect(() => {
+        const fetchTradeServiceProvider = async () => {
+            try {
+                const response = await axios.get(
+                    "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/trade_service"
+                );
+                setServiceProvider(response.data);
+            } catch (error) {
+                toast.error("Failed to fetch data");
+            }
+        };
+
+        fetchTradeServiceProvider();
+    }, []);
+
 
     if (!isOpen || !selectedPurchase) {
         return null;
@@ -55,7 +73,7 @@ const FinalPurchaseModal = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-6 rounded shadow-lg max-w-[100vh] w-full h-[90vh] overflow-y-auto">
+            <div className="bg-white p-6 rounded shadow-lg max-w-[1300px] w-full h-[90vh] overflow-y-auto">
                 <div className="grid grid-cols-12 ">
 
                     <h2 className="text-2xl font-bold mb-4 text-center col-span-11">Edit Purchase Details</h2>
@@ -295,7 +313,7 @@ const FinalPurchaseModal = ({
                 {/* Particular Expense Names */}
                 <h3 className="text-xl font-bold mb-4 text-center underline"><span>{selectedPurchase?.traderServiceProvider}</span> Particular Expenses</h3>
 
-                <div>
+                {/* <div>
                     <label className="block font-medium">Trade Service Provider</label>
                     <input
                         type="text"
@@ -304,7 +322,23 @@ const FinalPurchaseModal = ({
                         onChange={handleChange}
                         className="w-full px-4 py-2 border rounded"
                     />
+                </div> */}
+                <div>
+                    <label className="block font-medium">Trade Service Provider</label>
+                    <select
+                        name="traderServiceProvider"
+                        value={selectedPurchase.traderServiceProvider}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 border rounded"
+                    >
+                        {serviceProvider.map((provider, index) => (
+                            <option key={index} value={provider.name}>
+                                {provider.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
+
                 <div className="grid grid-cols-2 gap-4 mb-6">
                     <div>
                         <label className="block font-medium">Net Weight</label>
@@ -412,7 +446,8 @@ const FinalPurchaseModal = ({
                                         type="text"
                                         value={editedProductInBoxesData[index]?.hscode || product.hscode}
                                         onChange={(e) => handleInputChange(index, 'hscode', e.target.value)}
-                                        className="border rounded px-1"
+                                        placeholder="HS Code"
+                                        className="border-2 rounded px-1 w-36 min-h-12"
                                     />
                                 </td>
                                 <td className="py-2 px-1">{product.productName}</td>
@@ -428,7 +463,7 @@ const FinalPurchaseModal = ({
                                         type="text"
                                         value={editedProductInBoxesData[index]?.c_FUS || product.c_FUS}
                                         onChange={(e) => handleInputChange(index, 'c_FUS', e.target.value)}
-                                        className="border rounded px-1"
+                                        className="border-2 rounded px-1 w-36 min-h-12"
                                     />
                                 </td>
                                 <td className="py-2 px-1">
@@ -436,7 +471,7 @@ const FinalPurchaseModal = ({
                                         type="text"
                                         value={editedProductInBoxesData[index]?.c_FUSD || product.c_FUSD}
                                         onChange={(e) => handleInputChange(index, 'c_FUSD', e.target.value)}
-                                        className="border rounded px-1"
+                                        className="border-2 rounded px-1 w-36 min-h-12"
                                     />
                                 </td>
                             </tr>
