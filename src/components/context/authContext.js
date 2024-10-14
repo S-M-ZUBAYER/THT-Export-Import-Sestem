@@ -16,16 +16,21 @@ const UserProvider = ({ children }) => {
     localStorage.setItem("values", JSON.stringify(userEmail));
     setUser(userEmail);
   };
+  const userID = (userId) => {
+    localStorage.setItem("user", JSON.stringify(userId));
+  };
 
   const logoutUser = () => {
     localStorage.removeItem("values");
+    localStorage.removeItem("user");
+    setUser(null);
     setUser(null);
   };
 
 
 
   return (
-    <UserContext.Provider value={{ user, loginUser, logoutUser, financeDetailsData, setFinanceDetailsData }}>
+    <UserContext.Provider value={{ user, loginUser, userID, logoutUser, financeDetailsData, setFinanceDetailsData }}>
       {children}
     </UserContext.Provider>
   );

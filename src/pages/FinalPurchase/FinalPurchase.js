@@ -56,7 +56,6 @@ const FinalPurchase = () => {
     const handleSave = () => {
         const confirmSave = window.confirm("Do you want to Save this data to check finance?");
         if (confirmSave) {
-            console.log(selectedPurchase, "pur");
 
             setSelectedPurchase((prevState) => {
                 const updatedPurchase = { ...prevState, status: "finalPurchase" };
@@ -77,9 +76,6 @@ const FinalPurchase = () => {
             delete updatedFinance.particularExpenseNames;
             delete updatedFinance.purchaseProductInBoxes;
             delete updatedFinance.chargesList;
-
-
-            console.log(updatedPurchase, updatedFinance, "dat");
 
 
 

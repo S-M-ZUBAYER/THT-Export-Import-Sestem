@@ -16,7 +16,6 @@ const NewProductUpdate = () => {
         `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/newproduct/${id}`
       )
       .then((res) => {
-        // console.log(res);
         setFormData(res?.data);
       })
       .catch((error) =>

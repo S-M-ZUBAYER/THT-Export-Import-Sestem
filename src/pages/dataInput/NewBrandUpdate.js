@@ -17,7 +17,6 @@ const NewBrandUpdate = () => {
         `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/newbrand/${id}`
       )
       .then((res) => {
-        // console.log(res);
         setFormData(res?.data);
       })
       .catch((error) =>

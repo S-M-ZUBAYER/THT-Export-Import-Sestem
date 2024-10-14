@@ -33,7 +33,6 @@ const FinalPurchaseModal = ({
     if (!isOpen || !selectedPurchase) {
         return null;
     }
-    console.log(selectedPurchase);
     // State to manage the edited values for each product
 
     const handleInputChange = (index, field, value) => {
@@ -66,9 +65,6 @@ const FinalPurchaseModal = ({
             purchaseProductInBoxes: mergedData // Update the correct field in the parent state
         }));
     };
-
-
-    console.log(selectedPurchase, typeof (editedData), "new table data");
 
 
     return (

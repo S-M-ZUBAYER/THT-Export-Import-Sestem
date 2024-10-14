@@ -94,7 +94,6 @@ const NewBrand = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setBtnLoading(true);
-    // console.log(formData);
     axios
       .post(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/newbrand",

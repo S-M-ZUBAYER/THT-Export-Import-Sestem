@@ -44,7 +44,6 @@ const Signup = () => {
           toast.success("User create Successfully", { position: "top-center" });
           navigate("/");
           // window.location.reload();
-          // console.log(res);
         })
         .catch((err) =>
           toast.error("Something went wrong", { position: "top-center" })

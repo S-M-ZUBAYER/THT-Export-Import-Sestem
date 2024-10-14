@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
+import { ClipLoader } from "react-spinners";
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
@@ -9,6 +10,11 @@ const Admin = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const [userLoading, setUserLoading] = useState(true);
+  const override = {
+    display: "block",
+    margin: "25px auto",
+  };
 
   // Fetch user data from API
   useEffect(() => {
@@ -18,8 +24,10 @@ const Admin = () => {
           "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/users"
         );
         setUsers(response.data);
+        setUserLoading(false);
       } catch (error) {
         toast.error("Failed to fetch users");
+        setUserLoading(false);
       }
     };
     fetchUsers();
@@ -27,7 +35,6 @@ const Admin = () => {
 
   // Handle "Make Admin" button click
   const handleMakeAdmin = async (user) => {
-    console.log({ ...user, admin: true });
 
     try {
       await axios.put(
@@ -81,43 +88,58 @@ const Admin = () => {
       <h1 className="text-xl md:text-4xl mt-10 text-center font-bold text-violet-500 uppercase tracking-wide">
         User List
       </h1>
-      <div className="overflow-x-auto mt-7 mx-[35px] md:mx-3">
-        <table className="min-w-full bg-white shadow-md rounded-lg">
-          <thead className="bg-violet-500 text-white">
-            <tr>
-              <th className="py-3 px-6 text-left">Name</th>
-              <th className="py-3 px-6 text-left">Email</th>
-              <th className="py-3 px-6 text-left">Admin</th>
-              <th className="py-3 px-6 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="border-b">
-                <td className="py-3 px-6">{user.userName}</td>
-                <td className="py-3 px-6">{user.userEmail}</td>
-                <td className="py-3 px-6">
-                  {user.admin ? "Admin" : "Not Admin"}
-                </td>
-                <td className="py-3 px-6 flex space-x-4">
-                  {!user.admin && (
-                    <button
-                      onClick={() => handleMakeAdmin(user)}
-                      className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
-                      Make Admin
-                    </button>
-                  )}
-                  <button
-                    onClick={() => handleEditClick(user)}
-                    className="bg-yellow-500 text-white px-4 py-1 rounded hover:bg-yellow-600">
-                    Edit
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {
+        userLoading ?
+          <div className="">
+            <ClipLoader
+              color={"#36d7b7"}
+              loading={userLoading}
+              size={50}
+              cssOverride={override}
+            />
+            <p className="text-center font-extralight text-xl text-green-400">
+              Please wait ....
+            </p>
+          </div> :
+          <div className="overflow-x-auto mt-7 mx-[35px] md:mx-3">
+            <table className="min-w-full bg-white shadow-md rounded-lg">
+              <thead className="bg-violet-500 text-white">
+                <tr>
+                  <th className="py-3 px-6 text-left">Name</th>
+                  <th className="py-3 px-6 text-left">Email</th>
+                  <th className="py-3 px-6 text-left">Admin</th>
+                  <th className="py-3 px-6 text-left">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} className="border-b">
+                    <td className="py-3 px-6">{user.userName}</td>
+                    <td className="py-3 px-6">{user.userEmail}</td>
+                    <td className="py-3 px-6">
+                      {user.admin ? "Admin" : "Not Admin"}
+                    </td>
+                    <td className="py-3 px-6 flex space-x-4">
+                      {!user.admin && (
+                        <button
+                          onClick={() => handleMakeAdmin(user)}
+                          className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
+                          Make Admin
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleEditClick(user)}
+                        className="bg-yellow-500 text-white px-4 py-1 rounded hover:bg-yellow-600">
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+      }
+
 
       {/* Modal for editing user */}
       {isModalOpen && (

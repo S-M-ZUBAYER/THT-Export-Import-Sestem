@@ -47,9 +47,6 @@ const FinanceDetails = () => {
     }, [financeDetailsData.traderServiceProvider]);
 
 
-
-    console.log(financeDetailsData.traderServiceProvider, "provider");
-
     const handleToReject = () => {
         const confirmReject = window.confirm("Are you sure Do you want to reject this export information?");
         // Fetch purchase details using the invoice number
@@ -119,7 +116,6 @@ const FinanceDetails = () => {
             // // Fetch the purchase data
             // axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
             //     .then(response => {
-            //         console.log(response.data);
 
             //         // Find the purchase matching the invoice number
             //         const deletePurchases = response.data.find(
@@ -164,7 +160,6 @@ const FinanceDetails = () => {
                     return axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase');
                 })
                 .then(response => {
-                    console.log(response.data);
 
                     // Find the purchase matching the invoice number
                     const deletePurchases = response.data.find(
@@ -277,7 +272,6 @@ const FinanceDetails = () => {
         const confirmShippingPay = window.confirm(
             "Are you sure, you want to Confirm the shipping pay"
         );
-        console.log("ShippingPay");
         if (confirmShippingPay) {
             if (financeDetailsData.seaExpanseStatus) {
                 toast.warn("Already Paid Sea Payment");
@@ -333,7 +327,6 @@ const FinanceDetails = () => {
         const confirmCarrierPay = window.confirm(
             "Are you sure, you want to Confirm the Carrier pay"
         );
-        console.log(financeDetailsData.carrierExpanseStatus, "ContainerPay", financeDetailsData);
 
         if (confirmCarrierPay) {
 

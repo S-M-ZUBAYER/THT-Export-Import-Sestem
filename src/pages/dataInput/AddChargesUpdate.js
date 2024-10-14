@@ -19,7 +19,6 @@ const AddChargesUpdate = () => {
         `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/addcharges/${id}`
       )
       .then((res) => {
-        // console.log(res.data);
         setValues((prevValues) => ({
           ...prevValues,
           particularExpenseName: res?.data.particularExpenseName,

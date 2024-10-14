@@ -104,7 +104,6 @@ const TransportCountry = () => {
             countryPort: "",
           })
 
-          // console.log(res);
         })
         .catch((err) =>
           toast.error("Error coming from server please try again later", {

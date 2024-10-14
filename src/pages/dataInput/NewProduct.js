@@ -73,7 +73,6 @@ const NewProduct = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setBtnLoading(true);
-    // console.log(formData.productName);
     const isProductExists = products.some(
       (item) => item.productName === formData.productName
     );
@@ -107,7 +106,6 @@ const NewProduct = () => {
         );
       setBtnLoading(false);
     }
-    // console.log(formData);
   };
 
   // product delete from server and also frontend

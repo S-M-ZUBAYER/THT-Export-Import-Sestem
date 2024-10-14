@@ -23,7 +23,6 @@ const AccountsUpdate = () => {
         `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts/${id}`
       )
       .then((res) => {
-        // console.log(res);
         setFormData(res?.data);
       })
       .catch((error) =>
@@ -36,7 +35,6 @@ const AccountsUpdate = () => {
   // update data submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData, "formdata");
 
     axios
       .put(

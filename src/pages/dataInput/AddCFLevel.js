@@ -12,6 +12,10 @@ const AddCFLevel = () => {
     const [loading, setLoading] = useState(false); // Loading state for GET request
     const [adding, setAdding] = useState(false); // Loading state for POST request
     const [isFix, setIsFix] = useState(false);
+    const override = {
+        display: "block",
+        margin: "25px auto",
+    };
 
     // Fetch C&F Levels on component mount
     useEffect(() => {
@@ -48,7 +52,6 @@ const AddCFLevel = () => {
                 level: cfLevel // Assuming cfLevel doesn't need parent()
             };
 
-            console.log(payload);
             await axios.post(
                 "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/trade_service",
                 payload,
@@ -107,7 +110,6 @@ const AddCFLevel = () => {
 
     // Handle input change in modal
     const handleChange = (e) => {
-        console.log("click");
         const { name, value } = e.target;
         setSelectedLevel({
             ...selectedLevel,
@@ -227,9 +229,16 @@ const AddCFLevel = () => {
             <div className="mt-6">
                 <h2 className="text-lg font-bold mb-4">Existing C&F Commission Levels</h2>
                 {loading ? (
-                    <div className="text-center">
-                        <div className="animate-spin h-10 w-10 border-t-4 border-blue-500 rounded-full"></div>
-                        <p className="mt-4 text-green-500 text-lg">Please wait...</p>
+                    <div className="">
+                        <ClipLoader
+                            color={"#36d7b7"}
+                            loading={loading}
+                            size={50}
+                            cssOverride={override}
+                        />
+                        <p className="text-center font-extralight text-xl text-green-400">
+                            Please wait ....
+                        </p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">

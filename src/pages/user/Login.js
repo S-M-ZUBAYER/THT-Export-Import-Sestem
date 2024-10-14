@@ -7,37 +7,54 @@ import { UserContext } from "../../components/context/authContext";
 const Login = () => {
   const navigate = useNavigate();
   const [btnLoading, setBtnLoading] = useState(false);
-  const { loginUser } = useContext(UserContext);
+  const { loginUser, userID } = useContext(UserContext);
   const [values, setValues] = useState({
     userEmail: "",
     password: "",
   });
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setBtnLoading(true);
-    // http://localhost:5001/login
-    // https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev//users/signin
-    axios
-      .post(
+
+    try {
+      // Sign-in request
+      const res = await axios.post(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/users/signin",
         values
-      )
-      .then((res) => {
-        if (res.data === true) {
-          loginUser(values?.userEmail);
+      );
+
+      if (res.data === true) {
+        // If sign-in is successful, fetch the user data
+        loginUser(values?.userEmail);
+
+        const response = await axios.get(
+          "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/users"
+        );
+
+        const foundUser = response.data.find(
+          (data) => data?.userEmail === values?.userEmail
+        );
+
+        if (foundUser) {
+          userID(foundUser); // Store the found user's ID
           toast.success("Login Successfully", { position: "top-center" });
-          setBtnLoading(false);
-          navigate("/");
+          navigate("/"); // Navigate to the home page
         } else {
-          toast.error("Email & password don't match!!", {
-            position: "top-center",
-          });
-          setBtnLoading(false);
+          toast.error("User not found", { position: "top-center" });
         }
-      })
-      .catch((err) => toast.error("Something went wrong Please try again!"));
+      } else {
+        toast.error("Email & password don't match!!", {
+          position: "top-center",
+        });
+      }
+    } catch (err) {
+      toast.error("Something went wrong. Please try again!");
+    } finally {
+      setBtnLoading(false); // Ensure button loading state is reset in both success and error cases
+    }
   };
+
 
   return (
     <div className="flex w-full h-screen">

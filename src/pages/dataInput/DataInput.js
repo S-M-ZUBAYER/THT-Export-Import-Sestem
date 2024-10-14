@@ -33,7 +33,6 @@ const DataInput = () => {
 
     // Check if the value is a valid number
     if (name === "productWeight" && isNaN(value)) {
-      // console.log("Invalid input detected");
       setError("Product Weight/KG must be a number");
     } else {
       setError("");
@@ -176,7 +175,6 @@ const DataInput = () => {
         );
     }
 
-    // console.log(formData);
   };
 
   // product delete from server and also frontend

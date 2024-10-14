@@ -35,7 +35,7 @@ const Transport = () => {
     navigate("/export");
   };
 
-  // console.log(localData);
+
   return (
     <div className="mb-6">
       <div className="flex justify-center items-center">

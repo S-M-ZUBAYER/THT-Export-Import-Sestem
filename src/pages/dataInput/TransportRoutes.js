@@ -82,7 +82,6 @@ const TransportRoutes = () => {
             },
             ...transports]
           )
-          // console.log(res);
         })
         .catch((err) =>
           toast.error("Error coming from server please try again later", {
