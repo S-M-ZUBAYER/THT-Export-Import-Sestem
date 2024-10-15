@@ -36,11 +36,25 @@ const DashboardSidebar = ({ children }) => {
       icon: <TbBrandElectronicArts />, // Import icon
     },
     {
+      path: "/transportroutes",
+      display: "Transport Way",
+      icon: <FaShippingFast />,
+    },
+    {
+      path: "/transportcountry",
+      display: "Transport Country",
+      icon: <BiWorld />,
+    },
+    {
       path: "/AddC&FLevel",
       display: "Add C&F Level",
       icon: <MdOutlineProductionQuantityLimits />, // Export icon
     },
-
+    {
+      path: "/addcharges",
+      display: "Add Charges",
+      icon: <FaMoneyBill1Wave />,
+    },
     // {
     //   path: "/export",
     //   display: "Export",
@@ -56,21 +70,6 @@ const DashboardSidebar = ({ children }) => {
       path: "/datainput",
       display: "Product Data Add",
       icon: < MdAddToPhotos />,
-    },
-    {
-      path: "/transportroutes",
-      display: "Transport Way",
-      icon: <FaShippingFast />,
-    },
-    {
-      path: "/transportcountry",
-      display: "Transport Country",
-      icon: <BiWorld />,
-    },
-    {
-      path: "/addcharges",
-      display: "Add Charges",
-      icon: <FaMoneyBill1Wave />,
     },
     {
       path: "/accounts",

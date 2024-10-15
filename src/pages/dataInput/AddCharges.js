@@ -164,11 +164,6 @@ const AddCharges = () => {
               />
             </div>
             <div className="mt-5 flex justify-end gap-y-4">
-              <Link
-                to="/exportimport"
-                className="btn btn-info font-bold px-10 py-1 text-purple-950 hover:text-purple-800 mx-5">
-                Back
-              </Link>
               <button
                 className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
                 type="submit">

@@ -478,10 +478,6 @@ const Purchase = () => {
           <h1 className="flex justify-center items-center text-4xl my-4 uppercase text-info font-bold">
             Shipment Details Add
           </h1>
-          <p className="text-red-600 text-sm text-center font-medium">
-            ** Please Fillup this from carefully & check all fields You can't
-            modified it **
-          </p>
 
           {/* Table data get from accouts input database */}
           <div className="w-full lg:w-3/4 mx-auto">

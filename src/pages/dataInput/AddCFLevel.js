@@ -3,6 +3,8 @@ import axios from "axios";
 import { toast } from "react-toastify"; // For notifications
 import { ClipLoader } from "react-spinners";
 import { fill } from "lodash";
+import { FaTrash } from "react-icons/fa";
+import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 
 const AddCFLevel = () => {
     const [cfLevel, setCfLevel] = useState(""); // For the input field to add C&F Level
@@ -12,27 +14,28 @@ const AddCFLevel = () => {
     const [loading, setLoading] = useState(false); // Loading state for GET request
     const [adding, setAdding] = useState(false); // Loading state for POST request
     const [isFix, setIsFix] = useState(false);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [selectedLevel, setSelectedLevel] = useState(null);
     const override = {
         display: "block",
         margin: "25px auto",
     };
 
     // Fetch C&F Levels on component mount
+    const fetchCFLevels = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get(
+                "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/trade_service"
+            );
+            setCfLevels(response.data);
+            setLoading(false);
+        } catch (error) {
+            toast.error("Failed to fetch data");
+            setLoading(false);
+        }
+    };
     useEffect(() => {
-        const fetchCFLevels = async () => {
-            setLoading(true);
-            try {
-                const response = await axios.get(
-                    "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/trade_service"
-                );
-                setCfLevels(response.data);
-                setLoading(false);
-            } catch (error) {
-                toast.error("Failed to fetch data");
-                setLoading(false);
-            }
-        };
-
         fetchCFLevels();
     }, []);
 
@@ -61,25 +64,16 @@ const AddCFLevel = () => {
                     },
                 }
             );
-
+            setCfLevels([...cfLevels, {
+                id: cfLevels[cfLevels.length - 1].id + 1, name: serviceProvider,
+                status: isFix ? "fix" : "",
+                level: cfLevel
+            }])
             toast.success("C&F Level added successfully!");
 
             // Clear input fields
             setCfLevel("");
             setServiceProvider("");
-
-            // Add the new C&F level to the state
-            // setCfLevels((prevCfLevels) => [
-            //     ...prevCfLevels,
-            //     {
-            //         id: prevCfLevels.length + 1, // Assuming IDs are incremental
-            //         transportWayId: "",
-            //         transportCountryId: "",
-            //         addChargesId: cfLevel,
-            //         officeAccountId: ""
-            //     }
-            // ]);
-
             setAdding(false);
         } catch (error) {
             toast.error("Failed to add C&F Level");
@@ -93,8 +87,7 @@ const AddCFLevel = () => {
         setIsFix(false);
     }
 
-    const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [selectedLevel, setSelectedLevel] = useState(null);
+
 
     // Open modal and set selected level for editing
     const openModal = (level) => {
@@ -150,6 +143,26 @@ const AddCFLevel = () => {
         }
     };
 
+    // Function to handle the delete action
+    // data delete from server and also frontend
+    const handleToDelete = async (id) => {
+        const confirmDelete = window.confirm(
+            "Are you sure, you want to delete this C&F Commission Level?"
+        );
+        if (confirmDelete) {
+            try {
+                await axios.delete(
+                    `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/trade_service/${id}`
+                );
+                toast.warn("Data successfully Deleted!!", { position: "top-center" });
+                setCfLevels(cfLevels.filter((level) => level.id !== id))
+            } catch (error) {
+                toast.error("You can't delete now. Please try again later!", {
+                    position: "top-center",
+                });
+            }
+        }
+    };
 
     return (
         <div className="max-w-[1000mx] mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
@@ -248,7 +261,7 @@ const AddCFLevel = () => {
                                     <th className="text-left py-2 px-4 border-b font-medium text-gray-600">Service Provider</th>
                                     <th className="text-left py-2 px-4 border-b font-medium text-gray-600">Level</th>
                                     <th className="text-left py-2 px-4 border-b font-medium text-gray-600">Status</th>
-                                    <th className="text-left py-2 px-4 border-b font-medium text-gray-600">Actions</th>
+                                    <th className=" py-2 px-4 border-b font-medium text-gray-600 text-center">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -257,12 +270,19 @@ const AddCFLevel = () => {
                                         <td className="py-2 px-4 border-b">{level.name}</td>
                                         <td className="py-2 px-4 border-b">{level.level}</td>
                                         <td className="py-2 px-4 border-b">{level.status || 'Not Fixed'}</td>
-                                        <td className="py-2 px-4 border-b">
+                                        <td className="py-2 px-4 border-b flex justify-around">
                                             <button
                                                 onClick={() => openModal(level)}
                                                 className="text-blue-500 hover:text-blue-700"
                                             >
-                                                ✏️ Edit
+                                                <AiOutlineEdit className="w-6 h-6 text-purple-600" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleToDelete(level.id)} // Using the handleDelete function
+                                                className="text-red-500 hover:text-red-700" // Modified color for delete action
+                                            >
+                                                <AiOutlineDelete className="w-6 h-6 text-red-600" />
+
                                             </button>
                                         </td>
                                     </tr>

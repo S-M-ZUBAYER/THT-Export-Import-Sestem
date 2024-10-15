@@ -140,7 +140,7 @@ const FinalPurchase = () => {
                 <div className="w-full lg:w-3/4 mx-auto">
                     <div className="flex justify-between items-center my-6 bg-slate-500 p-3 rounded-lg">
                         <h1 className="text-3xl text-info font-bold uppercase">
-                            Select the Product
+                            Check And Approve For The Finance
                         </h1>
                         <input
                             type="text"

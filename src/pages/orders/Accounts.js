@@ -323,11 +323,6 @@ const Accounts = () => {
               </div>
             </div>
             <div className="mt-4 mr-7 flex justify-end">
-              <Link
-                to="/dashboard"
-                className="btn btn-info px-10 mx-5  mb-4">
-                Back
-              </Link>
               <button
                 className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black mb-4"
                 type="submit">

@@ -74,7 +74,7 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
     <div className="p-4">
       <div className=" overflow-x-auto add__scrollbar">
         {expenses.map((expense) => (
-          <div key={expense.id} className="mb-4 flex items-center gap-3">
+          <div key={expense.id} className="mb-4 grid grid-cols-4 gap-3">
             <label className="mb-2 flex items-center font-bold">
               <input
                 type="checkbox"

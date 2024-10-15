@@ -3,6 +3,7 @@ import { UserContext } from '../../components/context/authContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import MultipleImageUpload from './MultipleImageUpload';
 
 const FinanceDetails = () => {
 
@@ -808,6 +809,7 @@ const FinanceDetails = () => {
                 </div>
 
             </div>
+            <MultipleImageUpload></MultipleImageUpload>
         </div >
 
     );

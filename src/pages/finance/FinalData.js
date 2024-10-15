@@ -21,7 +21,7 @@ const FinalData = () => {
   const [finances, setFinances] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage] = useState(5);
+  const [itemsPerPage] = useState(2);
   const componentPDF = useRef();
   const [filteredData, setFilteredData] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
@@ -38,7 +38,8 @@ const FinalData = () => {
   const [selectedFinance, setSelectedFinance] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { financeDetailsData, setFinanceDetailsData } = useContext(UserContext);
-
+  const [searchValue, setSearchValue] = useState('');
+  const [filteredFinalData, setFilteredFinalData] = useState([]);
   const openModal = (finance) => {
     setSelectedFinance(finance);
     setIsModalOpen(true);
@@ -58,6 +59,7 @@ const FinalData = () => {
   }, []);
 
   const handlePageChange = ({ selected }) => {
+    setFilteredFinalData(finances.slice(selected * itemsPerPage, selected * itemsPerPage + itemsPerPage))
     setCurrentPage(selected);
   };
 
@@ -70,6 +72,7 @@ const FinalData = () => {
       const finalData = sortedData.filter((data) => data.status === "finalData"
       )
       setFinances(finalData);
+      setFilteredFinalData(finalData.slice(0, itemsPerPage));
       setLoading(false);
     } catch (error) {
       toast.error("Error from server to get data!!");
@@ -89,6 +92,7 @@ const FinalData = () => {
   };
 
   const handleSelect = (date) => {
+
     const filtered = finances?.filter((finance) => {
       const financeDate = new Date(finance.date);
       return (
@@ -98,7 +102,7 @@ const FinalData = () => {
     });
     setStartDate(date.selection.startDate);
     setEndDate(date.selection.endDate);
-    setFilteredData(filtered);
+    setFilteredFinalData(filtered);
   };
 
   const selectionRange = {
@@ -107,25 +111,49 @@ const FinalData = () => {
     key: "selection",
   };
 
-  const offset = currentPage * itemsPerPage;
-  const currentData =
-    filteredData.length > 0
-      ? filteredData.slice(offset, offset + itemsPerPage)
-      : finances.slice(offset, offset + itemsPerPage);
-
   const handlePrint = (finance) => {
     generatePDF(finance);
   };
 
+
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value.toLowerCase(); // Use the current input value
+    setSearchValue(value);
+
+    // Use `value` directly in the filter instead of `searchValue`
+    const filteredProducts = finances.filter((account) =>
+      account.transportWay.toLowerCase().includes(value) ||
+      account.truckNo.toLowerCase().includes(value) ||
+      account.transportCountry.toLowerCase().includes(value) ||
+      account.date.toLowerCase().includes(value) ||
+      account.invoiceNo.toLowerCase().includes(value) ||
+      account.epNo.toLowerCase().includes(value)
+    );
+    setFilteredFinalData(filteredProducts);
+  };
+
+
   return (
     <>
-      <div className="mb-3">
-        <h1 className="text-center my-4 text-3xl text-info font-bold bg-slate-500 p-3 rounded-lg uppercase">
+      <div className="container mx-auto px-4">
+        {/* <h1 className="text-center my-4 text-3xl text-info font-bold bg-slate-500 p-3 rounded-lg uppercase">
           Export Products List
-        </h1>
-
+        </h1> */}
+        <div className="flex justify-between items-center my-6 bg-slate-500 p-3 rounded-lg">
+          <h1 className="text-3xl text-info font-bold uppercase">
+            Export Products List
+          </h1>
+          <input
+            type="text"
+            placeholder="Search by date, model, pallet no, truck no"
+            className="border border-gray-300 p-2 rounded-md focus:outline-none"
+            value={searchValue}
+            onChange={handleSearchChange}
+          />
+        </div>
         <div className="mb-3 calendarWrap text-center w-3/4 mx-36">
-          <h3 className="mb-[8px] text-xl text-sky-400">Search by Date</h3>
+          <h3 className="mb-[8px] text-xl text-sky-400">Search By Date Range</h3>
           <input
             value={`${format(startDate, "MM/dd/yyyy")} to ${format(
               endDate,
@@ -163,38 +191,36 @@ const FinalData = () => {
                 Please wait ....
               </p>
             </div>
-          ) : (
-            <table className="table">
+          ) :
+
+            (<table className="min-w-full bg-white">
               <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Invoice No</th>
-                  <th>Net Weight</th>
-                  <th>Product Name</th>
-                  <th>Charges (BDT)</th>
-                  <th>Action</th>
+                <tr className="w-full bg-gray-200 text-left">
+                  <th className="py-2 px-4">Date</th>
+                  <th className="py-2 px-4">Truck No</th>
+                  <th className="py-2 px-4">Port</th>
+                  <th className="py-2 px-4">Country</th>
+                  <th className="py-2 px-4">Invoice No</th>
+                  <th className="py-2 px-4">Total Weight</th>
+                  <th className="py-2 px-4">Total Cost</th>
+                  <th className="py-2 px-4 text-center">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {currentData?.map((finance) => {
-                  const localDate = new Date(finance.date).toLocaleDateString();
-                  const productNames = finance.financeProductInBoxes.map(
-                    (p) => p.productName
-                  );
-                  const charges = finance.financeCharges
-                    .map((charge) => `${charge.description} - ${charge.amountBDT}`)
-                    .join(", ");
-                  return (
-                    <tr key={finance.id}>
-                      <td>{localDate}</td>
-                      <td>{finance.invoiceNo}</td>
-                      <td>{finance.netWeight}</td>
-                      <td>{productNames.join(", ")}</td>
-                      <td>{charges}</td>
-                      <td className="flex">
+                {filteredFinalData.length > 0 ? (
+                  filteredFinalData.map((finalData) => (
+                    <tr key={finalData.id} className="border-b">
+                      <td className="py-2 px-4">{finalData.date}</td>
+                      <td className="py-2 px-4">{finalData.truckNo}</td>
+                      <td className="py-2 px-4">{finalData.transportPort}</td>
+                      <td className="py-2 px-4">{finalData.transportCountryName}</td>
+                      <td className="py-2 px-4">{finalData.invoiceNo}</td>
+                      <td className="py-2 px-4">{finalData.allTotalBoxWeight}</td>
+                      <td className="py-2 px-4">{finalData.totalCost}</td>
+                      <td className=" flex justify-between items-center mb-3">
                         <Link
-                          onClick={() => setFinanceDetailsData(finance)}
-                          to={`/purchase-details/${finance.id}`}
+                          onClick={() => setFinanceDetailsData(finalData)}
+                          to={`/finalData-details/${finalData.id}`}
                           className="btn-accent font-bold px-[20px] py-[3px] mt-4 rounded-lg text-purple-950 hover:text-amber-500 mr-2"
                         >
                           Details
@@ -202,17 +228,23 @@ const FinalData = () => {
 
                         <button
                           className="btn-info font-bold px-[20px] py-[3px] mt-4 rounded-lg text-purple-950 hover:text-amber-500"
-                          onClick={() => handlePrint(finance)}
+                          onClick={() => handlePrint(finalData)}
                         >
                           Print
                         </button>
                       </td>
                     </tr>
-                  );
-                })}
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center py-4">
+                      No matching records found.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
-          )}
+            )}
         </div>
 
         <ReactPaginate
@@ -220,7 +252,7 @@ const FinalData = () => {
           nextLabel={"Next >"}
           breakLabel={"..."}
           pageCount={Math.ceil(
-            (filteredData.length > 0 ? filteredData.length : finances.length) /
+            (finances.length > 0 ? finances.length : finances.length) /
             itemsPerPage
           )}
           onPageChange={handlePageChange}

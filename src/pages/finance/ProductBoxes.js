@@ -708,11 +708,6 @@ const ProductBoxes = () => {
           </div>
           {/* Buttons */}
           <div className="flex flex-col md:flex-row justify-end items-center mx-7 py-5">
-            <Link
-              to="/dashboard"
-              className="btn btn-info font-bold px-6 py-1 text-purple-950 hover:text-purple-800 mr-6">
-              Back
-            </Link>
             <button
               className="btn btn-info font-bold px-6 py-1 text-purple-950 hover:text-purple-800 mr-6 mt-3 md:my-0"
               type="submit" onClick={handleToProductAdd}>

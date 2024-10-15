@@ -37,7 +37,7 @@ const NewProductUpdate = () => {
         toast.success("Successfully Data Updated!!", {
           position: "top-center",
         });
-        navigate("/admin");
+        navigate("/newproduct");
       })
       .catch((error) =>
         toast.error("Something went wrong try again later", {

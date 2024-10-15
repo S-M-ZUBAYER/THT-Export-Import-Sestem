@@ -47,22 +47,22 @@ const Finance = () => {
     margin: "25px auto",
   };
 
-  // Handle input change and filter purchases
+
   const handleSearchChange = (e) => {
-    const value = e.target.value.toLowerCase();
+    const value = e.target.value.toLowerCase(); // Use the current input value
     setSearchValue(value);
 
+    // Use `value` directly in the filter instead of `searchValue`
     const filteredProducts = purchases.filter((account) =>
       account.transportWay.toLowerCase().includes(value) ||
       account.truckNo.toLowerCase().includes(value) ||
       account.transportCountry.toLowerCase().includes(value) ||
       account.date.toLowerCase().includes(value) ||
       account.invoiceNo.toLowerCase().includes(value) ||
-      account.EpNo.toLowerCase().includes(value)
+      account.epNo.toLowerCase().includes(value)
     );
     setFilteredPurchases(filteredProducts);
   };
-
   return (
     <div className="container mx-auto px-4">
       <div className="">
@@ -75,7 +75,7 @@ const Finance = () => {
 
         <div className="w-full lg:w-3/4 mx-auto">
           <div className="flex justify-between items-center my-6 bg-slate-500 p-3 rounded-lg">
-            <h1 className="text-3xl text-info font-bold uppercase">Select the Product</h1>
+            <h1 className="text-3xl text-info font-bold uppercase">Check, Pay and Approve for final Data</h1>
             <input
               type="text"
               placeholder="Search by date, model, pallet no, truck no"
@@ -101,10 +101,12 @@ const Finance = () => {
           ) : <table className="min-w-full bg-white">
             <thead>
               <tr className="w-full bg-gray-200 text-left">
-                <th className="py-2 px-4">ID</th>
-                <th className="py-2 px-4">Transport Way</th>
+                <th className="py-2 px-4">Date</th>
+                <th className="py-2 px-4">Truck No</th>
+                <th className="py-2 px-4">Port</th>
                 <th className="py-2 px-4">Country</th>
                 <th className="py-2 px-4">Invoice No</th>
+                <th className="py-2 px-4">Total Weight</th>
                 <th className="py-2 px-4">Total Cost</th>
                 <th className="py-2 px-4">Action</th>
               </tr>
@@ -113,10 +115,12 @@ const Finance = () => {
               {filteredPurchases.length > 0 ? (
                 filteredPurchases.map((purchase) => (
                   <tr key={purchase.id} className="border-b">
-                    <td className="py-2 px-4">{purchase.id}</td>
-                    <td className="py-2 px-4">{purchase.transportWay}</td>
+                    <td className="py-2 px-4">{purchase.date}</td>
+                    <td className="py-2 px-4">{purchase.truckNo}</td>
+                    <td className="py-2 px-4">{purchase.transportPort}</td>
                     <td className="py-2 px-4">{purchase.transportCountryName}</td>
                     <td className="py-2 px-4">{purchase.invoiceNo}</td>
+                    <td className="py-2 px-4">{purchase.allTotalBoxWeight}</td>
                     <td className="py-2 px-4">{purchase.totalCost}</td>
                     <td className="py-2 px-4">
                       <Link
