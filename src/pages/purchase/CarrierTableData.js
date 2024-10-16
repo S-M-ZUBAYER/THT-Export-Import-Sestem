@@ -186,7 +186,7 @@ const CarrierTableData = ({
 
 
             <button
-                className="mt-4 p-2 bg-blue-500 text-white rounded"
+                className="mt-4 p-2 btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-green-500 text-white font-bold hover:text-black"
                 onClick={addRow}
             >
                 Add New Row

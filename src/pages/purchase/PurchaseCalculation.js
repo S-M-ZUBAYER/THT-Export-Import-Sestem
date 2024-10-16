@@ -141,14 +141,9 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
 
       {/* button */}
       <div className="my-6 flex justify-end">
-        <Link
-          to="/dashboard"
-          className="rounded-md bg-sky-800 text-white px-4 py-2 mx-2">
-          Back
-        </Link>
         <button
           // onClick={handleSave}
-          className="rounded-md bg-blue-500 text-white px-4 py-2 mr-2"
+          className="mr-2 btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
         >
           Save
         </button>

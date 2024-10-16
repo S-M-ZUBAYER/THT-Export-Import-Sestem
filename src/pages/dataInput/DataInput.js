@@ -199,7 +199,7 @@ const DataInput = () => {
 
   return (
     <div className="mb-6">
-      <h1 className="text-4xl font-bold text-violet-500 text-center mt-5">
+      <h1 className="text-4xl font-bold text-cyan-600 text-center mt-5">
         New Product Full Information Entry Form
       </h1>
       <div className="flex justify-center items-center">

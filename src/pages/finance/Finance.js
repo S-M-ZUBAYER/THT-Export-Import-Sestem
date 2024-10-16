@@ -66,7 +66,7 @@ const Finance = () => {
   return (
     <div className="container mx-auto px-4">
       <div className="">
-        <h1 className="flex justify-center items-center text-4xl my-4 uppercase text-info font-bold">
+        <h1 className="flex justify-center items-center text-4xl my-4 uppercase text-cyan-600 font-bold">
           Shipment Details Show And Update From Finance
         </h1>
         <p className="text-red-600 text-sm text-center font-medium">
@@ -126,7 +126,7 @@ const Finance = () => {
                       <Link
                         onClick={() => setFinanceDetailsData(purchase)}
                         to={`/finance-details/${purchase.id}`}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4 rounded"
+                        className="hover:bg-cyan-300  btn btn-info px-4 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-2 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
                       >
                         Details
                       </Link>

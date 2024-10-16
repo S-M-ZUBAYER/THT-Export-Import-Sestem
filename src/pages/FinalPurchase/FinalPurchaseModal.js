@@ -72,7 +72,7 @@ const FinalPurchaseModal = ({
             <div className="bg-white p-6 rounded shadow-lg max-w-[1300px] w-full h-[90vh] overflow-y-auto">
                 <div className="grid grid-cols-12 ">
 
-                    <h2 className="text-2xl font-bold mb-4 text-center col-span-11">Edit Purchase Details</h2>
+                    <h2 className=" mb-4 text-center col-span-11 flex justify-center items-center text-3xl my-4 uppercase text-cyan-600 font-bold">Edit Purchase Details</h2>
 
                     <div className="flex justify-end">
 

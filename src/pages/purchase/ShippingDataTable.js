@@ -207,10 +207,10 @@ const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, s
             </table>
 
             <button
-                className="bg-blue-500 text-white p-2 rounded"
+                className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-green-500 text-white font-bold hover:text-black p-2"
                 onClick={addNewChargeRow}
             >
-                Add New Charge Row
+                Add New Row
             </button>
         </div>
     );

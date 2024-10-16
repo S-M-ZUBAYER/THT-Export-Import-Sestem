@@ -35,21 +35,25 @@ const Admin = () => {
 
   // Handle "Make Admin" button click
   const handleMakeAdmin = async (user) => {
-
-    try {
-      await axios.put(
-        `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/users`,
-        { ...user, admin: true }
-      );
-      // Update local state
-      setUsers((prevUsers) =>
-        prevUsers.map((u) =>
-          u.id === user.id ? { ...u, admin: true } : u
-        )
-      );
-      toast.success("User has been made admin successfully!");
-    } catch (error) {
-      toast.error("Failed to make user admin");
+    const confirmAdmin = window.confirm(
+      "Are you sure, you want to make this user admin"
+    );
+    if (confirmAdmin) {
+      try {
+        await axios.post(
+          `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/users`,
+          { ...user, admin: true }
+        );
+        // Update local state
+        setUsers((prevUsers) =>
+          prevUsers.map((u) =>
+            u.id === user.id ? { ...u, admin: true } : u
+          )
+        );
+        toast.success("User has been made admin successfully!");
+      } catch (error) {
+        toast.error("Failed to make user admin");
+      }
     }
   };
 

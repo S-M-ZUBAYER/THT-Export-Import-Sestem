@@ -27,6 +27,7 @@ const Purchase = () => {
   const [filteredTruckNumbers, setFilteredTruckNumbers] = useState([]);
   const [finances, setFinances] = useState([]);
   const [traderServiceProvider, setTraderServiceProvider] = useState("");
+  const [serviceProviders, setServiceProviders] = useState("");
 
   // const [productChecks, setProductChecks] = useState([]);
   const [savedExpenses, setSavedExpenses] = useState([]);
@@ -179,6 +180,21 @@ const Purchase = () => {
     }
   };
 
+
+  const fetchTradeServiceProvider = async () => {
+    try {
+      const response = await axios.get(
+        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/trade_service"
+      );
+      setServiceProviders(response.data);
+    } catch (error) {
+      toast.error("Failed to fetch data");
+    }
+  };
+
+
+
+
   useEffect(() => {
     setLoading(true);
     //   getting transport data from server
@@ -195,6 +211,8 @@ const Purchase = () => {
     fetchFinance();
     // fetch purchase data
     fetchPurchase();
+    // fetch trade service data
+    fetchTradeServiceProvider();
   }, []);
 
 
@@ -475,7 +493,7 @@ const Purchase = () => {
       <div className="mb-6">
         {/* top form select and checkbox design */}
         <div className="">
-          <h1 className="flex justify-center items-center text-4xl my-4 uppercase text-info font-bold">
+          <h1 className="flex justify-center items-center text-4xl my-4 uppercase text-cyan-600 font-bold">
             Shipment Details Add
           </h1>
 
@@ -1003,16 +1021,23 @@ const Purchase = () => {
                     htmlFor="traderServiceProvider">
                     Trade Service Provider
                   </label>
-                  <input
+                  <select
                     className="w-full border-[1px] border-info rounded-md p-3 mt-3 bg-transparent"
-                    placeholder="Trade Service Provider Name"
-                    type="text"
                     name="traderServiceProvider"
                     value={traderServiceProvider}
+                    onChange={(e) => setTraderServiceProvider(e.target.value)}
                     required
                     aria-required
-                    onChange={(e) => setTraderServiceProvider(e.target.value)}
-                  />
+                  >
+                    <option value="" disabled>
+                      Select Trade Service Provider
+                    </option>
+                    {
+                      serviceProviders && serviceProviders.map(provider => <option value="Provider1">{provider.name}</option>)
+                    }
+                    {/* Add more options as needed */}
+                  </select>
+
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">

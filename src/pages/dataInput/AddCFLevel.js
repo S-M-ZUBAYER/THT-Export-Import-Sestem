@@ -165,8 +165,8 @@ const AddCFLevel = () => {
     };
 
     return (
-        <div className="max-w-[1000mx] mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
-            <h1 className="text-2xl font-bold mb-4 text-center">Add C&F Commission Level</h1>
+        <div className="max-w-[1000mx] mx-auto p-6 bg-white rounded-lg ">
+            <h1 className="text-4xl font-bold text-cyan-600 text-center my-5">Add C&F Commission Level</h1>
 
             <div className="mb-4">
                 <label className="block text-sm font-bold mb-2">Service Provider Name</label>
@@ -224,7 +224,7 @@ const AddCFLevel = () => {
                 <button
                     onClick={handleAddCFLevel}
                     disabled={adding}
-                    className={`px-4 py-2 rounded text-white ${adding ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500"
+                    className={`px-10 py-2 rounded text-white ${adding ? "bg-gray-400 cursor-not-allowed" : "btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
                         }`}
                 >
                     {adding ? "Adding..." : "Add"}
@@ -232,7 +232,7 @@ const AddCFLevel = () => {
 
                 <button
                     onClick={handleToCancel}
-                    className="px-4 py-2 bg-gray-500 text-white rounded"
+                    className="btn btn-error px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-yellow-500 text-white font-bold hover:text-black"
                 >
                     Cancel
                 </button>
@@ -240,7 +240,7 @@ const AddCFLevel = () => {
 
             {/* Display fetched C&F Levels */}
             <div className="mt-6">
-                <h2 className="text-lg font-bold mb-4">Existing C&F Commission Levels</h2>
+                <h2 className="text-center my-6 text-2xl text-info font-bold bg-slate-500 p-[10px] rounded-lg uppercase">Existing C&F Commission Levels</h2>
                 {loading ? (
                     <div className="">
                         <ClipLoader

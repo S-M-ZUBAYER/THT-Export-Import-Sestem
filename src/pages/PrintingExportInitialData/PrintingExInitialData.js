@@ -273,7 +273,7 @@ const PrintingExInitialData = () => {
 
             <div className="flex justify-end my-5">
                 <button
-                    className="btn-info font-bold px-[20px] py-[3px] mt-4 rounded-lg text-purple-950 hover:text-amber-500 "
+                    className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-green-500 text-white font-bold hover:text-black "
                     onClick={() => handlePrint(selectedItems)}>
                     Print
                 </button>

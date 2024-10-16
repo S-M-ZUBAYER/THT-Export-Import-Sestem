@@ -19,7 +19,7 @@ const Dashboard = () => {
       {/* Dashboard Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-semibold text-blue-900">Dashboard Overview</h1>
-        <button className="bg-blue-500 text-white px-6 py-2 rounded-md">Generate Report</button>
+        <button className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black">Generate Report</button>
       </div>
 
       {/* Stats Section */}

@@ -16,6 +16,15 @@ const FinanceDetails = () => {
     // Fetch C&F Levels on component mount
     const [serviceProvider, setServiceProvider] = useState([]);
     const [selectedServiceProvider, setSelectedServiceProvider] = useState({});
+    const [selectedImage, setSelectedImage] = useState(null); // For modal
+
+    const openModal = (image) => {
+        setSelectedImage(image); // Set the clicked image in modal
+    };
+
+    const closeModal = () => {
+        setSelectedImage(null); // Close the modal
+    };
     useEffect(() => {
         const fetchTradeServiceProvider = async () => {
             try {
@@ -418,7 +427,7 @@ const FinanceDetails = () => {
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <div className="max-w-[1300px] mx-auto bg-white shadow-md rounded-md p-6">
-                <h1 className="text-xl font-bold mb-4 text-center underline">Shipment and Invoice Details</h1>
+                <h1 className="mb-4 text-center underline flex justify-center items-center text-3xl my-4 uppercase text-cyan-600 font-bold">Shipment and Invoice Details</h1>
 
                 {/* General Information */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-4 bg-white">
@@ -560,7 +569,7 @@ const FinanceDetails = () => {
                             <button className="bg-green-500 text-white px-4 py-2 rounded">Paid</button>
                         ) : (
                             <div>
-                                <button onClick={() => setTradeRateInputVisible(!isTradeRateInputVisible)} className="bg-blue-500 text-white px-4 py-2 rounded">
+                                <button onClick={() => setTradeRateInputVisible(!isTradeRateInputVisible)} className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black">
                                     Trade Pay
                                 </button>
                                 {isTradeRateInputVisible && (
@@ -688,7 +697,7 @@ const FinanceDetails = () => {
                             <button className="bg-green-500 text-white px-4 py-2 rounded">Paid</button>
                         ) : (
                             <div>
-                                <button onClick={() => setDateInputVisible(!isDateInputVisible)} className="bg-blue-500 text-white px-4 py-2 rounded">
+                                <button onClick={() => setDateInputVisible(!isDateInputVisible)} className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black">
                                     Container Pay
                                 </button>
                                 {isDateInputVisible && (
@@ -774,7 +783,7 @@ const FinanceDetails = () => {
                             <button className="bg-green-500 text-white px-4 py-2 rounded">Paid</button>
                         ) : (
                             <div>
-                                <button onClick={() => setDateInputVisible(!isDateInputVisible)} className="bg-blue-500 text-white px-4 py-2 rounded">
+                                <button onClick={() => setDateInputVisible(!isDateInputVisible)} className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black">
                                     Shipping Pay
                                 </button>
                                 {isDateInputVisible && (
@@ -795,21 +804,73 @@ const FinanceDetails = () => {
                         )
                     }
                 </div>
+                {
+                    <div>
+                        {financeDetailsData.image && (
+                            <div>
+                                <h3 className="text-xl font-bold mb-4 text-center underline mt-10">
+                                    All Available Images Related To This Export Data
+                                </h3>
 
+                                {/* Image Grid - 3 Images per Row */}
+                                <div className="grid grid-cols-3 gap-4 py-10">
+                                    {financeDetailsData.image.split(",").map((image, index) => (
+                                        <div key={index} className="cursor-pointer">
+                                            <img
+                                                src={`https://grozziieget.zjweiting.com:3091/web-api-tht-1/fileUpload/${image}/view`} // Replace with actual image path
+                                                alt="Export related"
+                                                className="w-full h-32 object-cover rounded-lg"
+                                                onClick={() => openModal(image)} // Open modal on click
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+
+
+                            </div>
+                        )}
+                    </div>
+                }
+
+                {/* Modal for Full-Size Image */}
+                {selectedImage && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75 z-50">
+                        <div className="relative">
+                            <img
+                                src={`https://grozziieget.zjweiting.com:3091/web-api-tht-1/fileUpload/${selectedImage}/view`} // Replace with actual image path
+                                alt="Full-size"
+                                className="w-auto h-auto max-h-screen max-w-[1600px]"
+                            />
+                            <button
+                                onClick={closeModal}
+                                className="absolute top-2 right-1 bg-red-500 text-white rounded-3xl p-2 text-2xl"
+                            >
+                                ✖
+                            </button>
+                        </div>
+                    </div>
+                )}
+                {
+                    financeDetailsData.finalStatus === "finalData" ? "" :
+                        <MultipleImageUpload
+                            setFinanceDetailsData={setFinanceDetailsData}
+                            financeDetailsData={financeDetailsData}
+                        ></MultipleImageUpload>
+                }
                 {/* Payment Options */}
                 <div className="flex justify-end mb-4">
                     {
                         (!financeDetailsData.tradeExpanseStatus || !financeDetailsData.seaExpanseStatus || !financeDetailsData.carrierExpanseStatus) ?
-                            <button onClick={handleToReject} className="bg-red-500 text-white px-4 py-2 rounded mr-5">Reject</button> : ""
+                            <button onClick={handleToReject} className=" mr-5 btn btn-error px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-red-500 text-white font-bold hover:text-black">Reject</button> : ""
                     }
                     {
                         financeDetailsData.finalStatus === "finalData" ? "" :
-                            <button onClick={handleUpdate} className="bg-yellow-500 text-white px-4 py-2 rounded">Update</button>
+                            <button onClick={handleUpdate} className=" btn btn-accent px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-green-500 text-white font-bold hover:text-black">Update</button>
                     }
                 </div>
 
             </div>
-            <MultipleImageUpload></MultipleImageUpload>
+
         </div >
 
     );

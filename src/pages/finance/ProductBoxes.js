@@ -709,7 +709,7 @@ const ProductBoxes = () => {
           {/* Buttons */}
           <div className="flex flex-col md:flex-row justify-end items-center mx-7 py-5">
             <button
-              className="btn btn-info font-bold px-6 py-1 text-purple-950 hover:text-purple-800 mr-6 mt-3 md:my-0"
+              className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
               type="submit" onClick={handleToProductAdd}>
               Add Products
             </button>
@@ -719,7 +719,7 @@ const ProductBoxes = () => {
 
       {/* Instant Save Data */}
       <div className="my-7">
-        <h1 className="text-center font-bold text-2xl text-info shadow-lg rounded p-2">
+        <h1 className="text-center font-bold text-2xl text-cyan-600 shadow-lg rounded p-2 ">
           Temporary List for Export Products
         </h1>
 

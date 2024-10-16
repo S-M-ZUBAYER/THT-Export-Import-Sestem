@@ -182,7 +182,7 @@ const Accounts = () => {
   return (
     <>
       <div>
-        <h1 className="flex justify-center items-center text-3xl my-4 uppercase text-info font-bold">
+        <h1 className="flex justify-center items-center my-4 uppercase text-4xl font-bold text-cyan-600 text-center my-5">
           Production Quantities
         </h1>
         <div className="mt-3 lg:flex justify-center items-center">
