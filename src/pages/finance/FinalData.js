@@ -217,17 +217,17 @@ const FinalData = () => {
                       <td className="py-2 px-4">{finalData.invoiceNo}</td>
                       <td className="py-2 px-4">{finalData.allTotalBoxWeight}</td>
                       <td className="py-2 px-4">{finalData.totalCost}</td>
-                      <td className=" flex justify-between items-center mb-3">
+                      <td className=" flex justify-between items-center py-1">
                         <Link
                           onClick={() => setFinanceDetailsData(finalData)}
                           to={`/finalData-details/${finalData.id}`}
-                          className="btn-accent font-bold px-[20px] py-[3px] mt-4 rounded-lg text-purple-950 hover:text-amber-500 mr-2"
+                          className=" hover:bg-cyan-400 px-4 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-[6px] rounded-lg bg-violet-500 text-white font-bold hover:text-black"
                         >
                           Details
                         </Link>
 
                         <button
-                          className="btn-info font-bold px-[20px] py-[3px] mt-4 rounded-lg text-purple-950 hover:text-amber-500"
+                          className="hover:bg-cyan-400 px-4 py-[6px] active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all rounded-lg bg-green-500 text-white font-bold hover:text-black "
                           onClick={() => handlePrint(finalData)}
                         >
                           Print

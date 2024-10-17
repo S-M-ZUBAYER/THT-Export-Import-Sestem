@@ -1033,7 +1033,7 @@ const Purchase = () => {
                       Select Trade Service Provider
                     </option>
                     {
-                      serviceProviders && serviceProviders.map(provider => <option value="Provider1">{provider.name}</option>)
+                      serviceProviders && serviceProviders.map(provider => <option value={provider.name}>{provider.name}</option>)
                     }
                     {/* Add more options as needed */}
                   </select>
