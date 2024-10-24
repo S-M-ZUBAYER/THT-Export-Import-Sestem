@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
-import { generateInitialPDF } from './PrintFunctionForInitialData';
+// import { generateInitialPDF } from './PrintFunctionForInitialData';
+import PrintFunctionForInitialData from './PrintFunctionForInitialData';
 
 const PrintingExInitialData = () => {
     const [boxData, setBoxData] = useState([]);
@@ -13,11 +14,15 @@ const PrintingExInitialData = () => {
     const [searchValue, setSearchValue] = useState('');
     const [mark, setMark] = useState('');
     const [receiptNumber, setReceiptNumber] = useState('');
-    const [totalPallet, setTotalPallet] = useState('');
+    const [palletNo, setPalletNo] = useState('');
+    const [totalPalletNo, setTotalPalletNo] = useState(0);
     const [totalBoxPallet, setTotalBoxPallet] = useState('');
     const [language, setLanguage] = useState("EN");
     const [location, setLocation] = useState("China");
     const [company, setCompany] = useState("");
+    const [quantity, setQuantity] = useState(0);
+    const [printedData, setPrintedData] = useState({});
+    const [printData, setPrintData] = useState({});
 
 
 
@@ -63,9 +68,11 @@ const PrintingExInitialData = () => {
         if (selectedItems.some(item => item.id === product.id)) {
             // Deselect the item
             setSelectedItems(selectedItems.filter(item => item.id !== product.id));
+            setPrintedData({ ...printedData, printData: selectedItems.filter(item => item.id !== product.id) })
         } else {
             // Select the item (add full product data)
             setSelectedItems([...selectedItems, product]);
+            setPrintedData({ ...printedData, printData: [...selectedItems, product] })
         }
     };
 
@@ -76,10 +83,7 @@ const PrintingExInitialData = () => {
             setSelectedItems([]); // Deselect all
         }
     };
-    const handlePrint = (selectedItems) => {
-        // generatePDF(finances[currentPage]);
-        generateInitialPDF(selectedItems, remark);
-    };
+
 
     return (
         <div className="w-full lg:w-3/4 mx-auto">
@@ -163,6 +167,7 @@ const PrintingExInitialData = () => {
                     >
                         <option value="EN">English</option>
                         <option value="CN">Chinese</option>
+                        <option value="MS">Malaysia</option>
                     </select>
                 </div>
 
@@ -184,7 +189,7 @@ const PrintingExInitialData = () => {
             </div>
 
             {
-                location === "Philippines" && <div className="flex flex-col">
+                language === "MS" && <div className="flex flex-col">
                     <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="remarkInput">
                         Company Name
                     </label>
@@ -225,38 +230,27 @@ const PrintingExInitialData = () => {
                     onChange={(e) => setMark(e.target.value)}
                 />
             </div>
+
+
             {/* Total Pallet No Input */}
             <div className="flex flex-col">
-                <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="totalPallet">
-                    Total Pallet No
+                <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="totalPalletNo">
+                    Total Pallet Number
                 </label>
                 <input
-                    id="totalPallet"
+                    id="totalPalletNo"
                     type="number"
                     className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
                     placeholder="Enter total pallet number..."
-                    value={totalPallet}
-                    onChange={(e) => setTotalPallet(e.target.value)}
-                />
-            </div>
-            {/* Total Box in a Pallet Input */}
-            <div className="flex flex-col">
-                <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="totalBoxPallet">
-                    Total Box in a Pallet
-                </label>
-                <input
-                    id="totalBoxPallet"
-                    type="number"
-                    className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
-                    placeholder="Enter total boxes in a pallet..."
-                    value={totalBoxPallet}
-                    onChange={(e) => setTotalBoxPallet(e.target.value)}
+                    value={totalPalletNo}
+                    onChange={(e) => setTotalPalletNo(e.target.value)}
                 />
             </div>
 
+
             {/* Receipt Number Input */}
             {
-                location === "Philippines" && <div className="flex flex-col">
+                language === "MS" && <div className="flex flex-col">
                     <label className="text-lg font-bold text-purple-950 mb-2" htmlFor="receiptNumber">
                         Receipt Number
                     </label>
@@ -271,14 +265,10 @@ const PrintingExInitialData = () => {
                 </div>
             }
 
-            <div className="flex justify-end my-5">
-                <button
-                    className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-green-500 text-white font-bold hover:text-black "
-                    onClick={() => handlePrint(selectedItems)}>
-                    Print
-                </button>
-            </div>
 
+            <PrintFunctionForInitialData
+                finalData={{ ...printedData, language, mark, remark, quantity, company, receiptNumber, palletNo, totalBoxPallet, language, location }}
+            ></PrintFunctionForInitialData>
         </div>
     );
 };

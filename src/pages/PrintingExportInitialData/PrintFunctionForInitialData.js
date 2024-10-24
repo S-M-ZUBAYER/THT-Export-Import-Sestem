@@ -1,72 +1,92 @@
-import jsPDF from "jspdf";
+import React, { useState } from 'react';
+import Modal from 'react-modal';
+import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+import html2canvas from 'html2canvas';
+import ChineseFormate from './ChineseFormate';
+import MalaysiaFormate from './MalaysiaFormate';
+import EnglishFormate from './EnglishFormate';
 
-export const generateInitialPDF = (dataArray, remark) => {
-    const doc = new jsPDF();
+Modal.setAppElement('#root'); // Set the root element for accessibility
 
-    // Add border to the entire page
-    doc.rect(
-        5,
-        5,
-        doc.internal.pageSize.width - 15,
-        doc.internal.pageSize.height - 15,
-        "S"
+const PrintFunctionForInitialData = ({ finalData }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    console.log(finalData, "log");
+
+    const openModal = () => setIsOpen(true);
+    const closeModal = () => setIsOpen(false);
+
+
+
+    const handlePrint = () => {
+        const input = document.getElementById('pdf-content');
+
+        // Capture the content with specific dimensions
+        html2canvas(input, { scale: 2, useCORS: true }).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+
+            const imgWidth = 210; // A4 width in mm
+            const pageHeight = pdf.internal.pageSize.height;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            // Calculate X offset to center horizontally
+            const xOffset = (imgWidth - (canvas.width * imgWidth) / canvas.width) / 2;
+
+            // Add the first image, centered horizontally and vertically
+            const yOffset = (pageHeight - imgHeight) / 2;
+            pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+
+            // Add new pages if needed, keeping the content centered
+            while (heightLeft >= 0) {
+                pdf.addPage();
+                position = heightLeft - imgHeight;
+                pdf.addImage(imgData, 'PNG', xOffset, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+
+            // Save the PDF with the desired filename
+            pdf.save(`product_details_${finalData?.printData?.map(p => p.productName).join('_')}.pdf`);
+        });
+    };
+
+
+    return (
+        <div>
+            <div className="flex justify-end my-5">
+                <button
+                    className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-green-500 text-white font-bold hover:text-black "
+                    onClick={openModal}>
+                    Print
+                </button>
+            </div>
+            <Modal isOpen={isOpen} onRequestClose={closeModal} className="fixed inset-0 flex items-center justify-center z-50 overflow-scroll">
+                {
+                    finalData?.language === "EN" ?
+                        <EnglishFormate
+                            finalData={finalData}
+                            handlePrint={handlePrint}
+                            closeModal={closeModal}
+                        ></EnglishFormate> :
+                        finalData?.language === "CN" ?
+                            <ChineseFormate
+                                finalData={finalData}
+                                handlePrint={handlePrint}
+                                closeModal={closeModal}
+                            ></ChineseFormate> :
+                            <MalaysiaFormate
+                                finalData={finalData}
+                                handlePrint={handlePrint}
+                                closeModal={closeModal}
+                            ></MalaysiaFormate>
+                }
+            </Modal>
+        </div>
     );
-
-    // Set the font and size for the title
-    doc.setFontSize(35); // Adjusted size for "Mark" heading
-    doc.text("Mark", 78, 30);
-
-
-    doc.setFontSize(26); // Font size for the remark content
-    const remarkLines = doc.splitTextToSize(remark, 190); // Adjust width as needed
-    doc.text(remarkLines, 10, 45); // Display the remark below the "Mark" heading
-
-    // Display Product Name and Truck Number as headings
-    const firstProduct = dataArray[0]; // Assuming truck number and product name are the same for all
-    doc.setFontSize(30);
-    const productNameLines = doc.splitTextToSize(
-        `Product Name: ${firstProduct.productName}`,
-        240
-    );
-    doc.text(productNameLines, 7, 85); // Product Name
-
-    doc.setFontSize(30);
-    doc.text(`Truck Number: ${firstProduct.truckNumber}`, 7, 100); // Truck Number (Heading)
-
-    doc.setFontSize(20);
-    doc.text(`Made in Bangladesh`, 70, 123); // Truck Number (Heading)
-
-    // Set font smaller for total details text
-    doc.setFontSize(30);
-
-    // Preparing the table data
-    const tableData = dataArray.map((product) => [
-        product.productModel,
-        product.splitQuantitySingleProduct,
-        `${product.totalBox} boxes`,
-        product.totalPallet,
-        product.truckNumber, // Truck Number in the table
-    ]);
-
-    // Define the columns and column headers, including Truck Number
-    const columns = ["Model", "Split Quantity", "Total Box", "Pallet No", "Truck No"];
-
-    // Generate a single table with all product details, including truck number
-    doc.autoTable({
-        head: [columns],
-        body: tableData,
-        startY: 130, // Adjust the Y position based on content above
-        styles: {
-            fontSize: 10, // Reduced font size for table content
-            halign: "center",
-            cellPadding: 2, // Reducing padding to make the content fit
-            valign: "middle",
-        },
-        theme: "grid", // Makes the table look cleaner
-        tableWidth: 'auto', // Automatically adjust column widths based on content
-    });
-
-    // Save the PDF file using the first product ID as the reference
-    doc.save(`product_details_${firstProduct.id}.pdf`);
 };
+
+export default PrintFunctionForInitialData;
