@@ -20,9 +20,9 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal }) => {
             <div id="pdf-content" className="space-y-4 ">
                 <div className="border-4 p-3 mx-8 border-slate-800  min-h-[800px] ">
 
-                    <h1 className="text-3xl font-bold text-center underline mb-2">MARKS & NOTES</h1>
-                    <h1 className="text-3xl font-bold text-center underline mb-2">唛头</h1>
-                    <h2 className="text-xl ml-1 mb-4">
+                    <h1 className="text-4xl font-medium text-center mb-6">MARKS & NOTES</h1>
+                    <h1 className="text-4xl font-medium text-center mb-6">唛头</h1>
+                    <h2 className="text-xl ml-1 mb-6 mt-6">
                         {marks.map((mark, index) => (
                             <p key={index}>
                                 {index + 1}. {mark.trim()}
@@ -30,37 +30,37 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal }) => {
                         ))}
                     </h2>
 
-                    <div className="flex justify-start items-center mb-1">
-                        <h3 className="text-2xl ml-1 font-semibold">品名:</h3>
+                    <div className="flex justify-start items-center mb-4">
+                        <h3 className="text-xl ml-1   mr-2">品名:</h3>
                         <p className="text-xl ml-1">{finalData?.printData?.map(product => product.productName !== "Attendance Machine" ? product.productName !== "Dot Printer" ? "热敏打印机" : "点阵打印机" : "考勤机").join('+ ')}</p>
                     </div>
 
-                    <div className="flex justify-start items-center mb-1">
-                        <h3 className="text-2xl ml-1 font-semibold">每托盘箱数:</h3>
+                    <div className="flex justify-start items-center mb-4">
+                        <h3 className="text-xl ml-1    mr-2">每托盘箱数:  </h3>
                         <p className="text-xl ml-1">{totalBoxes} 箱</p>
                     </div>
-                    <div className="flex justify-start items-center mb-1">
-                        <h3 className="text-2xl ml-1 font-semibold">入库单号:</h3>
+                    <div className="flex justify-start items-center mb-4">
+                        <h3 className="text-xl ml-1    mr-2">入库单号:  </h3>
                         <p className="text-xl ml-1">{finalData?.receiptNumber}</p>
                     </div>
 
-                    <div className="flex justify-start items-center mb-1">
-                        <h3 className="text-2xl ml-1 font-semibold">数量:</h3>
+                    <div className="flex justify-start items-center mb-6">
+                        <h3 className="text-xl ml-1    mr-2">数量:  </h3>
                         <p className="text-xl ml-1">{totalQuantity} 台</p>
                     </div>
 
 
 
-                    <div className="flex justify-center items-center">
+                    <div className="flex justify-center items-center mb-2">
                         <h3 className="text-xl ml-1 mr-2">{finalData?.company}</h3>
                         <p className="text-xl ml-1">Company</p>
                     </div>
 
-                    <h3 className="text-2xl ml-1 text-center">Made in Bangladesh</h3>
+                    <h3 className="text-2xl font-semibold ml-1 text-center">Made in Bangladesh</h3>
 
-                    <div className="flex justify-center items-center">
-                        <h3 className="text-2xl ml-1 font-semibold">托盘号:</h3>
-                        <p className="text-xl ml-1">{finalData?.printData[0]?.totalPallet}</p>
+                    <div className="flex justify-center items-center mt-4 mb-2">
+                        <h3 className="text-4xl ml-1 font-medium">托盘号/</h3>
+                        <p className="text-4xl ml-1">{finalData?.printData[0]?.totalPallet}</p>
                     </div>
                     <table className="w-full border-collapse mt-4">
                         <thead>

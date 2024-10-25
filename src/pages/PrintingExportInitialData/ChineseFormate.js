@@ -34,14 +34,41 @@ const ChineseFormate = ({ finalData, handlePrint, closeModal }) => {
         return str;
     };
 
+    const productNames = () => {
+        const uniqueNames = new Set();
+        finalData?.printData?.forEach(product => {
+            if (product.productName === "Attendance Machine") {
+                uniqueNames.add("考勤机");
+            } else if (product.productName === "Dot Printer") {
+                uniqueNames.add("点阵打印机");
+            } else {
+                uniqueNames.add("热敏打印机");
+            }
+        });
+        return Array.from(uniqueNames).join('+ ');
+    };
+
+
+    // Get the result of the function by calling it
+    const names = productNames();
+
+    console.log(names, names.length); // Logs the product names and their length
+
+    if (names.length > 10) {
+        console.log(names.slice(0, 10), "nesxxtt", names.slice(10, names.length));
+    } else {
+        console.log(names);
+    }
+
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-white p-6 rounded-lg shadow-lg mt-24 mb-1">
             <div id="pdf-content" className="space-y-4">
-                <div className="border-4 p-3 mx-8 border-slate-800  min-h-[800px] ">
+                <div className="border-4 px-3 mx-8 border-slate-800  min-h-[900px] text-black">
 
-                    <h1 className="text-3xl font-bold text-center mb-2 underline">唛头</h1>
-                    <h2 className="text-xl ml-1 mb-4">
+                    <h1 className="text-7xl font-semibold text-center  tracking-widest">唛头</h1>
+
+                    <h2 className="text-3xl ml-1 mb-10 mt-8">
                         {marks.map((mark, index) => (
                             <p key={index}>
                                 {index + 1}. {mark.trim()}
@@ -49,41 +76,49 @@ const ChineseFormate = ({ finalData, handlePrint, closeModal }) => {
                         ))}
                     </h2>
 
-                    <div className="flex justify-start items-center">
-                        <h3 className="text-2xl ml-1 font-semibold">品名:</h3>
-                        <p className="text-xl ml-1">{finalData?.printData?.map(product => product.productName !== "Attendance Machine" ? product.productName !== "Dot Printer" ? "热敏打印机" : "点阵打印机" : "考勤机").join('+ ')}</p>
+                    <div className="flex justify-start  mb-10">
+                        <h3 className="text-5xl ml-1 font-medium tracking-widest">品名:</h3>
+                        {names.length > 10 ? (
+                            <div className="">
+                                <p className="text-5xl ml-1 font-medium tracking-widest">{names.slice(0, 10)}</p><br></br>
+                                <p className="text-5xl ml-1 font-medium tracking-widest">{names.slice(10, names.length)}</p>
+                            </div>
+                        ) : (
+                            <p className="text-5xl ml-1 font-medium tracking-widest">{names}</p>
+                        )}
                     </div>
 
-                    <div className="flex justify-start items-center">
-                        <h3 className="text-2xl ml-1 font-semibold">每托盘箱数:</h3>
-                        <p className="text-xl ml-1">{numberToChinese(totalBoxes)}</p>
+
+                    <div className="flex justify-start items-center mb-10">
+                        <h3 className="text-5xl ml-1 font-medium tracking-widest">每托盘箱数:</h3>
+                        <p className="text-5xl ml-1 font-medium tracking-widest">{numberToChinese(totalBoxes)}</p>
                     </div>
 
 
 
 
 
-                    <h3 className="text-2xl ml-1 text-center mt-3">Made in Bangladesh</h3>
+                    <h3 className="text-3xl ml-1 text-center font-semibold mb-10">Made in Bangladesh</h3>
 
-                    <div className="flex justify-center items-center">
-                        <h3 className="text-2xl ml-1 font-semibold">托盘号:</h3>
-                        <p className="text-xl ml-1">{finalData?.printData[0]?.totalPallet}</p>
+                    <div className="flex justify-center items-center mb-10">
+                        <h3 className="text-5xl ml-1 font-medium tracking-widest">托盘号:</h3>
+                        <p className="text-5xl ml-1 font-medium t">{finalData?.printData[0]?.totalPallet}</p>
                     </div>
-                    <table className="w-full border-collapse mt-4">
-                        <thead>
+                    <table className="w-full border-collapse mt-12 pb-2 ">
+                        <thead className='text-center'>
                             {
                                 finalData?.language === "EN" ? <tr className="bg-gray-200">
-                                    <th className="border px-4 py-2">Model</th>
-                                    <th className="border px-4 py-2">Date</th>
-                                    <th className="border px-4 py-2">Pallet Total Box</th>
-                                    <th className="border px-4 py-2">Pallet No</th>
-                                    <th className="border px-4 py-2">Remark</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">Model</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">Date</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">Pallet Total Box</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">Pallet No</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">Remark</th>
                                 </tr> : <tr className="bg-gray-200">
-                                    <th className="border px-4 py-2">型号</th>
-                                    <th className="border px-4 py-2">日期</th>
-                                    <th className="border px-4 py-2">托盘总箱数</th>
-                                    <th className="border px-4 py-2">托盘号</th>
-                                    <th className="border px-4 py-2">备注</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">型号</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">日期</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">托盘总箱数</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">托盘号</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">备注</th>
                                 </tr>
                             }
 
