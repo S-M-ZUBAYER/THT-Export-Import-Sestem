@@ -20,6 +20,8 @@ const NewProduct = () => {
 
   const [formData, setFormData] = useState({
     productName: "",
+    chineseName: "",
+    malaysiaName: ""
   });
 
   const handleChange = (event) => {
@@ -48,7 +50,7 @@ const NewProduct = () => {
       setFilteredProducts(sortedData); // Initially set filtered products to the full list
       setLoading(false);
     } catch (error) {
-      toast.error("Error getting data from server!", {
+      console.error("Error getting data from server!", {
         position: "top-center",
       });
     }
@@ -147,6 +149,38 @@ const NewProduct = () => {
                 type="text"
                 name="productName"
                 id="productName"
+                // value={productName}
+                // onChange={(e) => setProductName(e.target.value)}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mt-3">
+              <label className="text-lg font-semibold" htmlFor="chineseName">
+                Chinese Name
+              </label>
+              <input
+                className="w-full border-2 border-gray-100 rounded-xl p-[10px] mt-1 bg-transparent"
+                placeholder="Enter Product Chinese Name"
+                type="text"
+                name="chineseName"
+                id="chineseName"
+                // value={productName}
+                // onChange={(e) => setProductName(e.target.value)}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="mt-3">
+              <label className="text-lg font-semibold" htmlFor="malaysiaName">
+                Malaysia Name
+              </label>
+              <input
+                className="w-full border-2 border-gray-100 rounded-xl p-[10px] mt-1 bg-transparent"
+                placeholder="Enter Product Malaysia Name"
+                type="text"
+                name="malaysiaName"
+                id="malaysiaName"
                 // value={productName}
                 // onChange={(e) => setProductName(e.target.value)}
                 onChange={handleChange}

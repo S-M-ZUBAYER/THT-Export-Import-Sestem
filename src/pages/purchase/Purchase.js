@@ -102,7 +102,7 @@ const Purchase = () => {
 
       setLoading(false);
     } catch (error) {
-      toast.error("Error from server to get data!!");
+      console.error("Error from server to get data!!");
       setLoading(false);
     }
   };
@@ -114,7 +114,7 @@ const Purchase = () => {
       );
       setCharges(response?.data);
     } catch (error) {
-      toast.error("Error from server to get data!!");
+      console.error("Error from server to get data!!");
     }
   };
 
@@ -131,7 +131,7 @@ const Purchase = () => {
       setFilteredData(sortedData);
       setLoading(false);
     } catch (error) {
-      toast.error("Error from server to get data!!");
+      console.error("Error from server to get data!!");
       setLoading(false);
     }
   };
@@ -143,7 +143,7 @@ const Purchase = () => {
       );
       setTransportCountry(response?.data);
     } catch (error) {
-      toast.error("Error from server to get data!!");
+      console.error("Error from server to get data!!");
     }
   };
 
@@ -154,7 +154,7 @@ const Purchase = () => {
       );
       setTransportPath(response?.data);
     } catch (error) {
-      toast.error("Error from server to get data!!");
+      console.error("Error from server to get data!!");
     }
   };
 
@@ -165,7 +165,7 @@ const Purchase = () => {
       );
       setPurchase(response?.data);
     } catch (error) {
-      toast.error("Error from server to get data!!");
+      console.error("Error from server to get data!!");
     }
   };
 
@@ -176,7 +176,7 @@ const Purchase = () => {
       );
       setFinances(response?.data);
     } catch (error) {
-      toast.error("Error from server to get data!!");
+      console.error("Error from server to get data!!");
     }
   };
 
@@ -188,7 +188,7 @@ const Purchase = () => {
       );
       setServiceProviders(response.data);
     } catch (error) {
-      toast.error("Failed to fetch data");
+      console.error("Failed to fetch data");
     }
   };
 

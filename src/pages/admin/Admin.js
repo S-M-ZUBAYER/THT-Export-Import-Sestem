@@ -26,7 +26,7 @@ const Admin = () => {
         setUsers(response.data);
         setUserLoading(false);
       } catch (error) {
-        toast.error("Failed to fetch users");
+        console.error("Failed to fetch users");
         setUserLoading(false);
       }
     };

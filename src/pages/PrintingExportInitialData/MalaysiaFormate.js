@@ -1,8 +1,24 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
 const MalaysiaFormate = ({ finalData, handlePrint, closeModal }) => {
+    const [productNameFormate, setProductNameFormate] = useState([]);
+    // Fetch user data from API
+    useEffect(() => {
+        const fetchProductList = async () => {
+            try {
+                const response = await axios.get(
+                    "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/newproduct"
+                );
+                setProductNameFormate(response.data);
+            } catch (error) {
+                console.error("Failed to fetch users");
+            }
+        };
+        fetchProductList();
+    }, []);
 
-    const marks = finalData?.mark?.split(",") || [];
+    const marks = finalData?.mark ? finalData?.mark?.split(",") || [] : [];
 
     const totalQuantity = finalData?.printData?.reduce((acc, data) => {
         return acc + (data?.quantity || 0);
@@ -12,6 +28,21 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal }) => {
         return acc + (data?.totalBox || 0);
     }, 0);
 
+
+    const productNames = () => {
+        console.log("click");
+
+        return finalData?.printData
+            ?.map(product => {
+                const matchedProduct = productNameFormate?.find(
+                    item => item.productName === product.productName
+                );
+                console.log(matchedProduct, "match");
+
+                return matchedProduct ? matchedProduct.malaysiaName : product.productName;
+            })
+            .join(' + ');
+    };
 
 
     return (
@@ -32,7 +63,7 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal }) => {
 
                     <div className="flex justify-start items-center mb-4">
                         <h3 className="text-xl ml-1   mr-2">品名:</h3>
-                        <p className="text-xl ml-1">{finalData?.printData?.map(product => product.productName !== "Attendance Machine" ? product.productName !== "Dot Printer" ? "热敏打印机" : "点阵打印机" : "考勤机").join('+ ')}</p>
+                        <p className="text-xl ml-1">{productNames()}</p>
                     </div>
 
                     <div className="flex justify-start items-center mb-4">

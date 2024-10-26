@@ -50,7 +50,7 @@ const TransportCountry = () => {
       setFilteredCountries(sortedData); // Set filtered countries to full list initially
       setLoading(false);
     } catch (error) {
-      toast.error("Error getting data from server!", {
+      console.error("Error getting data from server!", {
         position: "top-center",
       });
     }

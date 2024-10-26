@@ -84,7 +84,7 @@ const DataInput = () => {
       setFilteredProducts(sortedData); // Initially set filtered products to the full list
       setLoading(false);
     } catch (error) {
-      toast.error("Error getting data from server!", {
+      console.error("Error getting data from server!", {
         position: "top-center",
       });
     }
@@ -117,7 +117,7 @@ const DataInput = () => {
       setProductsName(sortedData);
       setLoading(false);
     } catch (error) {
-      toast.error("Error getting data from server!", {
+      console.error("Error getting data from server!", {
         position: "top-center",
       });
     }

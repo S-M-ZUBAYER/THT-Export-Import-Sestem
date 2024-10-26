@@ -45,7 +45,7 @@ const Accounts = () => {
       );
       setServerData(response?.data);
     } catch (error) {
-      toast.error("Error from server to get data!!");
+      console.error("Error from server to get data!!");
     }
   };
 
@@ -69,7 +69,7 @@ const Accounts = () => {
       setFilteredAccounts(sortedData); // Set filtered accounts to full list initially
       setLoading(false);
     } catch (error) {
-      toast.error("Error getting accounts from server!", {
+      console.error("Error getting accounts from server!", {
         position: "top-center",
       });
     }

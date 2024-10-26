@@ -31,7 +31,7 @@ const AddCFLevel = () => {
             setCfLevels(response.data);
             setLoading(false);
         } catch (error) {
-            toast.error("Failed to fetch data");
+            console.error("Failed to fetch data");
             setLoading(false);
         }
     };

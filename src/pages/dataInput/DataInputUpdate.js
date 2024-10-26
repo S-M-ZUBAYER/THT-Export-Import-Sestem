@@ -23,7 +23,7 @@ const DataInputUpdate = () => {
         setFormData(res?.data);
       })
       .catch((error) =>
-        toast.error("Error coming from server please try again later", {
+        console.error("Error coming from server please try again later", {
           position: "top-center",
         })
       );

@@ -1,7 +1,26 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
 const ChineseFormate = ({ finalData, handlePrint, closeModal }) => {
-    const marks = finalData?.mark?.split(",") || [];
+
+    const [productNameFormate, setProductNameFormate] = useState([]);
+    // Fetch user data from API
+    useEffect(() => {
+        const fetchProductList = async () => {
+            try {
+                const response = await axios.get(
+                    "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/newproduct"
+                );
+                console.log(response.data);
+
+                setProductNameFormate(response.data);
+            } catch (error) {
+                console.error("Failed to fetch users");
+            }
+        };
+        fetchProductList();
+    }, []);
+    const marks = finalData?.mark ? finalData?.mark?.split(",") || [] : [];
     const totalBoxes = finalData?.printData?.reduce((acc, data) => {
         return acc + (data?.totalBox || 0);
     }, 0);
@@ -34,31 +53,25 @@ const ChineseFormate = ({ finalData, handlePrint, closeModal }) => {
         return str;
     };
 
+
     const productNames = () => {
-        const uniqueNames = new Set();
-        finalData?.printData?.forEach(product => {
-            if (product.productName === "Attendance Machine") {
-                uniqueNames.add("考勤机");
-            } else if (product.productName === "Dot Printer") {
-                uniqueNames.add("点阵打印机");
-            } else {
-                uniqueNames.add("热敏打印机");
-            }
-        });
-        return Array.from(uniqueNames).join('+ ');
+        console.log(productNameFormate);
+
+        return finalData?.printData
+            ?.map(product => {
+                const matchedProduct = productNameFormate?.find(
+                    item => item.productName === product.productName
+                );
+                console.log(matchedProduct, "match");
+
+                return matchedProduct ? matchedProduct.malaysiaName : product.productName;
+            })
+            .join('+');
     };
 
 
     // Get the result of the function by calling it
     const names = productNames();
-
-    console.log(names, names.length); // Logs the product names and their length
-
-    if (names.length > 10) {
-        console.log(names.slice(0, 10), "nesxxtt", names.slice(10, names.length));
-    } else {
-        console.log(names);
-    }
 
 
     return (
@@ -76,17 +89,26 @@ const ChineseFormate = ({ finalData, handlePrint, closeModal }) => {
                         ))}
                     </h2>
 
-                    <div className="flex justify-start  mb-10">
+                    <div className="flex justify-start mb-10">
                         <h3 className="text-5xl ml-1 font-medium tracking-widest">品名:</h3>
                         {names.length > 10 ? (
-                            <div className="">
-                                <p className="text-5xl ml-1 font-medium tracking-widest">{names.slice(0, 10)}</p><br></br>
-                                <p className="text-5xl ml-1 font-medium tracking-widest">{names.slice(10, names.length)}</p>
-                            </div>
+                            names.length < 20 ? (
+                                <div>
+                                    <p className="text-5xl ml-1 font-medium tracking-widest">{names.slice(0, 10)}</p>
+                                    <p className="text-5xl ml-1 font-medium tracking-widest">{names.slice(10)}</p>
+                                </div>
+                            ) : (
+                                <div>
+                                    <p className="text-5xl ml-1 font-medium tracking-widest">{names.slice(0, 10)}</p>
+                                    <p className="text-5xl ml-1 font-medium tracking-widest">{names.slice(10, 20)}</p>
+                                    <p className="text-5xl ml-1 font-medium tracking-widest">{names.slice(20)}</p>
+                                </div>
+                            )
                         ) : (
                             <p className="text-5xl ml-1 font-medium tracking-widest">{names}</p>
                         )}
                     </div>
+
 
 
                     <div className="flex justify-start items-center mb-10">

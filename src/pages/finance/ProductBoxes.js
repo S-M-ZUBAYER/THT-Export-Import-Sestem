@@ -54,7 +54,7 @@ const ProductBoxes = () => {
 
       setAccount(response?.data);
     } catch (error) {
-      toast.error("Error getting data from server!");
+      console.error("Error getting data from server!");
     }
   };
 
@@ -231,7 +231,7 @@ const ProductBoxes = () => {
       setDates(uniqueDates);
       setLoading(false);
     } catch (error) {
-      toast.error("Error getting products from server!", {
+      console.error("Error getting products from server!", {
         position: "top-center",
       });
     }

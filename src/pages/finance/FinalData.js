@@ -75,7 +75,8 @@ const FinalData = () => {
       setFilteredFinalData(finalData.slice(0, itemsPerPage));
       setLoading(false);
     } catch (error) {
-      toast.error("Error from server to get data!!");
+      console.error("Error from server to get data!!");
+      setLoading(false);
     }
   };
 

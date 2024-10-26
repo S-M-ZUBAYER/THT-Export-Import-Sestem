@@ -28,11 +28,8 @@ const Transportservice = () => {
   const [datas, setDatas] = useState([]);
   const refOne = useRef(null);
 
-  // const { data, loading, error, dataGet, dataPost, dataUpdate, dataDelete } =
-  //   useFetch();
 
   useEffect(() => {
-    // https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts
     axios
       .get(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts"
@@ -42,7 +39,7 @@ const Transportservice = () => {
         setProducts(res?.data);
       })
       .catch((error) =>
-        toast.error("Something wrong Please try again later!!")
+        console.error("Something wrong Please try again later!!")
       );
 
     axios

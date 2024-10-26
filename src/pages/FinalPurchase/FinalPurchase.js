@@ -26,7 +26,7 @@ const FinalPurchase = () => {
                 setFilteredPurchases(finalPurchases);
             })
             .catch(error => {
-                toast.error('Failed to fetch data!');
+                console.error('Failed to fetch data!');
             })
             .finally(() => {
                 setFinalPurchaseLoading(false); // Ensure loading is stopped after both success or failure

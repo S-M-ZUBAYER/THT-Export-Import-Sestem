@@ -48,7 +48,6 @@ const FinanceDetails = () => {
                 }
 
             } catch (error) {
-                toast.error("Failed to fetch data");
                 console.error("Error fetching trade service provider data:", error);
             }
         };

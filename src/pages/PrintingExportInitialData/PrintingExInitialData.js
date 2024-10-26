@@ -42,7 +42,7 @@ const PrintingExInitialData = () => {
             setFilteredData(sortedData);
             setLoading(false);
         } catch (error) {
-            toast.error("Error from server to get data!!");
+            console.error("Error from server to get data!!");
             setLoading(false);
         }
     };

@@ -50,7 +50,7 @@ const NewBrand = () => {
       setLoading(false);
 
     } catch (error) {
-      toast.error("Error getting data from server!", {
+      console.error("Error getting data from server!", {
         position: "top-center",
       });
 
@@ -71,7 +71,7 @@ const NewBrand = () => {
       setFilteredProducts(sortedData);
       setLoading(false);
     } catch (error) {
-      toast.error("Error getting data from server!", {
+      console.error("Error getting data from server!", {
         position: "top-center",
       });
     }

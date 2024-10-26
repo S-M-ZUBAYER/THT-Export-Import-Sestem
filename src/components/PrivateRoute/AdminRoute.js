@@ -10,56 +10,6 @@ const AdminRoute = () => {
   const foundUser = JSON.parse(localStorage.getItem("user")); // Get userId from localStore
 
 
-  // // loader css style
-  // const override = {
-  //   display: "block",
-  //   margin: "25px auto",
-  // };
-
-
-  // useEffect(() => {
-  //   // Fetch the user data if userId exists
-  //   const fetchUser = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/users/${foundUser}`
-  //       );
-
-  //       // Check if the fetched user is admin
-  //       if (response.status === 200) {
-  //         if (response.data?.isAdmin) {
-  //           setIsAdmin(true); // Set admin status if true
-  //         }
-  //       }
-  //     } catch (error) {
-  //       toast.error("Failed to fetch user information");
-  //     } finally {
-  //       setLoading(false); // Stop loading after the request
-  //     }
-  //   };
-
-  //   if (foundUser) {
-  //     fetchUser();
-  //   } else {
-  //     setLoading(false); // Stop loading if no userId found
-  //   }
-  // }, [foundUser]);
-
-  // Show a loading state while fetching the user data
-  // if (loading) {
-  //   return <div className="">
-  //     <ClipLoader
-  //       color={"#36d7b7"}
-  //       loading={loading}
-  //       size={50}
-  //       cssOverride={override}
-  //     />
-  //     <p className="text-center font-extralight text-xl text-green-400">
-  //       Please wait ....
-  //     </p>
-  //   </div>; // Replace with a spinner or loader component if desired
-  // }
-
   // If no userId is found, or user is not admin, redirect to home
   if (!foundUser) {
     return <Navigate to="/login" state={{ from: location }} replace />;

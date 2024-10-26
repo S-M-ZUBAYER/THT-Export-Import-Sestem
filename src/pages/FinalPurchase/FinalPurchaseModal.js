@@ -22,7 +22,7 @@ const FinalPurchaseModal = ({
                 );
                 setServiceProvider(response.data);
             } catch (error) {
-                toast.error("Failed to fetch data");
+                console.error("Failed to fetch data");
             }
         };
 
