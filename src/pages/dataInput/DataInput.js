@@ -188,7 +188,7 @@ const DataInput = () => {
           `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/products/${id}`
         );
         toast.warn("Data successfully Deleted!!", { position: "top-center" });
-        fetchProducts();
+        setFilteredProducts(filteredProducts.filter(products => products.id !== id))
       } catch (error) {
         toast.error("You can't delete now. Please try again later!", {
           position: "top-center",

@@ -66,16 +66,16 @@ const PrintingExInitialData = () => {
     // Handle selecting/deselecting items
     const handleCheckboxChange = (product) => {
         // Check if there are already selected items
-        // if (selectedItems.length > 0) {
-        //     // Get the totalPallet of the first selected item
-        //     const selectedTotalPallet = selectedItems[0]?.totalPallet;
+        if (selectedItems.length > 0) {
+            // Get the totalPallet of the first selected item
+            const selectedTotalPallet = selectedItems[0]?.totalPallet;
 
-        //     // If the new product's totalPallet doesn't match, don't select it
-        //     if (product.totalPallet !== selectedTotalPallet) {
-        //         alert("You can only select products with the same pallet number.");
-        //         return;
-        //     }
-        // }
+            // If the new product's totalPallet doesn't match, don't select it
+            if (product.totalPallet !== selectedTotalPallet) {
+                alert("You can only select products with the same pallet number.");
+                return;
+            }
+        }
 
         if (selectedItems.some(item => item.id === product.id)) {
             // Deselect the item

@@ -52,10 +52,11 @@ const AddCFLevel = () => {
             const payload = {
                 name: serviceProvider,
                 status: isFix ? "fix" : "",
-                level: cfLevel // Assuming cfLevel doesn't need parent()
+                level: cfLevel,
             };
 
-            await axios.post(
+
+            const response = await axios.post(
                 "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/trade_service",
                 payload,
                 {
@@ -64,22 +65,34 @@ const AddCFLevel = () => {
                     },
                 }
             );
-            setCfLevels([...cfLevels, {
-                id: cfLevels[cfLevels.length - 1].id + 1, name: serviceProvider,
-                status: isFix ? "fix" : "",
-                level: cfLevel
-            }])
-            toast.success("C&F Level added successfully!");
 
-            // Clear input fields
-            setCfLevel("");
-            setServiceProvider("");
-            setAdding(false);
+            if (response.status === 200 || response.status === 201) {
+                setCfLevels([
+                    ...cfLevels,
+                    {
+                        id: cfLevels.length > 0 ? cfLevels[cfLevels.length - 1].id + 1 : 1,
+                        name: serviceProvider,
+                        status: isFix ? "fix" : "",
+                        level: cfLevel,
+                    },
+                ]);
+
+                toast.success("C&F Level added successfully!");
+
+                // Clear input fields
+                setCfLevel("");
+                setServiceProvider("");
+            } else {
+                throw new Error("Unexpected response status");
+            }
         } catch (error) {
+            console.error(error); // Log the error for debugging
             toast.error("Failed to add C&F Level");
+        } finally {
             setAdding(false);
         }
     };
+
 
     const handleToCancel = () => {
         setCfLevel("");

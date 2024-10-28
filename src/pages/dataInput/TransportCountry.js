@@ -53,6 +53,7 @@ const TransportCountry = () => {
       console.error("Error getting data from server!", {
         position: "top-center",
       });
+      setLoading(false);
     }
   };
 
@@ -62,7 +63,7 @@ const TransportCountry = () => {
     setSearchTerm(value);
 
     // Filter countries based on search term for countryName and countryPort
-    const filtered = countries.filter((country) =>
+    const filtered = countries?.filter((country) =>
       country.countryName.toLowerCase().includes(value) ||  // Filter by countryName
       country.countryPort.toLowerCase().includes(value)     // Filter by countryPort
     );
@@ -74,7 +75,7 @@ const TransportCountry = () => {
   // submit data and save to server
   const handleSubmit = (e) => {
     e.preventDefault();
-    const isPortExists = countries.some(
+    const isPortExists = filteredCountries?.some(
       (item) =>
         item.countryPort.toLowerCase() === formData.countryPort.toLowerCase()
     );
@@ -99,10 +100,7 @@ const TransportCountry = () => {
             },
             ...filteredCountries]
           )
-          setFormData({
-            countryName: "",
-            countryPort: "",
-          })
+
 
         })
         .catch((err) =>
@@ -124,7 +122,7 @@ const TransportCountry = () => {
           `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/transport_country/${id}`
         );
         toast.warn("Data successfully Deleted!!", { position: "top-center" });
-        fetchCountries();
+        setFilteredCountries(filteredCountries.filter(countries => countries.id !== id))
       } catch (error) {
         toast.error("You can't delete now. Please try again later!", {
           position: "top-center",
