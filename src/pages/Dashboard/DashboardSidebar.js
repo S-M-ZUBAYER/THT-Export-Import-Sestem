@@ -87,13 +87,13 @@ const DashboardSidebar = ({ children }) => {
       icon: <FiPrinter />,
     },
     {
-      path: "/purchase",
-      display: "Purchase",
+      path: "/export",
+      display: "Export",
       icon: <BiSolidPurchaseTag />,
     },
     {
-      path: "/finalPurchase",
-      display: "Final Purchase",
+      path: "/finalExport",
+      display: "Final Export",
       icon: <BiSolidPurchaseTagAlt />,
     },
     {

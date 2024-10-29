@@ -10,6 +10,8 @@ const FinanceDetails = () => {
     const { financeDetailsData, setFinanceDetailsData } = useContext(UserContext);
     const [invoiceValue, setInvoiceValue] = useState(0);
     const [newCfLevel, setNewCfLevel] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [reason, setReason] = useState('');
     const navigate = useNavigate();
 
 
@@ -76,7 +78,8 @@ const FinanceDetails = () => {
                     // Create rejected data with the updated status
                     let rejectedData = {
                         ...finalPurchases, // Copy all properties of finalPurchases
-                        status: "purchase" // Update the status to "purchase"
+                        status: "purchase", // Update the status to "purchase"
+                        sendBackReasons: reason
                     };
 
 
@@ -90,7 +93,8 @@ const FinanceDetails = () => {
                         })
                         .then(() => {
                             toast.warn('Finance data deleted successfully!');
-                            navigate("/finalPurchase");
+                            setShowModal(false);
+                            navigate("/finalExport");
                         })
                         .catch(error => {
                             console.error('Error during rejection process:', error);
@@ -452,13 +456,13 @@ const FinanceDetails = () => {
                         <strong>EP No:</strong> {financeDetailsData.epNo}
                     </div>
                     <div>
-                        <strong>Truck No:</strong> {financeDetailsData.truckNo}
+                        <strong>Container No:</strong> {financeDetailsData.truckNo}
                     </div>
                     <div>
                         <strong>Zone:</strong> {financeDetailsData.zone}
                     </div>
                     <div>
-                        <strong>Place Of Load:</strong> {financeDetailsData.loadFrom}
+                        <strong>Port Of Loading:</strong> {financeDetailsData.loadFrom}
                     </div>
                     <div>
                         <strong>Permit Till Date:</strong> {financeDetailsData.permitedDate}
@@ -738,7 +742,10 @@ const FinanceDetails = () => {
                         <strong>VSL/VOY:</strong> {financeDetailsData.vslVoy}
                     </div>
                     <div>
-                        <strong>ETD CGP:</strong> {financeDetailsData.etd}
+                        <strong>ETD:</strong> {financeDetailsData.etd}
+                    </div>
+                    <div>
+                        <strong>ETA:</strong> {financeDetailsData.eta}
                     </div>
                     <div>
                         <strong>Sea Exchange Rate:</strong> {financeDetailsData.exchangeRate}
@@ -805,25 +812,33 @@ const FinanceDetails = () => {
                 </div>
                 {
                     <div>
-                        {financeDetailsData.image && (
+                        {financeDetailsData?.image && (
                             <div>
                                 <h3 className="text-xl font-bold mb-4 text-center underline mt-10">
                                     All Available Images Related To This Export Data
                                 </h3>
 
                                 {/* Image Grid - 3 Images per Row */}
-                                <div className="grid grid-cols-3 gap-4 py-10">
-                                    {financeDetailsData.image.split(",").map((image, index) => (
-                                        <div key={index} className="cursor-pointer">
+                                <div className="grid grid-cols-3 gap-6 py-10">
+                                    {financeDetailsData?.image && financeDetailsData?.image?.split("+")[1].split(",").map((image, index) => (
+                                        <div key={index} className="p-4 bg-white shadow-lg rounded-lg cursor-pointer hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                                            {/* Title - Image Name */}
+                                            <h3 className="text-center font-semibold text-lg text-gray-700 mb-2 truncate">
+                                                {financeDetailsData.image.split("+")[0].split(",")[index]}
+                                            </h3>
+
+                                            {/* Image */}
                                             <img
-                                                src={`https://grozziieget.zjweiting.com:3091/web-api-tht-1/fileUpload/${image}/view`} // Replace with actual image path
-                                                alt="Export related"
-                                                className="w-full h-32 object-cover rounded-lg"
+                                                src={`https://grozziieget.zjweiting.com:3091/web-api-tht-1/fileUpload/${image}/view`}
+                                                alt={`Export image ${index + 1}`}
+                                                className="w-full h-40 object-cover rounded-lg"
                                                 onClick={() => openModal(image)} // Open modal on click
                                             />
                                         </div>
                                     ))}
                                 </div>
+
+
 
 
                             </div>
@@ -859,13 +874,49 @@ const FinanceDetails = () => {
                 {/* Payment Options */}
                 <div className="flex justify-end mb-4">
                     {
-                        (!financeDetailsData.tradeExpanseStatus || !financeDetailsData.seaExpanseStatus || !financeDetailsData.carrierExpanseStatus) ?
-                            <button onClick={handleToReject} className=" mr-5 btn btn-error px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-red-500 text-white font-bold hover:text-black">Reject</button> : ""
+                        (!financeDetailsData.tradeExpanseStatus || !financeDetailsData.seaExpanseStatus || !financeDetailsData.carrierExpanseStatus) ? (
+                            <button
+                                onClick={() => setShowModal(true)}
+                                className="mr-5 btn btn-error px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-red-500 text-white font-bold hover:text-black">
+                                Send Back
+                            </button>
+                        ) : ""
                     }
                     {
-                        financeDetailsData.finalStatus === "finalData" ? "" :
-                            <button onClick={handleUpdate} className=" btn btn-accent px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-green-500 text-white font-bold hover:text-black">Update</button>
+                        financeDetailsData.finalStatus === "finalData" ? "" : (
+                            <button
+                                onClick={handleUpdate}
+                                className="btn btn-accent px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-green-500 text-white font-bold hover:text-black">
+                                Update
+                            </button>
+                        )
                     }
+
+                    {showModal && (
+                        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                            <div className="bg-white p-8 rounded-lg shadow-lg w-[90%] max-w-md">
+                                <h2 className="text-lg font-bold mb-4">Reason for Sending Back</h2>
+                                <textarea
+                                    value={reason}
+                                    onChange={(e) => setReason(e.target.value)}
+                                    className="w-full border border-gray-300 p-2 rounded-lg mb-4"
+                                    placeholder="Enter reason here"
+                                ></textarea>
+                                <div className="flex justify-end">
+                                    <button
+                                        onClick={() => setShowModal(false)}
+                                        className="mr-4 btn bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600">
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleToReject}
+                                        className="btn bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600">
+                                        Send Back
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
             </div>

@@ -72,6 +72,7 @@ const Accounts = () => {
       console.error("Error getting accounts from server!", {
         position: "top-center",
       });
+      setLoading(false);
     }
   };
 

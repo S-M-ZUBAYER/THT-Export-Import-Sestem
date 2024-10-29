@@ -10,7 +10,6 @@ import Accounts from "../pages/orders/Accounts";
 import Warehouse from "../pages/warehouse/Warehouse";
 import Admin from "../pages/admin/Admin";
 import Transport from "../pages/dataInput/Transport";
-import Export from "../pages/Dashboard/Export";
 import Import from "../pages/Dashboard/Import";
 import TransportRoutes from "../pages/dataInput/TransportRoutes";
 import DataInput from "../pages/dataInput/DataInput";
@@ -43,7 +42,6 @@ const Routers = () => {
       <Route path="/forgotpassword" element={<ForgotPassword />} />
       <Route element={<PrivateRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/export" element={<Export />} />
         <Route path="/import" element={<Import />} />
         <Route path="/accounts" element={<Accounts />} />
         <Route path="/accounts/:id" element={<AccountsUpdate />} />
@@ -59,14 +57,14 @@ const Routers = () => {
         <Route path="/datainput/:id" element={<DataInputUpdate />} />
         <Route path="/transportcountry" element={<TransportCountry />} />
         <Route path="/printInitialData" element={<PrintingExInitialData />} />
-        <Route path="/purchase" element={<Purchase />} />
-        <Route path="/finalPurchase" element={<FinalPurchase />} />
+        <Route path="/export" element={<Purchase />} />
+        <Route path="/finalExport" element={<FinalPurchase />} />
         <Route path="/transportservice" element={<Transportservice />} />
         <Route path="/addcharges" element={<AddCharges />} />
         <Route path="/addcharges/:id" element={<AddChargesUpdate />} />
         <Route path="/productinboxes" element={<ProductBoxes />} />
         <Route path="/finance" element={<Finance />} />
-        <Route path="/purchase-details/:id" element={<FinanceDetails />} />
+        <Route path="/export-details/:id" element={<FinanceDetails />} />
         <Route path="/finance-details/:id" element={<FinanceDetails />} />
         <Route path="/finaldata" element={<FinalData />} />
         <Route path="/finalData-details/:id" element={<FinanceDetails />} />

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 const CarrierTableData = ({
-    rows, setRows, setContainerServiceProvider, containerServiceProvider, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, invoiceNo, ipNo }) => {
+    rows, setRows, setContainerServiceProvider, containerServiceProvider, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, invoiceNo, truckNo, ipNo }) => {
 
     // Function to add a new row
     const addRow = (e) => {
@@ -115,7 +115,7 @@ const CarrierTableData = ({
                                     type="text"
                                     className="w-full p-2 border border-gray-300 rounded"
                                     value={row.containerNo}
-                                    onChange={(e) => handleInputChange(index, "containerNo", e.target.value)}
+                                    onChange={(e) => handleInputChange(index, "containerNo", truckNo)}
                                     placeholder="Container No"
                                 />
                             </td>

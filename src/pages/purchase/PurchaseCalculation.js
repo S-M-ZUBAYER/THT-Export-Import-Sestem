@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import CarrierTableData from "./CarrierTableData";
 import ShippingDataTable from "./ShippingDataTable";
 
-const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRows, containerServiceProvider, setContainerServiceProvider, formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, selectedExpensesList, setSelectedExpensesList, ipNo, invoiceNo, transportCountry, transportPort }) => {
+const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRows, containerServiceProvider, setContainerServiceProvider, formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, selectedExpensesList, setSelectedExpensesList, ipNo, invoiceNo, truckNo, transportCountry, transportPort }) => {
   const [selectedExpenses, setSelectedExpenses] = useState([]);
   const [remarks, setRemarks] = useState({});
   const [dates, setDates] = useState({});
@@ -125,6 +125,7 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
         setTotalCarrierAmount={setTotalCarrierAmount}
         ipNo={ipNo}
         invoiceNo={invoiceNo}
+        truckNo={truckNo}
       ></CarrierTableData>
 
 
@@ -137,6 +138,7 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
         setShipCostUSD={setShipCostUSD}
         transportCountry={transportCountry}
         transportPort={transportPort}
+        truckNo={truckNo}
       ></ShippingDataTable>
 
       {/* button */}

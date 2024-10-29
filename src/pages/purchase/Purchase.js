@@ -75,6 +75,7 @@ const Purchase = () => {
     destination: "",
     vslVoy: "",
     etd: "",
+    eta: "",
     exchangeRate: "", // Default Exchange Rate USD to BDT
     charges: [
       { description: "", amountUSD: 0, amountBDT: 0 },
@@ -388,6 +389,7 @@ const Purchase = () => {
         destination: formData?.destination,
         vslVoy: formData?.vslVoy,
         etd: formData?.etd,
+        eta: formData?.eta,
         exchangeRate: formData?.exchangeRate,
         seaExpanseStatus: false,
         seaExpanseDate: "",
@@ -762,7 +764,7 @@ const Purchase = () => {
                 {/* Truck No. */}
                 <div className="">
                   <label className="text-lg font-semibold" htmlFor="ipNo">
-                    Truck No.
+                    Container No.
                   </label>
                   <div className="mt-3">
                     <input
@@ -772,7 +774,7 @@ const Purchase = () => {
                       value={truckNo}
                       name="truckNo"
                       required
-                      placeholder="Enter or pick Truck No."
+                      placeholder="Enter Container No."
                       list="truckNumbersList" // Associate the input with the datalist for filtering
                       onChange={handleTruckNo}
                     />
@@ -802,7 +804,7 @@ const Purchase = () => {
                 {/* Place Of Load. */}
                 <div className="">
                   <label className="text-lg font-semibold" htmlFor="loadfrom">
-                    Place Of Load
+                    Port Of Loading
                   </label>
                   <div className="mt-3">
                     <input
@@ -812,7 +814,7 @@ const Purchase = () => {
                       value={loadfrom}
                       name="loadfrom"
                       required
-                      placeholder="Enter The Place Of Load" // Associate the input with the datalist for filtering
+                      placeholder="Enter The Port Of Loading" // Associate the input with the datalist for filtering
                       onChange={handleToLoadfrom}
                     />
                   </div>
@@ -845,7 +847,7 @@ const Purchase = () => {
                       value={expNo}
                       name="expNo"
                       required
-                      placeholder="Enter The Place Of Load" // Associate the input with the datalist for filtering
+                      placeholder="Enter The Export No" // Associate the input with the datalist for filtering
                       onChange={handleToExpNo}
                     />
                   </div>
@@ -914,7 +916,7 @@ const Purchase = () => {
                       value={consigneeAddress}
                       name="consigneeAddress"
                       required
-                      placeholder="Enter The Place Of Load" // Associate the input with the datalist for filtering
+                      placeholder="Enter The Consignee Address" // Associate the input with the datalist for filtering
                       onChange={handleToConsigneeAddress}
                     />
                   </div>
@@ -950,7 +952,7 @@ const Purchase = () => {
                       value={sCCMT}
                       name="sCCMT"
                       required
-                      placeholder="Enter The Place Of Load" // Associate the input with the datalist for filtering
+                      placeholder="Enter The LC/No./TT/P.S/SC/CMT" // Associate the input with the datalist for filtering
                       onChange={handleToSCCMT}
                     />
                   </div>
@@ -1110,6 +1112,7 @@ const Purchase = () => {
                 setSelectedExpensesList={setSelectedExpensesList}
                 ipNo={ipNo}
                 invoiceNo={invoiceNo}
+                truckNo={truckNo}
                 transportPort={selectedTransportCountryPort}
                 transportCountry={transportCountryName}
               />

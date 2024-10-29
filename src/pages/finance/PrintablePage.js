@@ -30,7 +30,7 @@ export const generatePDF = (financeDetailsData) => {
     { label: "EP No", value: financeDetailsData.epNo || "N/A" },
     { label: "Truck No", value: financeDetailsData.truckNo || "N/A" },
     { label: "Zone", value: financeDetailsData.zone || "N/A" },
-    { label: "Place Of Load", value: financeDetailsData.loadFrom || "N/A" },
+    { label: "Port Of Loading", value: financeDetailsData.loadFrom || "N/A" },
     { label: "Permit Till Date", value: financeDetailsData.permitedDate || "N/A" },
     { label: "Export No", value: financeDetailsData.expNo || "N/A" },
     { label: "Export Date", value: financeDetailsData.expDate || "N/A" },

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, transportPort, transportCountry }) => {
+const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, transportPort, transportCountry, truckNo }) => {
 
     // Update form fields
     const handleFieldChange = (e) => {
@@ -96,7 +96,7 @@ const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, s
                     <input
                         type="text"
                         name="containerNo"
-                        value={formData.containerNo}
+                        value={truckNo}
                         onChange={handleFieldChange}
                         className="w-full p-2 border border-gray-300 rounded"
                         placeholder="Enter Container No"
@@ -126,16 +126,28 @@ const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, s
                     />
                 </div>
                 <div>
-                    <label className="block font-semibold">ETD CGP</label>
+                    <label className="block font-semibold">ETD</label>
                     <input
-                        type="text"
+                        type="date"
                         name="etd"
                         value={formData.etd}
                         onChange={handleFieldChange}
                         className="w-full p-2 border border-gray-300 rounded"
-                        placeholder="Enter ETD CGP"
+                        placeholder="Enter ETD"
                     />
                 </div>
+                <div>
+                    <label className="block font-semibold">ETA</label>
+                    <input
+                        type="date"
+                        name="eta"
+                        value={formData.eta}
+                        onChange={handleFieldChange}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        placeholder="Enter ETA"
+                    />
+                </div>
+
             </div>
 
             {/* Exchange Rate */}

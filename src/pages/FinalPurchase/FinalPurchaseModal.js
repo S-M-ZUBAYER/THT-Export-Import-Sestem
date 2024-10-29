@@ -66,6 +66,7 @@ const FinalPurchaseModal = ({
         }));
     };
 
+    const reason = "don't do it again  again and again please be careful not re, Please check all the information is correct or not and so one, why you do it again and again please be careful not repeat this again,please don't mind this mistake can be happen  "
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -80,6 +81,22 @@ const FinalPurchaseModal = ({
                     </div>
 
                 </div>
+                {
+                    selectedPurchase?.sendBackReasons
+                    && <div className="py-4">
+                        <h4 className="text-lg font-semibold mb-4">Send Back Reasons:</h4>
+                        <div className="">
+                            {selectedPurchase?.sendBackReasons?.split(",").map((reason, index) => (
+                                <div
+                                    key={index}
+                                    className="bg-yellow-100 mb-2 border-l-4 border-yellow-500 text-yellow-700 p-3 rounded-lg shadow-sm w-full md:w-auto"
+                                >
+                                    <p className="font-medium text-sm">{index + 1}. {reason.trim()}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                }
 
                 {/* General Information */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
@@ -154,7 +171,7 @@ const FinalPurchaseModal = ({
                         />
                     </div>
                     <div>
-                        <label className="block font-medium">Truck No</label>
+                        <label className="block font-medium">Container No</label>
                         <input
                             type="text"
                             name="truckNo"
@@ -174,7 +191,7 @@ const FinalPurchaseModal = ({
                         />
                     </div>
                     <div>
-                        <label className="block font-medium">Place Of Load</label>
+                        <label className="block font-medium">Port Of Loading</label>
                         <input
                             type="text"
                             name="loadfrom"
@@ -580,11 +597,21 @@ const FinalPurchaseModal = ({
                         />
                     </div>
                     <div>
-                        <label className="block font-medium">ETD CGP</label>
+                        <label className="block font-medium">ETD</label>
                         <input
                             type="text"
                             name="etd"
                             value={selectedPurchase.etd}
+                            onChange={handleChange}
+                            className="w-full px-4 py-2 border rounded"
+                        />
+                    </div>
+                    <div>
+                        <label className="block font-medium">ETA</label>
+                        <input
+                            type="text"
+                            name="eta"
+                            value={selectedPurchase.eta}
                             onChange={handleChange}
                             className="w-full px-4 py-2 border rounded"
                         />
