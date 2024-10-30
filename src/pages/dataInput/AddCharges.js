@@ -52,6 +52,7 @@ const AddCharges = () => {
       console.error("Error getting data from server!", {
         position: "top-center",
       });
+      setLoading(false);
     }
   };
 
