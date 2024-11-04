@@ -192,7 +192,7 @@ const NewProduct = () => {
               <button
                 className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
                 type="submit">
-                {btnLoading ? "Loading" : "Save"}
+                {btnLoading ? "Saving" : "Save"}
               </button>
             </div>
           </div>
@@ -232,15 +232,15 @@ const NewProduct = () => {
               {/* head */}
               <thead>
                 <tr>
-                  <th className="sticky top-0 bg-gray-200">ID</th>
+                  <th className="sticky top-0 bg-gray-200">Serial No</th>
                   <th className="sticky top-0 bg-gray-200">Product Name</th>
                   <th className="sticky top-0 bg-gray-200">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts?.map((product) => (
+                {filteredProducts?.map((product, index) => (
                   <tr className="hover cursor-pointer" key={product.id}>
-                    <td>{product.id}</td>
+                    <td>{index + 1}</td>
                     <td>{product.productName}</td>
                     <td className="flex space-x-10">
                       <Link to={`/newproduct/${product.id}`}>

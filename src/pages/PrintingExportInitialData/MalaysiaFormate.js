@@ -97,17 +97,19 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal }) => {
                         <thead>
                             {
                                 finalData?.language === "EN" ? <tr className="bg-gray-200">
-                                    <th className="border px-4 py-2">Model</th>
-                                    <th className="border px-4 py-2">Date</th>
-                                    <th className="border px-4 py-2">Pallet Total Box</th>
-                                    <th className="border px-4 py-2">Pallet No</th>
-                                    <th className="border px-4 py-2">Remark</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-32">Model</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-32">Date</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-24">Pallet Total Box</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">Pallet No</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">Total Pallet No</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2">Remark</th>
                                 </tr> : <tr className="bg-gray-200">
-                                    <th className="border px-4 py-2">型号</th>
-                                    <th className="border px-4 py-2">日期</th>
-                                    <th className="border px-4 py-2">托盘总箱数</th>
-                                    <th className="border px-4 py-2">托盘号</th>
-                                    <th className="border px-4 py-2">备注</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-32">型号</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-32">日期</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-24">托盘总箱数</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-24">托盘号</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-24">总卡板</th>
+                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-24">备注</th>
                                 </tr>
                             }
 
@@ -119,6 +121,7 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal }) => {
                                     <td className="border px-4 py-2">{product?.date}</td>
                                     <td className="border px-4 py-2">{product?.totalBox} 箱</td>
                                     <td className="border px-4 py-2">{product?.totalPallet}</td>
+                                    <td className="border px-4 py-2">{finalData?.totalPalletNo}</td>
                                     <td className="border px-4 py-2">{finalData?.remark}</td>
                                 </tr>
                             ))}

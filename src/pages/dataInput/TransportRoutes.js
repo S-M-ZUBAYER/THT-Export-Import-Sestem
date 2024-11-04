@@ -169,16 +169,16 @@ const TransportRoutes = () => {
               {/* head */}
               <thead>
                 <tr>
-                  <th className="sticky top-0 bg-gray-200">ID</th>
+                  <th className="sticky top-0 bg-gray-200">Serial No</th>
                   <th className="sticky top-0 bg-gray-200">Transport Way</th>
                   <th className="sticky top-0 bg-gray-200 flex justify-end">Action</th>
                   {/* <th className="sticky top-0 bg-gray-200">Actions</th> */}
                 </tr>
               </thead>
               <tbody>
-                {transports?.map((product) => (
+                {transports?.map((product, index) => (
                   <tr className="hover cursor-pointer" key={product.id}>
-                    <td>{product.id}</td>
+                    <td>{index + 1}</td>
                     <td>{product.transportWay}</td>
                     <td className="space-x-10 flex justify-end">
                       <button onClick={() => handleDelete(product.id)}>

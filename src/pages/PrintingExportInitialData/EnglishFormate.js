@@ -2,6 +2,7 @@ import React from 'react';
 
 const EnglishFormate = ({ finalData, handlePrint, closeModal }) => {
 
+
     const marks = finalData?.mark?.split(",") || [];
     const totalQuantity = finalData?.printData?.reduce((acc, data) => {
         return acc + (data?.quantity || 0);
@@ -61,11 +62,12 @@ const EnglishFormate = ({ finalData, handlePrint, closeModal }) => {
                     <table className="w-full border-collapse mt-4">
                         <thead>
                             <tr className="bg-gray-200">
-                                <th className="border px-4 py-2">Model</th>
-                                <th className="border px-4 py-2">Date</th>
-                                <th className="border px-4 py-2">Pallet Total Box</th>
-                                <th className="border px-4 py-2">Pallet No</th>
-                                <th className="border px-4 py-2">Remark</th>
+                                <th className="border px-4 py-2 w-32">Model</th>
+                                <th className="border px-4 py-2 w-32">Date</th>
+                                <th className="border px-4 py-2 w-24">Pallet Total Box</th>
+                                <th className="border px-4 py-2 w-24">Pallet No</th>
+                                <th className="border px-4 py-2 w-24">Total Pallet No</th>
+                                <th className="border px-4 py-2 w-24">Remark</th>
                             </tr>
 
                         </thead>
@@ -76,6 +78,7 @@ const EnglishFormate = ({ finalData, handlePrint, closeModal }) => {
                                     <td className="border px-4 py-2">{product?.date}</td>
                                     <td className="border px-4 py-2">{product?.totalBox} boxes</td>
                                     <td className="border px-4 py-2">{product?.totalPallet}</td>
+                                    <td className="border px-4 py-2">{finalData?.totalPalletNo}</td>
                                     <td className="border px-4 py-2">{finalData?.remark}</td>
                                 </tr>
                             ))}

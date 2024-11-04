@@ -208,16 +208,16 @@ const AddCharges = () => {
               {/* head */}
               <thead>
                 <tr>
-                  <th className="sticky top-0 bg-gray-200">ID</th>
+                  <th className="sticky top-0 bg-gray-200">Serial No</th>
                   <th className="sticky top-0 bg-gray-200">Expenses Name</th>
                   <th className="sticky top-0 bg-gray-200">Expenses Cost</th>
                   <th className="sticky top-0 bg-gray-200">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredCharges?.map((charge) => (
+                {filteredCharges?.map((charge, index) => (
                   <tr className="hover cursor-pointer" key={charge.id}>
-                    <td>{charge.id}</td>
+                    <td>{index + 1}</td>
                     <td>{charge.particularExpenseName}</td>
                     <td>{charge.particularExpenseCost * 1}</td>
                     <td className="flex justify-evenly items-center">

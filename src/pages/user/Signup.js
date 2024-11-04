@@ -8,6 +8,7 @@ const Signup = () => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("");
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
@@ -19,6 +20,9 @@ const Signup = () => {
 
     if (!userName.trim()) {
       validationErrors.userName = "Name is required";
+    }
+    if (!role.trim()) {
+      validationErrors.userName = "Role is required";
     }
 
     if (!userEmail.trim()) {
@@ -37,7 +41,7 @@ const Signup = () => {
       axios
         .post(
           "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/users/signup",
-          { userName, userEmail, password }
+          { userName, userEmail, password, role }
         )
         .then((res) => {
           loginUser(userEmail);
@@ -123,6 +127,28 @@ const Signup = () => {
                   </p>
                 )}
               </div>
+              <div>
+                <label className="text-lg font-semibold" htmlFor="role">
+                  Role
+                </label>
+                <select
+                  className="w-full border-2 border-gray-100 rounded-xl p-2 mt-1 bg-transparent"
+                  name="role"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                >
+                  <option value="" disabled>Select your role</option>
+                  <option value="Product Manager">Product Manager</option>
+                  <option value="Commercial Manager">Commercial Manager</option>
+                  <option value="Finance">Finance</option>
+                </select>
+                {errors.role && (
+                  <p className="text-red-600 font-semibold my-1">
+                    {errors.role}
+                  </p>
+                )}
+              </div>
+
               <div className="mt-8 flex flex-col gap-y-2">
                 <button
                   className="active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-xl bg-violet-500 text-white text-lg font-bold"

@@ -17,6 +17,7 @@ const TransportCountry = () => {
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [filteredCountries, setFilteredCountries] = useState([]); // State for filtered countries
   const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
   const [lastId, setLastId] = useState('');
   const [formData, setFormData] = useState({
     countryName: "",
@@ -75,6 +76,7 @@ const TransportCountry = () => {
   // submit data and save to server
   const handleSubmit = (e) => {
     e.preventDefault();
+    setBtnLoading(true);
     const isPortExists = filteredCountries?.some(
       (item) =>
         item.countryPort.toLowerCase() === formData.countryPort.toLowerCase()
@@ -100,14 +102,16 @@ const TransportCountry = () => {
             },
             ...filteredCountries]
           )
-
+          setBtnLoading(false)
 
         })
         .catch((err) =>
           toast.error("Error coming from server please try again later", {
             position: "top-center",
           })
+
         );
+      setBtnLoading(false)
     }
   };
 
@@ -171,7 +175,7 @@ const TransportCountry = () => {
               <button
                 className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
                 type="submit">
-                Save
+                {btnLoading ? "Loading" : "Save"}
               </button>
             </div>
           </div>
@@ -211,16 +215,16 @@ const TransportCountry = () => {
               {/* head */}
               <thead>
                 <tr>
-                  <th className="sticky top-0 bg-gray-200">ID</th>
+                  <th className="sticky top-0 bg-gray-200">Serial No</th>
                   <th className="sticky top-0 bg-gray-200">Country Name</th>
                   <th className="sticky top-0 bg-gray-200">Country Port</th>
                   <th className="sticky top-0 bg-gray-200">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredCountries?.map((product) => (
+                {filteredCountries?.map((product, index) => (
                   <tr className="hover cursor-pointer" key={product.id}>
-                    <td>{product.id}</td>
+                    <td>{index + 1}</td>
                     <td>{product.countryName}</td>
                     <td>{product.countryPort}</td>
                     <td className="flex justify-around items-center">

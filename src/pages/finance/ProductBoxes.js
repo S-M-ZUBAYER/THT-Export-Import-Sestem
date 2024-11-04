@@ -522,7 +522,7 @@ const ProductBoxes = () => {
                         Select Models:
                       </label>
 
-                      <div className="flex flex-col space-y-4">
+                      <div className="flex flex-col space-y-4 overflow-scroll h-44">
                         {Array.isArray(modelList) && modelList.map((model, index) => (
                           <div key={index} className="flex items-center justify-between w-full bg-gray-100 p-2 rounded-md">
                             {/* Checkbox for each model */}
@@ -686,11 +686,11 @@ const ProductBoxes = () => {
                       <label
                         className="text-lg font-semibold"
                         htmlFor="truckNumber">
-                        Courier Number
+                        Container Number
                       </label>
                       <input
                         className="w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent"
-                        placeholder="Enter Truck Number"
+                        placeholder="Enter Container Number"
                         type="text"
                         name="truckNumber"
                         value={truckNumber}

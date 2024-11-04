@@ -25,36 +25,27 @@ const DashboardSidebar = ({ children }) => {
       display: "Dashboard",
       icon: <AiOutlineDashboard />, // Dashboard icon
     },
-    user && JSON.parse(user)?.admin && {
+    user && JSON.parse(user)?.role === "Product Manager" && {
       path: "/newproduct",
       display: "Add New Product",
       icon: <MdOutlineProductionQuantityLimits />, // Export icon
     },
-    user && JSON.parse(user)?.admin && {
+    user && JSON.parse(user)?.role === "Product Manager" && {
       path: "/newbrand",
       display: "Add New Brand",
       icon: <TbBrandElectronicArts />, // Import icon
     },
-    {
+    user && JSON.parse(user)?.role === "Product Manager" && {
       path: "/transportroutes",
       display: "Transport Way",
       icon: <FaShippingFast />,
     },
-    {
+    user && JSON.parse(user)?.role === "Product Manager" && {
       path: "/transportcountry",
-      display: "Transport Country",
+      display: "Destination Country",
       icon: <BiWorld />,
     },
-    {
-      path: "/AddC&FLevel",
-      display: "Add C&F Level",
-      icon: <MdOutlineProductionQuantityLimits />, // Export icon
-    },
-    {
-      path: "/addcharges",
-      display: "Add Charges",
-      icon: <FaMoneyBill1Wave />,
-    },
+
     // {
     //   path: "/export",
     //   display: "Export",
@@ -66,44 +57,54 @@ const DashboardSidebar = ({ children }) => {
     //   icon: <AiOutlineImport />, // Import icon
     // },
     // Adding new links here
-    {
+    user && JSON.parse(user)?.role === "Product Manager" && {
       path: "/datainput",
-      display: "Product Data Add",
+      display: "Product Data Entry",
       icon: < MdAddToPhotos />,
     },
-    {
+    user && JSON.parse(user)?.role === "Product Manager" && {
       path: "/accounts",
-      display: "Accounts",
+      display: "Product Export Summary",
       icon: <MdAccountBalance />,
     },
-    {
+    user && JSON.parse(user)?.role === "Product Manager" && {
       path: "/productinboxes",
-      display: "Product In Boxes",
+      display: "Product Palletizing",
       icon: <FaBoxOpen />,
     },
-    {
+    user && JSON.parse(user)?.role === "Product Manager" && {
       path: "/printInitialData",
-      display: "Print Initial Data",
+      display: "Pallet info Printing",
       icon: <FiPrinter />,
     },
-    {
+    user && JSON.parse(user)?.role === "Commercial Manager" && {
       path: "/export",
-      display: "Export",
+      display: "Export Data Entry",
       icon: <BiSolidPurchaseTag />,
     },
-    {
+    user && JSON.parse(user)?.role === "Commercial Manager" && {
       path: "/finalExport",
-      display: "Final Export",
+      display: "Final Export Checking",
       icon: <BiSolidPurchaseTagAlt />,
     },
-    {
+    user && JSON.parse(user)?.role === "Finance" && {
+      path: "/AddC&FLevel",
+      display: "Add C&F Level",
+      icon: <MdOutlineProductionQuantityLimits />, // Export icon
+    },
+    user && JSON.parse(user)?.role === "Finance" && {
+      path: "/addcharges",
+      display: "Add Charges",
+      icon: <FaMoneyBill1Wave />,
+    },
+    user && JSON.parse(user)?.role === "Finance" && {
       path: "/finance",
-      display: "Finance",
+      display: "Finance Checking",
       icon: <GiTakeMyMoney />,
     },
     {
       path: "/finaldata",
-      display: "Final Data",
+      display: "Final Data Display",
       icon: <FcPrint />,
     },
   ];
@@ -130,7 +131,7 @@ const DashboardSidebar = ({ children }) => {
 
 
         {/* Navigation Links */}
-        <div className="flex flex-col space-y-3 mt-5">
+        <div className="flex flex-col space-y-3 mt-5 h-screen">
           {navLinks.map((item, index) => (
             item && <NavLink
               key={index}

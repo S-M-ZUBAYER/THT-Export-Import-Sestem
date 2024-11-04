@@ -9,6 +9,7 @@ const Admin = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newName, setNewName] = useState("");
+  const [newRole, setNewRole] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [userLoading, setUserLoading] = useState(true);
   const override = {
@@ -70,13 +71,13 @@ const Admin = () => {
     try {
       await axios.put(
         `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/users`,
-        { ...selectedUser, userName: newName, password: newPassword }
+        { ...selectedUser, userName: newName, password: newPassword, role: newRole }
       );
       // Update local state
       setUsers((prevUsers) =>
         prevUsers.map((u) =>
           u.id === selectedUser.id
-            ? { ...u, userName: newName, password: newPassword }
+            ? { ...u, userName: newName, password: newPassword, role: newRole }
             : u
         )
       );
@@ -111,6 +112,7 @@ const Admin = () => {
                 <tr>
                   <th className="py-3 px-6 text-left">Name</th>
                   <th className="py-3 px-6 text-left">Email</th>
+                  <th className="py-3 px-6 text-left">Role</th>
                   <th className="py-3 px-6 text-left">Admin</th>
                   <th className="py-3 px-6 text-left">Actions</th>
                 </tr>
@@ -120,6 +122,7 @@ const Admin = () => {
                   <tr key={user.id} className="border-b">
                     <td className="py-3 px-6">{user.userName}</td>
                     <td className="py-3 px-6">{user.userEmail}</td>
+                    <td className="py-3 px-6">{user.role}</td>
                     <td className="py-3 px-6">
                       {user.admin ? "Admin" : "Not Admin"}
                     </td>
@@ -153,7 +156,7 @@ const Admin = () => {
           contentLabel="Edit User"
           className="bg-white rounded-lg p-6 shadow-lg max-w-lg mx-auto mt-20"
         >
-          <h2 className="text-xl font-bold mb-4">Edit User</h2>
+          <h2 className="text-xl font-bold mb-4 text-center text-cyan-600">Edit User</h2>
           <div className="mb-4">
             <label className="block text-sm font-bold mb-2">Email</label>
             <input
@@ -173,6 +176,19 @@ const Admin = () => {
             />
           </div>
           <div className="mb-4">
+            <label className="block text-sm font-bold mb-2">Role</label>
+            <select
+              value={newRole}
+              onChange={(e) => setNewRole(e.target.value)}
+              className="w-full p-2 border rounded bg-white"
+            >
+              <option value="" disabled>Select Role</option>  {/* Placeholder option */}
+              <option value="Commercial Manager">Commercial Manager</option>
+              <option value="Finance">Finance</option>
+              <option value="Product Manager">Product Manager</option>
+            </select>
+          </div>
+          <div className="mb-4">
             <label className="block text-sm font-bold mb-2">Password</label>
             <input
               type="password"
@@ -181,6 +197,7 @@ const Admin = () => {
               className="w-full p-2 border rounded"
             />
           </div>
+
           <button
             onClick={handleUpdateUser}
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
@@ -188,6 +205,7 @@ const Admin = () => {
           </button>
         </Modal>
       )}
+
     </div>
   );
 };

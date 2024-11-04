@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 const NewProductUpdate = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     productName: "",
   });
@@ -17,12 +18,14 @@ const NewProductUpdate = () => {
       )
       .then((res) => {
         setFormData(res?.data);
+        setLoading(false)
       })
       .catch((error) =>
         console.error("Error coming from server please try again later", {
           position: "top-center",
         })
       );
+    setLoading(false);
   }, [id]);
 
   // update data submit

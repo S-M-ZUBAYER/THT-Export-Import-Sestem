@@ -532,7 +532,7 @@ const Purchase = () => {
                   <thead>
                     <tr>
                       <th className="sticky top-0 bg-gray-200">Select</th>
-                      <th className="sticky top-0 bg-gray-200">ID</th>
+                      <th className="sticky top-0 bg-gray-200">Serial No</th>
                       <th className="sticky top-0 bg-gray-200">Date</th>
                       <th className="sticky top-0 bg-gray-200">Product Name</th>
                       <th className="sticky top-0 bg-gray-200">
@@ -545,7 +545,7 @@ const Purchase = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredData?.map((product) => {
+                    {filteredData?.map((product, index) => {
                       // const jsonStr = product.productModel.replace(
                       //   /^"|"$/g,
                       //   ""
@@ -565,7 +565,7 @@ const Purchase = () => {
                             // onClick={() => handleProductCheck(product)}
                             />
                           </td>
-                          <td>{product.id}</td>
+                          <td>{index + 1}</td>
                           <td>{product.date}</td>
                           <td>{product.productName}</td>
                           <td>{product.productModel}</td>

@@ -239,16 +239,16 @@ const NewBrand = () => {
               {/* head */}
               <thead>
                 <tr>
-                  <th className="sticky top-0 bg-gray-200">ID</th>
+                  <th className="sticky top-0 bg-gray-200">Serial No</th>
                   <th className="sticky top-0 bg-gray-200">Product Name</th>
                   <th className="sticky top-0 bg-gray-200">Product Brand</th>
                   <th className="sticky top-0 bg-gray-200">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts?.map((product) => (
+                {filteredProducts?.map((product, index) => (
                   <tr className="hover cursor-pointer" key={product.id}>
-                    <td>{product.id}</td>
+                    <td>{index + 1}</td>
                     <td>{product.productName}</td>
                     <td>{product.productBrand}</td>
                     <td className="flex space-x-10">

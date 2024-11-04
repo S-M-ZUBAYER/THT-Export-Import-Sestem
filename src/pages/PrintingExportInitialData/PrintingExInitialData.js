@@ -4,6 +4,7 @@ import { ClipLoader } from 'react-spinners';
 import { toast } from 'react-toastify';
 // import { generateInitialPDF } from './PrintFunctionForInitialData';
 import PrintFunctionForInitialData from './PrintFunctionForInitialData';
+import { AiOutlineDelete } from 'react-icons/ai';
 
 const PrintingExInitialData = () => {
     const [boxData, setBoxData] = useState([]);
@@ -98,6 +99,110 @@ const PrintingExInitialData = () => {
             setSelectedItems([]); // Deselect all
         }
     };
+    // product delete from server and also frontend
+    // const handleDelete = async (product) => {
+    //     const confirmDelete = window.confirm(
+    //         "Are you sure, you want to delete this Product Data?"
+    //     );
+    //     if (confirmDelete) {
+    //         try {
+    //             try {
+    //                 await axios.delete(
+    //                     `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes/${product?.id}`
+    //                 );
+    //                 toast.warn("Data successfully Deleted!!", { position: "top-center" });
+    //                 setFilteredData(filteredData.filter(products => products.id !== product?.id))
+    //             } catch (error) {
+    //                 toast.error("You can't delete now. Please try again later!", {
+    //                     position: "top-center",
+    //                 });
+    //             }
+    //         } catch (error) {
+    //             console.error(error);
+
+    //         }
+
+    //     }
+    // };
+    const handleDelete = async (product) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this Product Data?");
+
+        if (confirmDelete) {
+            try {
+                // Step 1: Fetch all products from `office_accounts` once
+                const response = await axios.get(`https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts`);
+                const officeAccounts = response.data;
+
+                // Step 2: Parse quantities and models into arrays
+                const quantities = product.splitQuantitySingleProduct.split(',').map(q => parseFloat(q.trim()));
+                const models = product.productModel.split(',').map(m => m.trim());
+
+                // Validation check: Quantities and models should have the same length
+                if (quantities.length !== models.length) {
+                    console.error("Quantities and models mismatch. Please check the data.");
+                    toast.error("Quantities and models mismatch. Please check the data.");
+                    return;
+                }
+
+                // Step 3: Loop through each model and update or add
+                for (let i = 0; i < models.length; i++) {
+                    const model = models[i];
+                    const quantity = quantities[i];
+
+                    // Find existing product matching model and product name
+                    const existingProduct = officeAccounts.find(
+                        item => item.productModel === model && item.productName === product.productName && item.date === product.date
+                    );
+                    console.log({
+                        ...existingProduct,
+                        productQuantity: parseFloat(existingProduct.productQuantity) + quantity,
+                        usedProduct: parseFloat(existingProduct.usedProduct) - quantity
+                    }, "data");
+
+                    if (existingProduct) {
+                        // Update existing product's quantity and usedProduct
+                        await axios.put(
+                            `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts`,
+                            {
+                                ...existingProduct,
+                                productQuantity: parseFloat(existingProduct.productQuantity) + quantity,
+                                usedProduct: parseFloat(existingProduct.usedProduct) - quantity
+                            }
+                        );
+                        toast.success(`Updated ${model} successfully!`, { position: "top-center" });
+                    } else {
+                        // Create a new product entry if it doesn't exist
+                        await axios.post(
+                            `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts`,
+                            {
+                                date: product.date,
+                                productModel: model,
+                                productBrand: product.productBrand,
+                                productName: product.productName,
+                                productQuantity: quantity,
+                                usedProduct: 0
+                            }
+                        );
+                        toast.success(`Added new product for ${model}!`, { position: "top-center" });
+                    }
+                }
+
+                // Step 4: Delete the product in `product_in_boxes`
+                await axios.delete(
+                    `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes/${product?.id}`
+                );
+
+                toast.warn("Data successfully Deleted!!", { position: "top-center" });
+                setFilteredData(filteredData.filter((p) => p.id !== product?.id));
+
+            } catch (error) {
+                console.error("Error occurred:", error);
+                toast.error("An error occurred. Please try again later!", { position: "top-center" });
+            }
+        }
+    };
+
+
 
 
     return (
@@ -133,7 +238,7 @@ const PrintingExInitialData = () => {
                                     onChange={handleSelectAll}
                                     checked={selectedItems.length === filteredData.length && filteredData.length > 0}
                                 /> Select All</th>
-                                <th className="sticky top-0 bg-gray-200">ID</th>
+                                <th className="sticky top-0 bg-gray-200 w-12">Serial No</th>
                                 <th className="sticky top-0 bg-gray-200">Date</th>
                                 <th className="sticky top-0 bg-gray-200">Product Name</th>
                                 <th className="sticky top-0 bg-gray-200">Product Model</th>
@@ -141,10 +246,11 @@ const PrintingExInitialData = () => {
                                 <th className="sticky top-0 bg-gray-200">Quantity</th>
                                 <th className="sticky top-0 bg-gray-200">Pallet No.</th>
                                 <th className="sticky top-0 bg-gray-200">Truck No.</th>
+                                <th className="sticky top-0 bg-gray-200">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredData.map((product) => (
+                            {filteredData.map((product, index) => (
                                 <tr className="hover cursor-pointer" key={product.id}>
                                     <td>
                                         <input
@@ -154,14 +260,19 @@ const PrintingExInitialData = () => {
                                             onChange={() => handleCheckboxChange(product)}
                                         />
                                     </td>
-                                    <td>{product.id}</td>
-                                    <td>{product.date}</td>
-                                    <td>{product.productName}</td>
-                                    <td>{product.productModel}</td>
-                                    <td>{product.splitQuantitySingleProduct}</td>
-                                    <td>{product.quantity}</td>
-                                    <td>{product.totalPallet}</td>
-                                    <td>{product.truckNumber}</td>
+                                    <td>{index + 1}</td>
+                                    <td>{product?.date}</td>
+                                    <td>{product?.productName}</td>
+                                    <td>{product?.productModel}</td>
+                                    <td>{product?.splitQuantitySingleProduct}</td>
+                                    <td>{product?.quantity}</td>
+                                    <td>{product?.totalPallet}</td>
+                                    <td>{product?.truckNumber}</td>
+                                    <td>
+                                        <button onClick={() => handleDelete(product)}>
+                                            <AiOutlineDelete className="w-6 h-6 text-red-600" />
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -282,7 +393,7 @@ const PrintingExInitialData = () => {
 
 
             <PrintFunctionForInitialData
-                finalData={{ ...printedData, language, mark, remark, quantity, company, receiptNumber, palletNo, totalBoxPallet, language, location }}
+                finalData={{ ...printedData, language, mark, remark, quantity, company, receiptNumber, palletNo, totalBoxPallet, language, location, totalPalletNo }}
             ></PrintFunctionForInitialData>
         </div>
     );

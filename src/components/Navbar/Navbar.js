@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/authContext";
 
 const Navbar = () => {
@@ -72,18 +72,25 @@ const Navbar = () => {
             </li>
           </ul>
         </div>
-        <div className="navbar-end">
-          <p></p>
-          {user ? (
-            <p style={{ cursor: "pointer" }} onClick={handleLogout}>
-              Log Out
-            </p>
-          ) : (
-            <NavLink to="/login" className="">
-              Sign In
-            </NavLink>
-          )}
+        <div className="navbar-end gap-4">
+
+          <div>
+            {user ? (
+              <p className="hover:text-red-600 cursor-pointer" onClick={handleLogout}>
+                Log Out
+              </p>
+            ) : (
+              <NavLink to="/login" className="">
+                Sign In
+              </NavLink>
+            )}
+          </div>
+
+          <div>
+            <Link className="hover:text-green-600" to="/signup">Create New User</Link>
+          </div>
         </div>
+
       </div>
     </div>
   );

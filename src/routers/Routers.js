@@ -2,7 +2,6 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Login from "../pages/user/Login";
 import Signup from "../pages/user/Signup";
-import ForgotPassword from "../pages/user/ForgotPassword";
 import PrivateRoute from "../components/PrivateRoute/PrivateRoute";
 import AdminRoute from "../components/PrivateRoute/AdminRoute";
 import Dashboard from "../pages/Dashboard/Dashboard";
@@ -38,10 +37,12 @@ const Routers = () => {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/forgotpassword" element={<ForgotPassword />} />
       <Route element={<PrivateRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/newproduct" element={<NewProduct />} />
+        <Route path="/newproduct/:id" element={<NewProductUpdate />} />
+        <Route path="/newbrand" element={<NewBrand />} />
+        <Route path="/newbrand/:id" element={<NewBrandUpdate />} />
         <Route path="/import" element={<Import />} />
         <Route path="/accounts" element={<Accounts />} />
         <Route path="/accounts/:id" element={<AccountsUpdate />} />
@@ -70,12 +71,9 @@ const Routers = () => {
         <Route path="/finalData-details/:id" element={<FinanceDetails />} />
       </Route>
       <Route element={<AdminRoute />}>
-        <Route path="/newproduct" element={<NewProduct />} />
-        <Route path="/newproduct/:id" element={<NewProductUpdate />} />
-        <Route path="/newbrand" element={<NewBrand />} />
-        <Route path="/newbrand/:id" element={<NewBrandUpdate />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin" element={<Admin />} />
+        <Route path="/signup" element={<Signup />} />
       </Route>
     </Routes>
   );
