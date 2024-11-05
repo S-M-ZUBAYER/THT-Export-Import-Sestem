@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
-const MalaysiaFormate = ({ finalData, handlePrint, closeModal }) => {
+const MalaysiaFormate = ({ finalData, handlePrint, closeModal, setProductList }) => {
     const [productNameFormate, setProductNameFormate] = useState([]);
     // Fetch user data from API
     useEffect(() => {
@@ -30,7 +30,9 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal }) => {
 
 
     const productNames = () => {
-        console.log("click");
+        console.log(productNameFormate);
+
+        const uniqueNames = new Set();
 
         return finalData?.printData
             ?.map(product => {
@@ -39,11 +41,20 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal }) => {
                 );
                 console.log(matchedProduct, "match");
 
-                return matchedProduct ? matchedProduct.malaysiaName : product.productName;
+                const productName = matchedProduct ? matchedProduct.malaysiaName : product.productName;
+
+                // Add only if the name is not already in the Set
+                if (!uniqueNames.has(productName)) {
+                    uniqueNames.add(productName);
+                    return productName;
+                }
+                return null; // Skip duplicates
             })
-            .join(' + ');
+            .filter(name => name !== null) // Remove nulls (duplicate names)
+            .join('+');
     };
 
+    setProductList(productNames())
 
     return (
 
@@ -96,20 +107,20 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal }) => {
                     <table className="w-full border-collapse mt-4">
                         <thead>
                             {
-                                finalData?.language === "EN" ? <tr className="bg-gray-200">
-                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-32">Model</th>
-                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-32">Date</th>
-                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-24">Pallet Total Box</th>
-                                    <th className="border-x-2 border-gray-300 px-4 py-2">Pallet No</th>
-                                    <th className="border-x-2 border-gray-300 px-4 py-2">Total Pallet No</th>
-                                    <th className="border-x-2 border-gray-300 px-4 py-2">Remark</th>
-                                </tr> : <tr className="bg-gray-200">
-                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-32">型号</th>
-                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-32">日期</th>
-                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-24">托盘总箱数</th>
-                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-24">托盘号</th>
-                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-24">总卡板</th>
-                                    <th className="border-x-2 border-gray-300 px-4 py-2 w-24">备注</th>
+                                finalData?.language === "EN" ? <tr className="bg-gray-200 text-sm">
+                                    <th className="border-x-2 border-gray-300  py-2 w-72">Model</th>
+                                    <th className="border-x-2 border-gray-300  py-2 w-30">Date</th>
+                                    <th className="border-x-2 border-gray-300  py-2 w-20">Pallet Total Box</th>
+                                    <th className="border-x-2 border-gray-300  py-2 w-12">Pallet No</th>
+                                    <th className="border-x-2 border-gray-300  py-2 w-12">Total Pallet No</th>
+                                    <th className="border-x-2 border-gray-300 py-2 w-12">Remark</th>
+                                </tr> : <tr className="bg-gray-200 text-sm">
+                                    <th className="border-x-2 border-gray-300  py-2 w-72">型号</th>
+                                    <th className="border-x-2 border-gray-300  py-2 w-30">日期</th>
+                                    <th className="border-x-2 border-gray-300  py-2 w-20">托盘总箱数</th>
+                                    <th className="border-x-2 border-gray-300  py-2 w-12">托盘号</th>
+                                    <th className="border-x-2 border-gray-300  py-2 w-12">总卡板</th>
+                                    <th className="border-x-2 border-gray-300 py-2 w-12">备注</th>
                                 </tr>
                             }
 

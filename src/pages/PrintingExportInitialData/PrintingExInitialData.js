@@ -131,32 +131,32 @@ const PrintingExInitialData = () => {
             try {
                 // Step 1: Fetch all products from `office_accounts` once
                 const response = await axios.get(`https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts`);
-                const officeAccounts = response.data;
+                const officeAccounts = response?.data;
 
                 // Step 2: Parse quantities and models into arrays
-                const quantities = product.splitQuantitySingleProduct.split(',').map(q => parseFloat(q.trim()));
-                const models = product.productModel.split(',').map(m => m.trim());
+                const quantities = product?.splitQuantitySingleProduct?.split(',')?.map(q => parseFloat(q.trim()));
+                const models = product?.productModel?.split(',')?.map(m => m.trim());
 
                 // Validation check: Quantities and models should have the same length
-                if (quantities.length !== models.length) {
+                if (quantities?.length !== models?.length) {
                     console.error("Quantities and models mismatch. Please check the data.");
                     toast.error("Quantities and models mismatch. Please check the data.");
                     return;
                 }
 
                 // Step 3: Loop through each model and update or add
-                for (let i = 0; i < models.length; i++) {
+                for (let i = 0; i < models?.length; i++) {
                     const model = models[i];
                     const quantity = quantities[i];
 
                     // Find existing product matching model and product name
-                    const existingProduct = officeAccounts.find(
-                        item => item.productModel === model && item.productName === product.productName && item.date === product.date
+                    const existingProduct = officeAccounts?.find(
+                        item => item?.productModel === model && item?.productName === product?.productName && item?.date === product?.date
                     );
                     console.log({
                         ...existingProduct,
-                        productQuantity: parseFloat(existingProduct.productQuantity) + quantity,
-                        usedProduct: parseFloat(existingProduct.usedProduct) - quantity
+                        productQuantity: parseFloat(existingProduct?.productQuantity) + quantity,
+                        usedProduct: parseFloat(existingProduct?.usedProduct) - quantity
                     }, "data");
 
                     if (existingProduct) {
@@ -165,8 +165,8 @@ const PrintingExInitialData = () => {
                             `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts`,
                             {
                                 ...existingProduct,
-                                productQuantity: parseFloat(existingProduct.productQuantity) + quantity,
-                                usedProduct: parseFloat(existingProduct.usedProduct) - quantity
+                                productQuantity: parseFloat(existingProduct?.productQuantity) + quantity,
+                                usedProduct: parseFloat(existingProduct?.usedProduct) - quantity
                             }
                         );
                         toast.success(`Updated ${model} successfully!`, { position: "top-center" });
@@ -175,10 +175,10 @@ const PrintingExInitialData = () => {
                         await axios.post(
                             `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts`,
                             {
-                                date: product.date,
+                                date: product?.date,
                                 productModel: model,
-                                productBrand: product.productBrand,
-                                productName: product.productName,
+                                productBrand: product?.productBrand,
+                                productName: product?.productName,
                                 productQuantity: quantity,
                                 usedProduct: 0
                             }
@@ -193,7 +193,7 @@ const PrintingExInitialData = () => {
                 );
 
                 toast.warn("Data successfully Deleted!!", { position: "top-center" });
-                setFilteredData(filteredData.filter((p) => p.id !== product?.id));
+                setFilteredData(filteredData?.filter((p) => p.id !== product?.id));
 
             } catch (error) {
                 console.error("Error occurred:", error);

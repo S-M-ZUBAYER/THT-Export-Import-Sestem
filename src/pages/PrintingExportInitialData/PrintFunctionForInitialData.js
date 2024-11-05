@@ -11,6 +11,7 @@ Modal.setAppElement('#root'); // Set the root element for accessibility
 
 const PrintFunctionForInitialData = ({ finalData }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [productList, setProductList] = useState("");
     console.log(finalData, "log");
 
     const openModal = () => setIsOpen(true);
@@ -82,7 +83,8 @@ const PrintFunctionForInitialData = ({ finalData }) => {
             }
 
             // Save the PDF with the desired filename
-            pdf.save(`product_details_${finalData?.printData?.map(p => p.productName).join('_')}.pdf`);
+            // pdf.save(`product_details_${finalData?.printData?.map(p => p.productName).join('_')}.pdf`);
+            pdf.save(`product_details_${productList}.pdf`);
         });
     };
 
@@ -101,17 +103,20 @@ const PrintFunctionForInitialData = ({ finalData }) => {
                     finalData?.language === "EN" ?
                         <EnglishFormate
                             finalData={finalData}
+                            setProductList={setProductList}
                             handlePrint={handlePrint}
                             closeModal={closeModal}
                         ></EnglishFormate> :
                         finalData?.language === "CN" ?
                             <ChineseFormate
                                 finalData={finalData}
+                                setProductList={setProductList}
                                 handlePrint={handlePrint}
                                 closeModal={closeModal}
                             ></ChineseFormate> :
                             <MalaysiaFormate
                                 finalData={finalData}
+                                setProductList={setProductList}
                                 handlePrint={handlePrint}
                                 closeModal={closeModal}
                             ></MalaysiaFormate>
