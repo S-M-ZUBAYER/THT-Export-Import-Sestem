@@ -17,7 +17,6 @@ const Purchase = () => {
   const [transportPath, setTransportPath] = useState([]);
   const [transportCountry, setTransportCountry] = useState([]);
   const [accounts, setAccounts] = useState([]);
-  const [charges, setCharges] = useState([]);
   const [boxData, setBoxData] = useState([]);
   const [purchase, setPurchase] = useState([]);
   const [transportWay, setTransportWay] = useState("");
@@ -26,18 +25,15 @@ const Purchase = () => {
     useState("");
   const [filteredTruckNumbers, setFilteredTruckNumbers] = useState([]);
   const [finances, setFinances] = useState([]);
-  const [traderServiceProvider, setTraderServiceProvider] = useState("");
-  const [serviceProviders, setServiceProviders] = useState("");
+
 
   // const [productChecks, setProductChecks] = useState([]);
-  const [savedExpenses, setSavedExpenses] = useState([]);
-  const [totalCost, setTotalCost] = useState(0.00);
+
+
   const [invoiceNo, setInvoiceNo] = useState("");
   const [total, setTotal] = useState(0.00);
   const [ipNo, setIpNo] = useState("");
   const [truckNo, setTruckNo] = useState("");
-  const [grossWeight, setGrossWeight] = useState(0);
-  const [netWeight, setNetWeight] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedItems, setSelectedItems] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -63,33 +59,18 @@ const Purchase = () => {
 
   const productData = JSON.stringify(selectedItems);
 
-  // calculation purchase state
-  const [containerServiceProvider, setContainerServiceProvider] = useState("");
-  const [rows, setRows] = useState([
-    { slNo: 1, date: "", containerNo: "", containerTypeSize: "", invoiceNo: "", epNumber: "", fareAmount: 0, aitVat: 0, individualTotalAmount: 0 }
-  ]);
-  const [formData, setFormData] = useState({
-    shipper: "THT-Space Electrical Company Ltd.",
-    blNo: "",
-    containerNo: "",
-    destination: "",
-    vslVoy: "",
-    etd: "",
-    eta: "",
-    exchangeRate: "", // Default Exchange Rate USD to BDT
-    charges: [
-      { description: "", amountUSD: 0, amountBDT: 0 },
-    ],
-  });
-  const [shipCostTK, setShipCostTK] = useState(0);
-  const [shipCostUSD, setShipCostUSD] = useState(0);
 
 
-  const [totalFareAmount, setTotalFareAmount] = useState(0);
-  const [totalAitVat, setTotalAitVat] = useState(0);
-  const [totalCarrierAmount, setTotalCarrierAmount] = useState(0);
 
-  const [selectedExpensesList, setSelectedExpensesList] = useState([]);
+
+
+
+
+
+
+
+
+
 
   // data get from office_accounts API
   const fetchAccounts = async () => {
@@ -108,16 +89,7 @@ const Purchase = () => {
     }
   };
 
-  const fetchCharges = async () => {
-    try {
-      const response = await axios.get(
-        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/addcharges"
-      );
-      setCharges(response?.data);
-    } catch (error) {
-      console.error("Error from server to get data!!");
-    }
-  };
+
 
   const fetchBoxData = async () => {
     try {
@@ -182,16 +154,7 @@ const Purchase = () => {
   };
 
 
-  const fetchTradeServiceProvider = async () => {
-    try {
-      const response = await axios.get(
-        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/trade_service"
-      );
-      setServiceProviders(response.data);
-    } catch (error) {
-      console.error("Failed to fetch data");
-    }
-  };
+
 
 
 
@@ -204,16 +167,13 @@ const Purchase = () => {
     fetchTransportCountry();
     //   getting accounts data from office_accounts server
     fetchAccounts();
-    // geeting charges api call
-    fetchCharges();
+
     // fetch box data
     fetchBoxData();
     // fetch finance data
     fetchFinance();
     // fetch purchase data
     fetchPurchase();
-    // fetch trade service data
-    fetchTradeServiceProvider();
   }, []);
 
 
@@ -265,12 +225,6 @@ const Purchase = () => {
   const handleTruckNo = (event) => {
     setTruckNo(event.target.value);
   };
-  const handleGrossWeight = (event) => {
-    setGrossWeight(event.target.value);
-  };
-  const handleNetWeight = (event) => {
-    setNetWeight(event.target.value);
-  };
   const handleToZone = (event) => {
     setZone(event.target.value);
   };
@@ -315,14 +269,7 @@ const Purchase = () => {
   };
 
 
-  const handleExpenseSave = (selectedExpenseData) => {
 
-    setSavedExpenses(selectedExpenseData);
-  };
-
-  const handleTotalCostChange = (newTotalCost) => {
-    setTotalCost(newTotalCost);
-  };
 
 
   const [allTotalBoxWeight, setAllTotalBoxWeight] = useState(0);
@@ -358,10 +305,6 @@ const Purchase = () => {
         transportWay: transportWay, // id pass
         transportCountryName: transportCountryName, // id pass
         purchaseProductInBoxes: selectedProduct,
-        // purchaseProductInBoxes: [],
-        particularExpenseNames: savedExpenses,
-        // particularExpenseNames: [],
-        totalCost: totalCost,
         invoiceNo: invoiceNo,
         total: newEx.toString(),
         truckNo: truckNo,
@@ -370,38 +313,16 @@ const Purchase = () => {
         date: selectedProductDate,
         tradeExpanseStatus: false,
         tradeExpanseDate: "",
-        status: "purchase",
+        status: "initialPurchase",
         finalStatus: "",
         allTotalBoxWeight: allTotalBoxWeight,
-        traderServiceProvider: traderServiceProvider,
-        netWeight: parseFloat(netWeight),
-        grossWeight: parseFloat(grossWeight),
-        containerServiceProvider: containerServiceProvider,
-        totalFareAmount: parseFloat(totalFareAmount),
-        totalAitVat: parseFloat(totalAitVat),
-        totalCarrierAmount: parseFloat(totalCarrierAmount),
         carrierExpanseStatus: false,
         carrierExpanseDate: "",
-        seaServiceProvider: formData?.seaServiceProvider,
-        shipper: formData?.shipper,
-        blNo: formData?.blNo,
-        containerNo: formData?.containerNo,
-        destination: formData?.destination,
-        vslVoy: formData?.vslVoy,
-        etd: formData?.etd,
-        eta: formData?.eta,
-        exchangeRate: formData?.exchangeRate,
         seaExpanseStatus: false,
         seaExpanseDate: "",
         tradeExchangeRate: 0,
         tradeValue: 0,
-        containerExpenseNames: rows,
-        // containerExpenseNames: [],
-        chargesList: formData?.charges,
-        // chargesList: [],
         image: "",
-        totalAmountUSD: parseFloat(shipCostUSD),
-        totalAmountBDT: parseFloat(shipCostTK),
         candF: 0,
         epNo: ipNo,
         zone: zone,
@@ -436,33 +357,45 @@ const Purchase = () => {
             position: "top-center",
           });
 
-          // Create an array of delete promises for all selected products
-          const deletePromises = selectedProduct.map((product) =>
-            axios.delete(
-              `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes/${product.id}`
-            )
-          );
+          try {
+            // Create an array of delete promises for all selected products
+            const deletePromises = selectedProduct.map((product) =>
+              axios.delete(
+                `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes/${product.id}`
+              )
+            );
 
-          // Wait for all delete requests to complete
-          await Promise.all(deletePromises);
+            // Wait for all delete requests to complete
+            await Promise.all(deletePromises);
 
-          // Update the state after the delete operations are complete
-          setBoxData((prevBoxData) =>
-            prevBoxData.filter((data) => !selectedProduct.some((product) => product.id === data.id))
-          );
+            // Update the state after the delete operations are complete
+            setBoxData((prevBoxData) =>
+              prevBoxData.filter(
+                (data) => !selectedProduct.some((product) => product.id === data.id)
+              )
+            );
 
-          setFilteredData((prevFilteredData) =>
-            prevFilteredData.filter((data) => !selectedProduct.some((product) => product.id === data.id))
-          );
+            setFilteredData((prevFilteredData) =>
+              prevFilteredData.filter(
+                (data) => !selectedProduct.some((product) => product.id === data.id)
+              )
+            );
 
-          // Navigate after the operations are done
-          navigate("/finalPurchase");
+            // Navigate after the operations are done
+            navigate("/exportAndFinance");
+          } catch (deleteError) {
+            // Handle delete-specific errors if needed
+            toast.error("Failed to delete some items. Please check and try again.", {
+              position: "top-center",
+            });
+          }
         })
         .catch((err) =>
-          toast.error("This error coming from server please try again later!!", {
+          toast.error("This error is coming from the server, please try again later!", {
             position: "top-center",
           })
         );
+
 
 
     };
@@ -1014,109 +947,17 @@ const Purchase = () => {
 
 
               </div>
-              {/* Trade Service Provider */}
-              <h1 className="text-3xl underline font-bold mt-10 mb-6 text-center text-gray-800">Trade Overseas Service Details Form</h1>
-              <div className="">
-                <div>
-                  <label
-                    className="lebel-text text-lg font-semibold"
-                    htmlFor="traderServiceProvider">
-                    Trade Service Provider
-                  </label>
-                  <select
-                    className="w-full border-[1px] border-info rounded-md p-3 mt-3 bg-transparent"
-                    name="traderServiceProvider"
-                    value={traderServiceProvider}
-                    onChange={(e) => setTraderServiceProvider(e.target.value)}
-                    required
-                    aria-required
-                  >
-                    <option value="" disabled>
-                      Select Trade Service Provider
-                    </option>
-                    {
-                      serviceProviders && serviceProviders.map(provider => <option value={provider.name}>{provider.name}</option>)
-                    }
-                    {/* Add more options as needed */}
-                  </select>
 
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-
-                {/* Net Weight */}
-                <div className="">
-                  <label className="text-lg font-semibold" htmlFor="netWeight">
-                    Net Weight
-                  </label>
-                  <div className="mt-3">
-                    <input
-                      type="number"
-                      className="input input-info w-full"
-                      id="netWeight"
-                      value={netWeight}
-                      name="netWeight"
-                      required
-                      placeholder="Enter or pick netWeight"
-                      list="netWeight" // Associate the input with the datalist for filtering
-                      onChange={handleNetWeight}
-                    />
-                  </div>
-                </div>
-
-                {/* Gross Weight */}
-                <div className="">
-                  <label className="text-lg font-semibold" htmlFor="grossWeight">
-                    Gross Weight
-                  </label>
-                  <div className="mt-3">
-                    <input
-                      type="number"
-                      className="input input-info w-full"
-                      id="grossWeight"
-                      value={grossWeight}
-                      name="grossWeight"
-                      required
-                      placeholder="Enter or pick grossWeight"
-                      list="grossWeight" // Associate the input with the datalist for filtering
-                      onChange={handleGrossWeight}
-                    />
-                  </div>
-                </div>
-              </div>
-
-
-
-              {/* checking element for calculation */}
-              <ExpensesForm
-                rows={rows}
-                setRows={setRows}
-                containerServiceProvider={containerServiceProvider}
-                setContainerServiceProvider={setContainerServiceProvider}
-                formData={formData}
-                setFormData={setFormData}
-                expenses={charges}
-                onExpenseSave={handleExpenseSave}
-                onTotalCostChange={handleTotalCostChange}
-                shipCostTK={shipCostTK}
-                setShipCostTK={setShipCostTK}
-                shipCostUSD={shipCostUSD}
-                setShipCostUSD={setShipCostUSD}
-                totalFareAmount={totalFareAmount}
-                setTotalFareAmount={setTotalFareAmount}
-                totalAitVat={totalAitVat}
-                setTotalAitVat={setTotalAitVat}
-                totalCarrierAmount={totalCarrierAmount}
-                setTotalCarrierAmount={setTotalCarrierAmount}
-                selectedExpensesList={selectedExpensesList}
-                setSelectedExpensesList={setSelectedExpensesList}
-                ipNo={ipNo}
-                invoiceNo={invoiceNo}
-                truckNo={truckNo}
-                transportPort={selectedTransportCountryPort}
-                transportCountry={transportCountryName}
-              />
             </form>
+          </div>
+          {/* button */}
+          <div className="my-6 flex justify-end">
+            <button
+              onClick={formSubmit}
+              className="mr-2 btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
+            >
+              Save
+            </button>
           </div>
         </div>
       </div>

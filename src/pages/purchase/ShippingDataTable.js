@@ -2,12 +2,23 @@ import React, { useEffect, useState } from "react";
 
 const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, transportPort, transportCountry, truckNo }) => {
 
-    // Update form fields
     const handleFieldChange = (e) => {
         const { name, value } = e.target;
 
-        setFormData({ ...formData, [name]: value });
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
     };
+    useEffect(() => {
+
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            containerNo: truckNo
+        }));
+    }, [truckNo]);
+
+
 
     // Update charges and calculate amounts
     const handleChargeChange = (index, field, value) => {
@@ -100,6 +111,7 @@ const ShippingDataTable = ({ formData, setFormData, shipCostTK, setShipCostTK, s
                         onChange={handleFieldChange}
                         className="w-full p-2 border border-gray-300 rounded"
                         placeholder="Enter Container No"
+                        readOnly
                     />
                 </div>
                 <div>

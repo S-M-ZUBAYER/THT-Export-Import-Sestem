@@ -78,24 +78,29 @@ const DashboardSidebar = ({ children }) => {
       icon: <FiPrinter />,
     },
     user && JSON.parse(user)?.role === "Commercial Manager" && {
+      path: "/AddCAndFLevel",
+      display: "Add C&F Level",
+      icon: <MdOutlineProductionQuantityLimits />, // Export icon
+    },
+    user && JSON.parse(user)?.role === "Commercial Manager" && {
+      path: "/addcharges",
+      display: "Add Charges",
+      icon: <FaMoneyBill1Wave />,
+    },
+    user && JSON.parse(user)?.role === "Commercial Manager" && {
       path: "/export",
-      display: "Export Data Entry",
+      display: "Export Initial Data Entry",
+      icon: <BiSolidPurchaseTag />,
+    },
+    user && JSON.parse(user)?.role === "Commercial Manager" && {
+      path: "/exportAndFinance",
+      display: "Export Finance Data Entry",
       icon: <BiSolidPurchaseTag />,
     },
     user && JSON.parse(user)?.role === "Commercial Manager" && {
       path: "/finalExport",
       display: "Final Export Checking",
       icon: <BiSolidPurchaseTagAlt />,
-    },
-    user && JSON.parse(user)?.role === "Finance" && {
-      path: "/AddC&FLevel",
-      display: "Add C&F Level",
-      icon: <MdOutlineProductionQuantityLimits />, // Export icon
-    },
-    user && JSON.parse(user)?.role === "Finance" && {
-      path: "/addcharges",
-      display: "Add Charges",
-      icon: <FaMoneyBill1Wave />,
     },
     user && JSON.parse(user)?.role === "Finance" && {
       path: "/finance",

@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import CarrierTableData from "./CarrierTableData";
 import ShippingDataTable from "./ShippingDataTable";
 
-const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRows, containerServiceProvider, setContainerServiceProvider, formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, selectedExpensesList, setSelectedExpensesList, ipNo, invoiceNo, truckNo, transportCountry, transportPort }) => {
+const ExpensesForm = ({ handleToFinalSave, expenses, onExpenseSave, onTotalCostChange, rows, setRows, containerServiceProvider, setContainerServiceProvider, formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, selectedExpensesList, setSelectedExpensesList, ipNo, invoiceNo, truckNo, transportCountry, transportPort }) => {
   const [selectedExpenses, setSelectedExpenses] = useState([]);
   const [remarks, setRemarks] = useState({});
   const [dates, setDates] = useState({});
+
   const handleSave = () => {
     const selectedExpenseData = selectedExpenses.map((id) => {
       const expense = expenses.find((expense) => expense.id === Number(id));
@@ -144,7 +145,7 @@ const ExpensesForm = ({ expenses, onExpenseSave, onTotalCostChange, rows, setRow
       {/* button */}
       <div className="my-6 flex justify-end">
         <button
-          // onClick={handleSave}
+          onClick={handleToFinalSave}
           className="mr-2 btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
         >
           Save

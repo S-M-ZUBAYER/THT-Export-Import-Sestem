@@ -59,12 +59,11 @@ const FinanceDetails = () => {
 
 
     const handleToReject = () => {
-        const confirmReject = window.confirm("Are you sure Do you want to reject this export information?");
-        // Fetch purchase details using the invoice number
+        const confirmReject = window.confirm("Are you sure you want to reject this export information?");
+
         if (confirmReject) {
             axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
                 .then(response => {
-
                     // Find the purchase matching the invoice number from financeDetailsData
                     const finalPurchases = response.data.find(
                         (purchase) => purchase.invoiceNo === financeDetailsData.invoiceNo
@@ -72,41 +71,35 @@ const FinanceDetails = () => {
 
                     if (!finalPurchases) {
                         toast.error('No purchase found for this invoice number!');
-                        return;
+                        return Promise.reject('No matching purchase found');
                     }
 
                     // Create rejected data with the updated status
                     let rejectedData = {
-                        ...finalPurchases, // Copy all properties of finalPurchases
-                        status: "purchase", // Update the status to "purchase"
+                        ...finalPurchases,
+                        status: "purchase",
                         sendBackReasons: reason
                     };
 
-
                     // Update the purchase data by making a PUT request
-                    axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase', rejectedData)
-                        .then(() => {
-                            toast.warn('Data rejected from finance successfully!');
+                    return axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase', rejectedData);
+                })
+                .then(() => {
+                    toast.warn('Data rejected from finance successfully!');
 
-                            // After successful PUT, delete the finance entry
-                            return axios.delete(`https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance/${financeDetailsData.id}`);
-                        })
-                        .then(() => {
-                            toast.warn('Finance data deleted successfully!');
-                            setShowModal(false);
-                            navigate("/finalExport");
-                        })
-                        .catch(error => {
-                            console.error('Error during rejection process:', error);
-                            toast.error('Failed to reject data or delete finance data!');
-                        });
+                    // Only proceed to delete after PUT request is successful
+                    return axios.delete(`https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance/${financeDetailsData.id}`);
+                })
+                .then(() => {
+                    toast.warn('Finance data deleted successfully!');
+                    setShowModal(false);
+                    navigate("/finance");
                 })
                 .catch(error => {
-                    console.error('Error fetching purchase data:', error);
-                    toast.error('Failed to fetch purchase data!');
+                    console.error('Error during rejection process:', error);
+                    toast.error('An error occurred during the rejection or deletion process. Please try again.');
                 });
         }
-
     };
 
 
