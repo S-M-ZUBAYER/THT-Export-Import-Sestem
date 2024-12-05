@@ -14,20 +14,74 @@ const FinalPurchaseModal = ({
 
     const [editedProductInBoxesData, setEditedProductInBoxesData] = useState(selectedPurchase ? selectedPurchase?.purchaseProductInBoxes : []);
     const [serviceProvider, setServiceProvider] = useState([]);
-    useEffect(() => {
-        const fetchTradeServiceProvider = async () => {
-            try {
-                const response = await axios.get(
-                    "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/trade_service"
-                );
-                setServiceProvider(response.data);
-            } catch (error) {
-                console.error("Failed to fetch data");
-            }
-        };
+    const [calculationData, setCalculationData] = useState([]);
 
+    const fetchTradeServiceProvider = async () => {
+        try {
+            const response = await axios.get(
+                "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/trade_service"
+            );
+            setServiceProvider(response.data);
+        } catch (error) {
+            console.error("Failed to fetch data");
+        }
+    };
+
+    const fetchProductCalculationData = async () => {
+        try {
+            const response = await axios.get(
+                "https://grozziieget.zjweiting.com:3091/web-api-tht-1/product_in_box_calculation"
+            );
+            setCalculationData(response.data);
+        } catch (error) {
+            console.error("Failed to fetch data");
+        }
+    };
+
+    useEffect(() => {
         fetchTradeServiceProvider();
+        fetchProductCalculationData()
     }, []);
+
+    useEffect(() => {
+        if (calculationData.length > 0 && selectedPurchase?.purchaseProductInBoxes?.length > 0) {
+            const originalData = [...selectedPurchase.purchaseProductInBoxes];
+            const updatedData = [...editedProductInBoxesData];
+
+            const mergedData = originalData.map((product, index) => {
+                const hscode =
+                    updatedData[index]?.hscode ||
+                    calculationData.find((item) => item.productName === product.productName)?.hscode ||
+                    product.hscode;
+
+                const c_FUS =
+                    parseFloat(calculationData.find((item) => item.productName === product.productName)?.fobus$) * product?.quantity
+
+                const c_FUSD =
+                    parseFloat(calculationData.find((item) => item.productName === product.productName)?.fobusd) * product?.quantity
+
+                updatedData[index] = {
+                    ...product,
+                    hscode,
+                    c_FUS,
+                    c_FUSD,
+                };
+
+                return updatedData[index];
+            });
+
+            // Only update if mergedData has changed
+            const hasChanges = JSON.stringify(mergedData) !== JSON.stringify(selectedPurchase.purchaseProductInBoxes);
+
+            if (hasChanges) {
+                setEditedProductInBoxesData(updatedData);
+                setSelectedPurchase((prev) => ({
+                    ...prev,
+                    purchaseProductInBoxes: mergedData,
+                }));
+            }
+        }
+    }, [calculationData, selectedPurchase?.purchaseProductInBoxes]);
 
 
     if (!isOpen || !selectedPurchase) {
@@ -35,38 +89,7 @@ const FinalPurchaseModal = ({
     }
     // State to manage the edited values for each product
 
-    const handleInputChange = (index, field, value) => {
-        // Clone the original data from selectedPurchase.purchaseProductInBoxes
-        const originalData = [...selectedPurchase.purchaseProductInBoxes];
 
-        // Create a copy of the edited data
-        const updatedData = [...editedProductInBoxesData];
-
-        // If there's no data for this index in editedProductInBoxesData, initialize it with the original product data
-        if (!updatedData[index]) {
-            updatedData[index] = { ...originalData[index] };
-        }
-
-        // Update only the specific field with the new value
-        updatedData[index] = {
-            ...updatedData[index],
-            [field]: value
-        };
-
-        // Set the updated data in the editedProductInBoxesData state
-        setEditedProductInBoxesData(updatedData);
-
-        // Merge the original data with the updated data, ensuring the unedited objects retain their original values
-        const mergedData = originalData.map((item, i) => updatedData[i] ? updatedData[i] : item);
-
-        // Update the parent state with the merged data
-        setSelectedPurchase((prev) => ({
-            ...prev,
-            purchaseProductInBoxes: mergedData // Update the correct field in the parent state
-        }));
-    };
-
-    const reason = "don't do it again  again and again please be careful not re, Please check all the information is correct or not and so one, why you do it again and again please be careful not repeat this again,please don't mind this mistake can be happen  "
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -457,12 +480,16 @@ const FinalPurchaseModal = ({
                                 <td className="py-2 px-1">
                                     <input
                                         type="text"
-                                        value={editedProductInBoxesData[index]?.hscode || product.hscode}
-                                        onChange={(e) => handleInputChange(index, 'hscode', e.target.value)}
+                                        value={editedProductInBoxesData[index]?.hscode ||
+                                            calculationData.find((item) => item.productName === product.productName)?.hscode ||
+                                            product.hscode}
                                         placeholder="HS Code"
                                         className="border-2 rounded px-1 w-36 min-h-12"
+                                        readOnly
                                     />
                                 </td>
+
+
                                 <td className="py-2 px-1">{product.productName}</td>
                                 <td className="py-2 px-1">{product.productModel}</td>
                                 <td className="py-2 px-1">{product.quantity}</td>
@@ -472,22 +499,30 @@ const FinalPurchaseModal = ({
                                 <td className="py-2 px-1">{product.weightPerBox}</td>
                                 <td className="py-2 px-1">{product.individualTotalBoxWeight}</td>
                                 <td className="py-2 px-1">
-                                    <input
-                                        type="text"
-                                        value={editedProductInBoxesData[index]?.c_FUS || product.c_FUS}
-                                        onChange={(e) => handleInputChange(index, 'c_FUS', e.target.value)}
-                                        className="border-2 rounded px-1 w-36 min-h-12"
-                                    />
-                                </td>
-                                <td className="py-2 px-1">
-                                    <input
-                                        type="text"
-                                        value={editedProductInBoxesData[index]?.c_FUSD || product.c_FUSD}
-                                        onChange={(e) => handleInputChange(index, 'c_FUSD', e.target.value)}
-                                        className="border-2 rounded px-1 w-36 min-h-12"
-                                    />
+                                    <td className="py-2 px-1">
+                                        <input
+                                            type="text"
+                                            value={
+                                                parseFloat((calculationData.find((item) => item.productName === product.productName)?.fobus$ || 0) * product.quantity)
+                                            }
+                                            className="border-2 rounded px-1 w-36 min-h-12"
+                                            readOnly
+                                        />
+                                    </td>
+                                    <td className="py-2 px-1">
+                                        <input
+                                            type="text"
+                                            value={
+
+                                                parseFloat((calculationData.find((item) => item.productName === product.productName)?.fobusd || 0) * product.quantity)
+                                            }
+                                            className="border-2 rounded px-1 w-36 min-h-12"
+                                            readOnly
+                                        />
+                                    </td>
                                 </td>
                             </tr>
+
                         ))}
                     </tbody>
                     <tfoot>

@@ -32,6 +32,7 @@ import FinalPurchase from "../pages/FinalPurchase/FinalPurchase";
 import FinanceDetails from "../pages/finance/FinanceDetails";
 import AddCFLevel from "../pages/dataInput/AddCFLevel";
 import PurchaseFinance from "../pages/purchase/PurchaseFinance";
+import ProductInBoxCalculation from "../pages/dataInput/ProductInBoxCalculation";
 
 const Routers = () => {
   return (
@@ -66,6 +67,7 @@ const Routers = () => {
         <Route path="/addcharges" element={<AddCharges />} />
         <Route path="/addcharges/:id" element={<AddChargesUpdate />} />
         <Route path="/productinboxes" element={<ProductBoxes />} />
+        <Route path="/addProductInBoxValue" element={<ProductInBoxCalculation />} />
         <Route path="/finance" element={<Finance />} />
         <Route path="/export-details/:id" element={<FinanceDetails />} />
         <Route path="/finance-details/:id" element={<FinanceDetails />} />

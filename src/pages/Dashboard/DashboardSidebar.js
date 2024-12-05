@@ -6,6 +6,7 @@ import { MdAddToPhotos, MdAccountBalance, MdOutlineProductionQuantityLimits } fr
 import { FaShippingFast, FaBoxOpen } from "react-icons/fa";
 import { BiWorld, BiSolidPurchaseTag, BiSolidPurchaseTagAlt } from "react-icons/bi";
 import { FaMoneyBill1Wave } from "react-icons/fa6";
+import { FaCalculator } from "react-icons/fa6";
 import { FiPrinter } from "react-icons/fi";
 import { FcPrint } from "react-icons/fc";
 import { GiTakeMyMoney } from "react-icons/gi";
@@ -86,6 +87,11 @@ const DashboardSidebar = ({ children }) => {
       path: "/addcharges",
       display: "Add Charges",
       icon: <FaMoneyBill1Wave />,
+    },
+    user && JSON.parse(user)?.role === "Commercial Manager" && {
+      path: "/addProductInBoxValue",
+      display: "Add Product InBox Value",
+      icon: <FaCalculator />,
     },
     user && JSON.parse(user)?.role === "Commercial Manager" && {
       path: "/export",

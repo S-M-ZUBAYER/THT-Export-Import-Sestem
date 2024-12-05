@@ -1,8 +1,10 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 const MalaysiaFormate = ({ finalData, handlePrint, closeModal, setProductList }) => {
     const [productNameFormate, setProductNameFormate] = useState([]);
+    const [printData, setPrintData] = useState(finalData?.printData || []);
+    const [newRows, setNewRows] = useState([]); // Track new rows separately
     // Fetch user data from API
     useEffect(() => {
         const fetchProductList = async () => {
@@ -20,17 +22,23 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal, setProductList })
 
     const marks = finalData?.mark ? finalData?.mark?.split(",") || [] : [];
 
-    const totalQuantity = finalData?.printData?.reduce((acc, data) => {
-        return acc + (data?.quantity || 0);
-    }, 0);
+    const calculateTotals = useCallback(() => {
+        const allData = [...(finalData?.printData || []), ...newRows];
 
-    const totalBoxes = finalData?.printData?.reduce((acc, data) => {
-        return acc + (data?.totalBox || 0);
-    }, 0);
+        const totalQuantity = allData.reduce((acc, data) => {
+            return acc + (parseInt(data?.quantity || data?.totalBox || 0, 10));
+        }, 0);
 
+        const totalBoxes = allData.reduce((acc, data) => {
+            return acc + (parseInt(data?.totalBox || 0, 10));
+        }, 0);
+
+        return { totalQuantity, totalBoxes };
+    }, [finalData, newRows]);
+
+    const { totalQuantity, totalBoxes } = calculateTotals();
 
     const productNames = () => {
-        console.log(productNameFormate);
 
         const uniqueNames = new Set();
 
@@ -39,7 +47,6 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal, setProductList })
                 const matchedProduct = productNameFormate?.find(
                     item => item.productName === product.productName
                 );
-                console.log(matchedProduct, "match");
 
                 const productName = matchedProduct ? matchedProduct.malaysiaName : product.productName;
 
@@ -55,6 +62,17 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal, setProductList })
     };
 
     setProductList(productNames())
+
+    const addRow = () => {
+        const newRow = { productModel: '', totalBox: '', remark: '' };
+        setNewRows([...newRows, newRow]);
+
+    };
+    const handleInputChange = (index, field, value) => {
+        const updatedData = [...newRows];
+        updatedData[index][field] = value;
+        setNewRows(updatedData);
+    };
 
     return (
 
@@ -136,6 +154,43 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal, setProductList })
                                     <td className="border px-4 py-2">{finalData?.remark}</td>
                                 </tr>
                             ))}
+                            {newRows.map((product, index) => (
+                                <tr key={`new-${index}`} className="hover:bg-gray-100">
+                                    <td className="border h-8">
+
+                                        <textarea
+                                            value={product.productModel}
+                                            onChange={(e) => handleInputChange(index, 'productModel', e.target.value)}
+                                            className=" border-t w-full h-full resize-none pl-3 whitespace-pre-wrap text-start"
+                                            rows="1"
+                                        ></textarea>
+                                    </td>
+
+
+                                    <td className="border px-4 py-2">{printData[0].date}</td>
+                                    <td className="my-auto border">
+                                        <div className="flex justify-center items-center">
+                                            <input
+                                                type="text"
+                                                value={product.totalBox}
+                                                onChange={(e) => handleInputChange(index, 'totalBox', e.target.value)}
+                                                className="w-8 h-8 pt-1"
+                                            /> 箱
+                                        </div>
+
+                                    </td>
+                                    <td className="border px-4 py-2">{printData[0].totalPallet}</td>
+                                    <td className="border px-4 py-2">{finalData?.totalPalletNo}</td>
+                                    <td className="border">
+                                        <input
+                                            type="text"
+                                            value={product.remark}
+                                            onChange={(e) => handleInputChange(index, 'remark', e.target.value)}
+                                            className="w-full h-8"
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -144,6 +199,9 @@ const MalaysiaFormate = ({ finalData, handlePrint, closeModal, setProductList })
             <div className="flex justify-between mt-4">
                 <button className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition" onClick={handlePrint}>
                     Print PDF
+                </button>
+                <button onClick={addRow} className="bg-blue-500 text-white  px-4 py-2 rounded hover:bg-blue-600 transition">
+                    Add Row
                 </button>
                 <button className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition" onClick={closeModal}>
                     Close

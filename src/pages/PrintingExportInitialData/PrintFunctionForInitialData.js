@@ -12,7 +12,7 @@ Modal.setAppElement('#root'); // Set the root element for accessibility
 const PrintFunctionForInitialData = ({ finalData }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [productList, setProductList] = useState("");
-    console.log(finalData, "log");
+
 
     const openModal = () => setIsOpen(true);
     const closeModal = () => setIsOpen(false);
@@ -20,6 +20,7 @@ const PrintFunctionForInitialData = ({ finalData }) => {
 
 
     const handlePrint = () => {
+        console.log(finalData, "log");
         const input = document.getElementById('pdf-content');
 
         // Capture the content with specific dimensions

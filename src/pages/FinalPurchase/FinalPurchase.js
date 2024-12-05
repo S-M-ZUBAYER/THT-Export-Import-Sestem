@@ -71,7 +71,6 @@ const FinalPurchase = () => {
                 financeCharges: selectedPurchase.chargesList
             };
 
-
             delete updatedFinance.containerExpenseNames;
             delete updatedFinance.particularExpenseNames;
             delete updatedFinance.purchaseProductInBoxes;
