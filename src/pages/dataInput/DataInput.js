@@ -132,8 +132,11 @@ const DataInput = () => {
     }
     setError("");
     const isModelExists = products.some(
-      (item) => item.productModel === formData.productModel
+      (item) =>
+        item.productModel === formData.productModel &&
+        item.productBrand === formData.productBrand
     );
+
     if (isModelExists) {
       toast.error("This Model already exists. Check table Data", {
         position: "top-center",

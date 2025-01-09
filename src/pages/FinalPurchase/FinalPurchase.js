@@ -76,8 +76,6 @@ const FinalPurchase = () => {
             delete updatedFinance.purchaseProductInBoxes;
             delete updatedFinance.chargesList;
 
-
-
             // Now save to the API (you can do this after ensuring the state is correct)
             axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase', updatedPurchase)
                 .then(response => {

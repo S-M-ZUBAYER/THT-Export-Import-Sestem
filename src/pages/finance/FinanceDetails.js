@@ -58,6 +58,7 @@ const FinanceDetails = () => {
     }, [financeDetailsData.traderServiceProvider]);
 
 
+
     const handleToReject = () => {
         const confirmReject = window.confirm("Are you sure you want to reject this export information?");
 
@@ -455,7 +456,7 @@ const FinanceDetails = () => {
                         <strong>Zone:</strong> {financeDetailsData.zone}
                     </div>
                     <div>
-                        <strong>Port Of Loading:</strong> {financeDetailsData.loadFrom}
+                        <strong>Port Of Loading:</strong> {financeDetailsData?.loadfrom}
                     </div>
                     <div>
                         <strong>Permit Till Date:</strong> {financeDetailsData.permitedDate}

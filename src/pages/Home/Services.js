@@ -12,21 +12,21 @@ const Services = () => {
           to="/dashboard"
           className="border py-12 rounded-xl shadow-xl hover:shadow-2xl hover:bg-indigo-50">
           <p className="text-indigo-600 font-bold text-lg hover:text-indigo-400">
-            Accounts
+            Production
           </p>
         </Link>
         <Link
           to="/warehouse"
           className="border py-12 rounded-xl shadow-xl hover:shadow-2xl hover:bg-indigo-50">
           <p className="text-indigo-600 font-bold text-lg hover:text-indigo-400">
-            Warehouse
+            Commercial
           </p>
         </Link>
         <Link
           to="/admin"
           className="border py-12 rounded-xl shadow-xl hover:shadow-2xl hover:bg-indigo-50">
           <p className="text-indigo-600 font-bold text-lg hover:text-indigo-400">
-            Admin
+            Finance
           </p>
         </Link>
       </div>

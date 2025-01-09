@@ -6,6 +6,8 @@ const ChineseFormate = ({ finalData, handlePrint, closeModal, setProductList }) 
     const [printData, setPrintData] = useState(finalData?.printData || []);
     const [newRows, setNewRows] = useState([]);
     const [totalChinese, setTotalChinese] = useState('');
+    console.log(finalData);
+
 
     useEffect(() => {
         // Fetch product list on mount
@@ -96,17 +98,7 @@ const ChineseFormate = ({ finalData, handlePrint, closeModal, setProductList }) 
             <div id="pdf-content" className="space-y-4">
                 <div className="border-4 px-3 mx-8 border-slate-800 min-h-[900px] text-black">
                     <h1 className="text-7xl font-semibold text-center tracking-widest">唛头</h1>
-                    <h2 className="text-3xl ml-1 mb-10 mt-8">
-                        {marks?.map((mark, index) => (
-                            <p key={index}>
-                                {index + 1}. {mark.trim()}
-                            </p>
-                        ))}
-                    </h2>
-
-
-
-                    <div className="flex justify-start mb-10">
+                    <div className="flex justify-start mb-10 mt-8">
                         <h3 className="text-5xl ml-1 font-medium tracking-widest">品名:</h3>
                         {productNameList.length > 10 ? (
                             productNameList.length < 20 ? (
@@ -126,7 +118,7 @@ const ChineseFormate = ({ finalData, handlePrint, closeModal, setProductList }) 
                         )}
                     </div>
 
-                    <div className="flex justify-start items-center mb-10">
+                    <div className="flex justify-start items-center mb-8">
                         <h3 className="text-5xl ml-1 font-medium tracking-widest">每托盘箱数:</h3>
                         {/* <p className="text-5xl ml-1 font-medium tracking-widest">{finalData?.totalBoxes}</p> */}
                         <p className="text-5xl ml-1 font-medium tracking-widest">
@@ -134,6 +126,14 @@ const ChineseFormate = ({ finalData, handlePrint, closeModal, setProductList }) 
                         </p>
 
                     </div>
+
+                    <h2 className="text-4xl font-medium ml-1 mb-10">
+                        {marks?.map((mark, index) => (
+                            <p key={index}>
+                                {mark.trim()}
+                            </p>
+                        ))}
+                    </h2>
 
                     <h3 className="text-3xl ml-1 text-center font-semibold mb-10">Made in Bangladesh</h3>
 
@@ -161,7 +161,7 @@ const ChineseFormate = ({ finalData, handlePrint, closeModal, setProductList }) 
                                     <td className="border px-4 py-2">{product.totalBox} 箱</td>
                                     <td className="border px-4 py-2">{product.totalPallet}</td>
                                     <td className="border px-4 py-2">{finalData?.totalPalletNo}</td>
-                                    <td className="border px-4 py-2">{product.remark}</td>
+                                    <td className="border px-4 py-2">{finalData.remark}</td>
                                 </tr>
                             ))}
                             {newRows.map((product, index) => (
