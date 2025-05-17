@@ -76,6 +76,8 @@ const MultipleImageUpload = ({ financeDetailsData, setFinanceDetailsData }) => {
 
         const fullImageString = `${imageNames}+${fullFile}`; // Combine image names with file URLs
         const updateData = { ...financeDetailsData, image: fullImageString };
+        console.log(fullImageString, updateData, imageNames, fullFile);
+
 
         axios.put('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', updateData)
             .then(response => {

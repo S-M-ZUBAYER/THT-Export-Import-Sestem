@@ -15,6 +15,7 @@ const Accounts = () => {
   const [serverData, setServerData] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [filteredAccounts, setFilteredAccounts] = useState([]);
   const [lastId, setLastId] = useState('');
@@ -76,7 +77,7 @@ const Accounts = () => {
     }
   };
 
-
+  console.log(accounts, "accounht");
   const handleChange = (event) => {
     setFormData({
       ...formData,
@@ -84,50 +85,48 @@ const Accounts = () => {
     });
   };
 
-  const formSubmit = (e) => {
+  const formSubmit = async (e) => {
     e.preventDefault();
+    setBtnLoading(true); // ✅ Start loading state
 
-    const { productModel, productQuantity, date } = formData;
+    const { productModel, productQuantity, productBrand, date } = formData;
 
-    // Check if the productModel exists in accounts
+    // Check if the productModel exists in accounts for the same date
     const existingModel = accounts.find(
-      (account) => {
-        return account.productModel === productModel && account.date === date
-      }
+      (account) => account.productBrand === productBrand && account.productModel === productModel && account.date === date
     );
 
     if (existingModel) {
-      toast.warn("You Can't add same model number in same date you need to edit please..");
+      toast.warn("You can't add the same model on the same date. Please edit instead.");
+      setBtnLoading(false); // ✅ Reset loading state
       return;
     }
 
-    axios
-      .post(
+    try {
+      const res = await axios.post(
         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts",
         formData
-      )
-      .then((res) => {
-        toast.success(
-          "Successfully File added to server & check below table",
-          {
-            position: "top-center",
-          }
-        );
-        setFilteredAccounts([
-          {
-            id: lastId,
-            usedProduct: 0,
-            ...formData
-          },
-          ...filteredAccounts]
-        )
-      })
-      .catch((err) =>
-        toast.error("Error coming from server please try again later", {
-          position: "top-center",
-        })
       );
+
+      toast.success("Successfully added to the server. Check the table below!", { position: "top-center" });
+
+      setFilteredAccounts([
+        {
+          id: lastId,
+          usedProduct: 0,
+          ...formData
+        },
+        ...filteredAccounts
+      ]);
+
+    } catch (err) {
+      toast.error("Error from the server. Please try again later.", { position: "top-center" });
+
+    } finally {
+      setBtnLoading(false); // ✅ Always reset loading state
+    }
   };
+
 
   // account delete from server and also frontend
   const handleDelete = async (id) => {
@@ -327,7 +326,7 @@ const Accounts = () => {
               <button
                 className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black mb-4"
                 type="submit">
-                Save
+                {btnLoading ? "Saving" : "Save"}
               </button>
             </div>
           </form>

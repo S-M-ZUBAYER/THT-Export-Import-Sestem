@@ -25,6 +25,7 @@ const Purchase = () => {
     useState("");
   const [filteredTruckNumbers, setFilteredTruckNumbers] = useState([]);
   const [finances, setFinances] = useState([]);
+  const [btnLoading, setBtnLoading] = useState(false);
 
 
   // const [productChecks, setProductChecks] = useState([]);
@@ -286,12 +287,132 @@ const Purchase = () => {
   }, [selectedProduct])
 
   // data send to server
-  const formSubmit = (e) => {
+  // const formSubmit = (e) => {
+  //   e.preventDefault();
+  //   const confirmPurchase = window.confirm(
+  //     "Are you sure, you want to confirm these data as next step?"
+  //   );
+  //   if (confirmPurchase) {
+  //     setBtnLoading(true); // ✅ Start loading
+  //     let weightPerBoxList = [];
+  //     let individualTotalBoxWeightList = [];
+
+  //     selectedProduct.forEach((product) => {
+  //       weightPerBoxList.push(product?.weightPerBox);
+  //       individualTotalBoxWeightList.push(product?.individualTotalBoxWeight);
+  //     });
+  //     const newEx = parseFloat(total);
+  //     const purchaseInfo = {
+  //       id: 0,
+  //       transportWay: transportWay, // id pass
+  //       transportCountryName: transportCountryName, // id pass
+  //       purchaseProductInBoxes: selectedProduct,
+  //       invoiceNo: invoiceNo,
+  //       total: newEx.toString(),
+  //       truckNo: truckNo,
+  //       transportCountry: transportCountryName,
+  //       transportPort: selectedTransportCountryPort,
+  //       date: selectedProductDate,
+  //       tradeExpanseStatus: false,
+  //       tradeExpanseDate: "",
+  //       status: "initialPurchase",
+  //       finalStatus: "",
+  //       allTotalBoxWeight: allTotalBoxWeight,
+  //       carrierExpanseStatus: false,
+  //       carrierExpanseDate: "",
+  //       seaExpanseStatus: false,
+  //       seaExpanseDate: "",
+  //       tradeExchangeRate: 0,
+  //       tradeValue: 0,
+  //       image: "",
+  //       candF: 0,
+  //       epNo: ipNo,
+  //       zone: zone,
+  //       loadfrom: loadfrom,
+  //       expNo: expNo,
+  //       permitedDate: permitedDate,
+  //       invoiceDate: invoiceDate,
+  //       expDate: ExpDate,
+  //       cmValue: cmValue,
+  //       consigneeName: consigneeName,
+  //       consigneeAddress: consigneeAddress,
+  //       bankName: bankName,
+  //       sccmt: sCCMT,
+  //       enterpriseEmp: enterpriseEmp,
+  //       verifyingEmp: verifyingEmp,
+  //       permitEmp: permitEmp,
+  //       // transportCountry: transportCountryName,
+  //     };
+
+  //     axios
+  //       .post(
+  //         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
+  //         purchaseInfo,
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       )
+  //       .then(async (res) => {
+  //         toast.success("Successfully Uploaded to server", {
+  //           position: "top-center",
+  //         });
+
+  //         try {
+  //           // Create an array of delete promises for all selected products
+  //           const deletePromises = selectedProduct.map((product) =>
+  //             axios.delete(
+  //               `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes/${product.id}`
+  //             )
+  //           );
+
+  //           // Wait for all delete requests to complete
+  //           await Promise.all(deletePromises);
+
+  //           // Update the state after the delete operations are complete
+  //           setBoxData((prevBoxData) =>
+  //             prevBoxData.filter(
+  //               (data) => !selectedProduct.some((product) => product.id === data.id)
+  //             )
+  //           );
+
+  //           setFilteredData((prevFilteredData) =>
+  //             prevFilteredData.filter(
+  //               (data) => !selectedProduct.some((product) => product.id === data.id)
+  //             )
+  //           );
+
+  //           // Navigate after the operations are done
+  //           navigate("/exportAndFinance");
+  //         } catch (deleteError) {
+  //           // Handle delete-specific errors if needed
+  //           toast.error("Failed to delete some items. Please check and try again.", {
+  //             position: "top-center",
+  //           });
+  //         }
+  //       })
+  //       .catch((err) =>
+  //         toast.error("This error is coming from the server, please try again later!", {
+  //           position: "top-center",
+  //         })
+  //       );
+
+
+
+  //   };
+  // }
+
+  const formSubmit = async (e) => {
     e.preventDefault();
     const confirmPurchase = window.confirm(
-      "Are you sure, you want to confirm these data as next step?"
+      "Are you sure you want to confirm these data as the next step?"
     );
-    if (confirmPurchase) {
+    if (!confirmPurchase) return;
+
+    setBtnLoading(true); // ✅ Start loading
+
+    try {
       let weightPerBoxList = [];
       let individualTotalBoxWeightList = [];
 
@@ -299,15 +420,16 @@ const Purchase = () => {
         weightPerBoxList.push(product?.weightPerBox);
         individualTotalBoxWeightList.push(product?.individualTotalBoxWeight);
       });
+
       const newEx = parseFloat(total);
       const purchaseInfo = {
         id: 0,
-        transportWay: transportWay, // id pass
-        transportCountryName: transportCountryName, // id pass
+        transportWay,
+        transportCountryName,
         purchaseProductInBoxes: selectedProduct,
-        invoiceNo: invoiceNo,
+        invoiceNo,
         total: newEx.toString(),
-        truckNo: truckNo,
+        truckNo,
         transportCountry: transportCountryName,
         transportPort: selectedTransportCountryPort,
         date: selectedProductDate,
@@ -315,7 +437,7 @@ const Purchase = () => {
         tradeExpanseDate: "",
         status: "initialPurchase",
         finalStatus: "",
-        allTotalBoxWeight: allTotalBoxWeight,
+        allTotalBoxWeight,
         carrierExpanseStatus: false,
         carrierExpanseDate: "",
         seaExpanseStatus: false,
@@ -325,81 +447,70 @@ const Purchase = () => {
         image: "",
         candF: 0,
         epNo: ipNo,
-        zone: zone,
-        loadfrom: loadfrom,
-        expNo: expNo,
-        permitedDate: permitedDate,
-        invoiceDate: invoiceDate,
+        zone,
+        loadfrom,
+        expNo,
+        permitedDate,
+        invoiceDate,
         expDate: ExpDate,
-        cmValue: cmValue,
-        consigneeName: consigneeName,
-        consigneeAddress: consigneeAddress,
-        bankName: bankName,
+        cmValue,
+        consigneeName,
+        consigneeAddress,
+        bankName,
         sccmt: sCCMT,
-        enterpriseEmp: enterpriseEmp,
-        verifyingEmp: verifyingEmp,
-        permitEmp: permitEmp,
-        // transportCountry: transportCountryName,
+        enterpriseEmp,
+        verifyingEmp,
+        permitEmp,
       };
 
-      axios
-        .post(
-          "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
-          purchaseInfo,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+      await axios.post(
+        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
+        purchaseInfo,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      toast.success("Successfully Uploaded to server", {
+        position: "top-center",
+      });
+
+      // Create an array of delete promises for all selected products
+      const deletePromises = selectedProduct.map((product) =>
+        axios.delete(
+          `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes/${product.id}`
         )
-        .then(async (res) => {
-          toast.success("Successfully Uploaded to server", {
-            position: "top-center",
-          });
+      );
 
-          try {
-            // Create an array of delete promises for all selected products
-            const deletePromises = selectedProduct.map((product) =>
-              axios.delete(
-                `https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes/${product.id}`
-              )
-            );
+      // Wait for all delete requests to complete
+      await Promise.all(deletePromises);
 
-            // Wait for all delete requests to complete
-            await Promise.all(deletePromises);
+      // Update the state after the delete operations are complete
+      setBoxData((prevBoxData) =>
+        prevBoxData.filter(
+          (data) => !selectedProduct.some((product) => product.id === data.id)
+        )
+      );
 
-            // Update the state after the delete operations are complete
-            setBoxData((prevBoxData) =>
-              prevBoxData.filter(
-                (data) => !selectedProduct.some((product) => product.id === data.id)
-              )
-            );
+      setFilteredData((prevFilteredData) =>
+        prevFilteredData.filter(
+          (data) => !selectedProduct.some((product) => product.id === data.id)
+        )
+      );
 
-            setFilteredData((prevFilteredData) =>
-              prevFilteredData.filter(
-                (data) => !selectedProduct.some((product) => product.id === data.id)
-              )
-            );
+      // Navigate after all operations are done
+      navigate("/exportAndFinance");
 
-            // Navigate after the operations are done
-            navigate("/exportAndFinance");
-          } catch (deleteError) {
-            // Handle delete-specific errors if needed
-            toast.error("Failed to delete some items. Please check and try again.", {
-              position: "top-center",
-            });
-          }
-        })
-        .catch((err) =>
-          toast.error("This error is coming from the server, please try again later!", {
-            position: "top-center",
-          })
-        );
+    } catch (error) {
+      toast.error("An error occurred, please try again later!", {
+        position: "top-center",
+      });
 
+    } finally {
+      setBtnLoading(false); // ✅ Reset loading state in all cases
+    }
+  };
 
-
-    };
-  }
 
   const [searchValue, setSearchValue] = useState('');
 
@@ -956,7 +1067,7 @@ const Purchase = () => {
               onClick={formSubmit}
               className="mr-2 btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
             >
-              Save
+              {btnLoading ? "Saving" : "Save"}
             </button>
           </div>
         </div>

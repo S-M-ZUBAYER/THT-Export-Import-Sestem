@@ -158,6 +158,10 @@ const FinanceDetails = () => {
                 finalStatus: "finalData",
 
             };
+
+            console.log(AcceptedData, "accepted data");
+
+
             // Save updated finance data to the API
             axios.post('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/finance', AcceptedData)
                 .then(response => {

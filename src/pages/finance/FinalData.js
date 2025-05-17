@@ -21,7 +21,7 @@ const FinalData = () => {
   const [finances, setFinances] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsPerPage] = useState(2);
+  const [itemsPerPage] = useState(10);
   const componentPDF = useRef();
   const [filteredData, setFilteredData] = useState([]);
   const [startDate, setStartDate] = useState(new Date());

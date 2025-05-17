@@ -17,6 +17,7 @@ const AddCharges = () => {
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [filteredCharges, setFilteredCharges] = useState([]); // State for filtered charges
   const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     particularExpenseName: "",
@@ -71,15 +72,19 @@ const AddCharges = () => {
   // Data save for server
   const handleSubmit = (e) => {
     e.preventDefault();
+    setBtnLoading(true);
+
     const isChargeExists = charges.some(
       (item) =>
         item.particularExpenseName.toLowerCase() ===
         formData.particularExpenseName.toLowerCase()
     );
+
     if (isChargeExists) {
       toast.error("This Charge already exists. Add another", {
         position: "top-center",
       });
+      setBtnLoading(false); // ✅ Ensure button is reset if charge already exists
     } else {
       axios
         .post(
@@ -97,13 +102,17 @@ const AddCharges = () => {
           });
           fetchAccounts();
         })
-        .catch((err) =>
+        .catch((err) => {
           toast.error("Error coming from server please try again later", {
             position: "top-center",
-          })
-        );
+          });
+        })
+        .finally(() => {
+          setBtnLoading(false); // ✅ Ensures loading state resets in all cases
+        });
     }
   };
+
 
   // data delete from server and also frontend
   const handleDelete = async (id) => {
@@ -168,7 +177,10 @@ const AddCharges = () => {
               <button
                 className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
                 type="submit">
-                Save
+                {
+                  btnLoading ? "Saving" : "Save"
+                }
+
               </button>
             </div>
           </div>

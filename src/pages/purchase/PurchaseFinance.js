@@ -29,7 +29,7 @@ const PurchaseFinance = () => {
     const [finalTruckNo, setFinalTruckNo] = useState("");
     const [finalTransportPort, setFinalTransportPort] = useState("");
     const [finalTransportCountry, setFinalTransportCountry] = useState("");
-
+    const [btnLoading, setBtnLoading] = useState(false);
     const [searchValue, setSearchValue] = useState('');
     const [rows, setRows] = useState([
         { slNo: 1, date: "", containerNo: "", containerTypeSize: "", invoiceNo: "", epNumber: "", fareAmount: 0, aitVat: 0, individualTotalAmount: 0 }
@@ -205,38 +205,42 @@ const PurchaseFinance = () => {
 
 
     // Data send to server
-    const handleToFinalSave = (e) => {
+    const handleToFinalSave = async (e) => {
         e.preventDefault();
         const confirmPurchase = window.confirm(
-            "Are you sure, you want to confirm these data as Final Export?"
+            "Are you sure you want to confirm these data as Final Export?"
         );
-        if (confirmPurchase) {
+        if (!confirmPurchase) return;
 
+        setBtnLoading(true); // ✅ Start loading state
+
+        try {
             console.log(updateProductInfo, "purchase info");
 
-            axios
-                .put(
-                    "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
-                    updateProductInfo,
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                )
-                .then((res) => {
-                    toast.success("Successfully Uploaded to server", {
-                        position: "top-center",
-                    });
+            await axios.put(
+                "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase",
+                updateProductInfo,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
 
-                    // Navigate to final purchase page after the operation is complete
-                    navigate("/finalExport");
-                })
-                .catch((err) => {
-                    toast.error("This error coming from server please try again later!!", {
-                        position: "top-center",
-                    });
-                });
+            toast.success("Successfully Uploaded to server", {
+                position: "top-center",
+            });
+
+            // Navigate to final purchase page after the operation is complete
+            navigate("/finalExport");
+
+        } catch (error) {
+            toast.error("This error is coming from the server, please try again later!!", {
+                position: "top-center",
+            });
+
+        } finally {
+            setBtnLoading(false); // ✅ Always reset loading state
         }
     };
 
@@ -447,6 +451,7 @@ const PurchaseFinance = () => {
                 selectedExpensesList={selectedExpensesList}
                 setSelectedExpensesList={setSelectedExpensesList}
                 handleToFinalSave={handleToFinalSave}
+                btnLoading={btnLoading}
                 ipNo={finalIpNo}
                 invoiceNo={finalInvoiceNo}
                 truckNo={finalTruckNo}

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import CarrierTableData from "./CarrierTableData";
 import ShippingDataTable from "./ShippingDataTable";
 
-const ExpensesForm = ({ handleToFinalSave, expenses, onExpenseSave, onTotalCostChange, rows, setRows, containerServiceProvider, setContainerServiceProvider, formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, selectedExpensesList, setSelectedExpensesList, ipNo, invoiceNo, truckNo, transportCountry, transportPort }) => {
+const ExpensesForm = ({ handleToFinalSave, btnLoading, expenses, onExpenseSave, onTotalCostChange, rows, setRows, containerServiceProvider, setContainerServiceProvider, formData, setFormData, shipCostTK, setShipCostTK, shipCostUSD, setShipCostUSD, totalFareAmount, setTotalFareAmount, totalAitVat, setTotalAitVat, totalCarrierAmount, setTotalCarrierAmount, selectedExpensesList, setSelectedExpensesList, ipNo, invoiceNo, truckNo, transportCountry, transportPort }) => {
   const [selectedExpenses, setSelectedExpenses] = useState([]);
   const [remarks, setRemarks] = useState({});
   const [dates, setDates] = useState({});
@@ -148,7 +148,7 @@ const ExpensesForm = ({ handleToFinalSave, expenses, onExpenseSave, onTotalCostC
           onClick={handleToFinalSave}
           className="mr-2 btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
         >
-          Save
+          {btnLoading ? "Saving" : "Save"}
         </button>
       </div>
     </div>

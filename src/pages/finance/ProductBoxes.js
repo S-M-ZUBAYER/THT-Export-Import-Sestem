@@ -32,6 +32,7 @@ const ProductBoxes = () => {
   const [allDataProducts, setAllDataProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [btnLoading, setBtnLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(""); // State for selected date
   const [selectedFixDate, setSelectedFixDate] = useState(""); // State for selected date
   const [dates, setDates] = useState([]); // State for unique dates
@@ -72,142 +73,242 @@ const ProductBoxes = () => {
   };
 
 
+  // const formSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   // Check if productList is empty
+  //   if (productList.length === 0) {
+  //     toast.error("No products to save.", {
+  //       position: "top-center",
+  //     });
+  //     return;
+  //   }
+
+  //   // Check if productList is empty
+  //   if (!selectedFixDate) {
+  //     toast.error("Please Select the Fix date first Please.", {
+  //       position: "top-center",
+  //     });
+  //     return;
+  //   }
+
+  //   try {
+  //     // Create a list of promises for all product requests
+  //     const productPromises = productList.map(async (product) => {
+  //       const productData = {
+  //         productName: product?.productName,
+  //         productModel: product?.productModels,
+  //         productBrand: product?.productBrand,
+  //         quantity: product?.productQuantity,
+  //         splitProductsBox: product?.perBoxProducts,
+  //         splitQuantitySingleProduct: product?.modelQuantity,
+  //         productPerBox: product?.productQuantity,
+  //         weightPerBox: parseFloat(product?.weightPerBox),
+  //         totalBox: product?.totalBox,
+  //         individualTotalBoxWeight: parseFloat(product?.individualTotalBoxWeight),
+  //         totalPallet: product?.palletNo,
+  //         truckNumber: product?.truckNumber,
+  //         date: selectedFixDate,
+  //       };
+
+
+  //       // Send the data to the product API
+  //       const productResponse = await fetch(
+  //         "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes",
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify(productData),
+  //         }
+  //       );
+
+  //       if (!productResponse.ok) {
+  //         const errorMessage = `Failed to save product: ${productResponse.status} ${productResponse.statusText}`;
+  //         console.error(errorMessage);
+  //         throw new Error(errorMessage); // Custom error message
+  //       }
+
+  //       const result = await productResponse.json();
+
+  //       // Prepare the data for the second API
+  //       const productReduceData = {
+  //         productName: product.productName,
+  //         productModel: product.productModels,
+  //         productBrand: product.productBrand,
+  //         productQuantity: product.productQuantity,
+  //         date: selectedFixDate,
+  //       };
+
+
+  //       // Split productModels and modelQuantity if there are multiple values
+  //       const productModels = product.productModels.split(",").map((model) => model.trim());
+  //       const productQuantities = product.modelQuantity.split(",").map((quantity) => quantity.trim());
+  //       const perProductTotalQuantity = product.perProductTotalQuantity.split(",").map((quantity) => quantity.trim());
+
+  //       if (productModels.length !== productQuantities.length) {
+  //         throw new Error("Mismatch between number of product models and quantities");
+  //       }
+  //       if (perProductTotalQuantity.length !== productQuantities.length) {
+  //         throw new Error("Mismatch between number of per product total quantity and quantities");
+  //       }
+
+  //       // Handle patch and update operations for models and brands in parallel
+  //       const updatePromises = productModels.map(async (model, i) => {
+  //         const updateData = {
+  //           productModel: model,
+  //           productQuantity: parseInt(productQuantities[i], 10),
+  //           usedProduct: parseInt(productQuantities[i], 10)
+  //         };
+  //         // Perform patch and put requests
+  //         try {
+  //           await axios.patch(
+  //             "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts/sub",
+  //             updateData
+  //           );
+  //         } catch (error) {
+  //           console.error(`Failed to update office account for ${model}:`, error);
+  //           throw error;
+  //         }
+  //       });
+
+  //       // Wait for all patch and put operations to complete
+  //       await Promise.all(updatePromises);
+  //     });
+
+  //     // Wait for all products to be processed
+  //     await Promise.all(productPromises);
+
+  //     // Success toast and navigation
+  //     toast.success("Successfully uploaded to server", {
+  //       position: "top-center",
+  //     });
+
+  //     // Reset form and navigate
+  //     navigate("/printInitialData");
+
+  //   } catch (error) {
+  //     console.error("Error occurred:", error);
+
+  //     // Check if it's a network error or a response error
+  //     if (error.message.includes("Failed to fetch")) {
+  //       toast.error("Network Error. Please check your connection and try again.", {
+  //         position: "top-center",
+  //       });
+  //     } else if (error.response) {
+  //       toast.error(`API Error: ${error.response.status} ${error.response.statusText}`, {
+  //         position: "top-center",
+  //       });
+  //     } else {
+  //       toast.error(`Error: ${error.message}`, {
+  //         position: "top-center",
+  //       });
+  //     }
+  //   }
+  // };
+
   const formSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if productList is empty
+    // Prevent multiple submissions
+    setLoading(true);
+
     if (productList.length === 0) {
-      toast.error("No products to save.", {
-        position: "top-center",
-      });
+      toast.error("No products to save.", { position: "top-center" });
+      setLoading(false);
       return;
     }
 
-    // Check if productList is empty
     if (!selectedFixDate) {
-      toast.error("Please Select the Fix date first Please.", {
-        position: "top-center",
-      });
+      toast.error("Please select the fix date first.", { position: "top-center" });
+      setLoading(false);
       return;
     }
 
     try {
-      // Create a list of promises for all product requests
-      const productPromises = productList.map(async (product) => {
-        const productData = {
-          productName: product?.productName,
-          productModel: product?.productModels,
-          productBrand: product?.productBrand,
-          quantity: product?.productQuantity,
-          splitProductsBox: product?.perBoxProducts,
-          splitQuantitySingleProduct: product?.modelQuantity,
-          productPerBox: product?.productQuantity,
-          weightPerBox: parseFloat(product?.weightPerBox),
-          totalBox: product?.totalBox,
-          individualTotalBoxWeight: parseFloat(product?.individualTotalBoxWeight),
-          totalPallet: product?.palletNo,
-          truckNumber: product?.truckNumber,
-          date: selectedFixDate,
-        };
-
-
-        // Send the data to the product API
-        const productResponse = await fetch(
-          "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(productData),
-          }
-        );
-
-        if (!productResponse.ok) {
-          const errorMessage = `Failed to save product: ${productResponse.status} ${productResponse.statusText}`;
-          console.error(errorMessage);
-          throw new Error(errorMessage); // Custom error message
-        }
-
-        const result = await productResponse.json();
-        console.log("Product saved successfully:", result);
-
-        // Prepare the data for the second API
-        const productReduceData = {
-          productName: product.productName,
-          productModel: product.productModels,
-          productBrand: product.productBrand,
-          productQuantity: product.productQuantity,
-          date: selectedFixDate,
-        };
-
-
-        // Split productModels and modelQuantity if there are multiple values
-        const productModels = product.productModels.split(",").map((model) => model.trim());
-        const productQuantities = product.modelQuantity.split(",").map((quantity) => quantity.trim());
-        const perProductTotalQuantity = product.perProductTotalQuantity.split(",").map((quantity) => quantity.trim());
-
-        if (productModels.length !== productQuantities.length) {
-          throw new Error("Mismatch between number of product models and quantities");
-        }
-        if (perProductTotalQuantity.length !== productQuantities.length) {
-          throw new Error("Mismatch between number of per product total quantity and quantities");
-        }
-
-        // Handle patch and update operations for models and brands in parallel
-        const updatePromises = productModels.map(async (model, i) => {
-          const updateData = {
-            productModel: model,
-            productQuantity: parseInt(productQuantities[i], 10),
-            usedProduct: parseInt(productQuantities[i], 10)
+      // Process all products asynchronously
+      await Promise.all(
+        productList.map(async (product) => {
+          const productData = {
+            productName: product.productName,
+            productModel: product.productModels,
+            productBrand: product.productBrand,
+            quantity: product.productQuantity,
+            splitProductsBox: product.perBoxProducts,
+            splitQuantitySingleProduct: product.modelQuantity,
+            productPerBox: product.productQuantity,
+            weightPerBox: parseFloat(product.weightPerBox),
+            totalBox: product.totalBox,
+            individualTotalBoxWeight: parseFloat(product.individualTotalBoxWeight),
+            totalPallet: product.palletNo,
+            truckNumber: product.truckNumber,
+            date: selectedFixDate,
           };
-          // Perform patch and put requests
-          try {
-            await axios.patch(
-              "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts/sub",
-              updateData
-            );
-          } catch (error) {
-            console.error(`Failed to update office account for ${model}:`, error);
-            throw error;
+
+          // Send product data to API
+          const productResponse = await fetch(
+            "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/product_in_boxes",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(productData),
+            }
+          );
+
+          if (!productResponse.ok) {
+            throw new Error(`Failed to save product: ${productResponse.status} ${productResponse.statusText}`);
           }
-        });
 
-        // Wait for all patch and put operations to complete
-        await Promise.all(updatePromises);
-      });
+          // Split productModels and modelQuantity if there are multiple values
+          const productModels = product.productModels.split(",").map((model) => model.trim());
+          const productQuantities = product.modelQuantity.split(",").map((quantity) => quantity.trim());
+          const perProductTotalQuantity = product.perProductTotalQuantity.split(",").map((quantity) => quantity.trim());
 
-      // Wait for all products to be processed
-      await Promise.all(productPromises);
+          if (productModels.length !== productQuantities.length || perProductTotalQuantity.length !== productQuantities.length) {
+            throw new Error("Mismatch between product models and quantities.");
+          }
+
+          // Update office account records for each model
+          await Promise.all(
+            productModels.map(async (model, i) => {
+              try {
+                await axios.patch(
+                  "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/office_accounts/sub",
+                  {
+                    productModel: model,
+                    productQuantity: parseInt(productQuantities[i], 10),
+                    usedProduct: parseInt(productQuantities[i], 10),
+                  }
+                );
+              } catch (error) {
+                console.error(`Failed to update office account for ${model}:`, error);
+                throw error;
+              }
+            })
+          );
+        })
+      );
 
       // Success toast and navigation
-      toast.success("Successfully uploaded to server", {
-        position: "top-center",
-      });
-
-      // Reset form and navigate
+      toast.success("Successfully uploaded to server", { position: "top-center" });
       navigate("/printInitialData");
 
     } catch (error) {
       console.error("Error occurred:", error);
 
-      // Check if it's a network error or a response error
+      // Error handling based on type
       if (error.message.includes("Failed to fetch")) {
-        toast.error("Network Error. Please check your connection and try again.", {
-          position: "top-center",
-        });
+        toast.error("Network Error. Please check your connection.", { position: "top-center" });
       } else if (error.response) {
-        toast.error(`API Error: ${error.response.status} ${error.response.statusText}`, {
-          position: "top-center",
-        });
+        toast.error(`API Error: ${error.response.status} ${error.response.statusText}`, { position: "top-center" });
       } else {
-        toast.error(`Error: ${error.message}`, {
-          position: "top-center",
-        });
+        toast.error(`Error: ${error.message}`, { position: "top-center" });
       }
+    } finally {
+      setLoading(false); // ✅ Ensure loading state resets
     }
   };
-
 
 
   useEffect(() => {
@@ -285,34 +386,33 @@ const ProductBoxes = () => {
 
 
   const handleNameInputChange = (e) => {
-    const productName = e.target.value;
-
-    // Find products that match the selected productName
+    const [productName, productBrand] = e.target.value.split(","); // Split productName and productBrand
+    // Filter products based on both productName and productBrand
     const models = filteredProducts
-      .filter(product => product.productName === productName)
-      .map(product => {
-        // Set the selected brand for the first matching product (if any)
-        setSelectedProductBrand(product.productBrand);
-
-        // Return model data (modelNo, quantity, and brand)
-        return {
-          modelNo: product.productModel,
-          quantity: product.productQuantity,
-          totalQuantityPerProduct: product.productQuantity
-        };
-      });
+      .filter(
+        (product) =>
+          product.productName === productName && product.productBrand === productBrand
+      )
+      .map((product) => ({
+        modelNo: product.productModel,
+        brandName: product.productBrand,
+        quantity: product.productQuantity,
+        totalQuantityPerProduct: product.productQuantity,
+      }));
 
     // Update the model list with the filtered model data
     setModelList(models);
 
-    // Set the selected product name
+    // Set the selected product name and brand
     setSelectedProductName(productName);
+    setSelectedProductBrand(productBrand);
 
     // Reset input fields and values
     setSelectedProductModels({});
     setModelData({});
     setInputValues({});
   };
+
 
 
 
@@ -498,19 +598,23 @@ const ProductBoxes = () => {
                       <div className="input-group">
                         <select
                           className="select select-secondary w-full focus:outline-none"
-                          value={selectedProductName || ""}
+                          value={`${selectedProductName},${selectedProductBrand}` || ""} // Include both productName and productBrand
                           name="productName"
                           required
                           onChange={handleNameInputChange}
                         >
                           <option value="" className="mt-2">Pick product Name</option>
                           {filteredProducts?.map((product, index) => (
-                            <option key={index} value={product.productName}>
-                              {product?.productName}
+                            <option
+                              key={index}
+                              value={`${product.productName},${product.productBrand}`} // Match value format
+                            >
+                              {`${product?.productName} (${product?.productBrand})`}
                             </option>
                           ))}
                         </select>
                       </div>
+
                       {errorMessage && (
                         <p className="text-red-500">{errorMessage}</p>
                       )}
@@ -793,7 +897,7 @@ const ProductBoxes = () => {
             <button
               className="btn btn-info font-bold px-6 py-2 text-purple-950 hover:text-purple-800"
               onClick={formSubmit}>
-              Save
+              {btnLoading ? "Saving" : "Save"}
             </button>
           </div>
         )}

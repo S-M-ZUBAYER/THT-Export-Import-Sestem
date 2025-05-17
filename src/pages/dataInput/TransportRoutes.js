@@ -15,6 +15,7 @@ const override = {
 const TransportRoutes = () => {
   const [transports, setTransports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
   const [lastId, setLastId] = useState('');
   const [formTransportData, setFormTransportData] = useState({
     transportWay: "",
@@ -54,8 +55,10 @@ const TransportRoutes = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setBtnLoading(true); // ✅ Start loading state
+
     const isRouteExists = transports.some(
       (item) =>
         item.transportWay.toLowerCase() ===
@@ -63,34 +66,34 @@ const TransportRoutes = () => {
     );
 
     if (isRouteExists) {
-      toast.error("This Route already exists !!", {
+      toast.error("This Route already exists !!", { position: "top-center" });
+      setBtnLoading(false); // ✅ Reset loading state if duplicate exists
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/transport",
+        formTransportData
+      );
+
+      toast.success("Successfully Uploaded to server", { position: "top-center" });
+
+      setTransports([
+        { id: lastId, ...formTransportData },
+        ...transports,
+      ]);
+
+    } catch (err) {
+      toast.error("Error coming from server, please try again later", {
         position: "top-center",
       });
-    } else {
-      axios
-        .post(
-          "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/transport",
-          formTransportData
-        )
-        .then((res) => {
-          toast.success("Successfully Uploaded to server", {
-            position: "top-center",
-          });
-          setTransports([
-            {
-              id: lastId,
-              ...formTransportData
-            },
-            ...transports]
-          )
-        })
-        .catch((err) =>
-          toast.error("Error coming from server please try again later", {
-            position: "top-center",
-          })
-        );
+
+    } finally {
+      setBtnLoading(false); // ✅ Always reset loading state
     }
   };
+
 
   // product delete from server and also frontend
   const handleDelete = async (id) => {
@@ -139,7 +142,7 @@ const TransportRoutes = () => {
               <button
                 className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
                 type="submit">
-                Save
+                {btnLoading ? "Saving" : "Save"}
               </button>
             </div>
           </div>

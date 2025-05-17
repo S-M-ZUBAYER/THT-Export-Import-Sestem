@@ -21,8 +21,10 @@ const FinalPurchase = () => {
         axios.get('https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/purchase')
             .then(response => {
                 const sortedData = response?.data.sort((a, b) => b.id - a.id);
+                console.log(sortedData);
                 const finalPurchases = sortedData.filter(purchase => purchase.status === "purchase");
                 setPurchases(finalPurchases);
+
                 setFilteredPurchases(finalPurchases);
             })
             .catch(error => {

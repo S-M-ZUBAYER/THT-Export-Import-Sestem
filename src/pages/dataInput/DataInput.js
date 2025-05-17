@@ -17,6 +17,7 @@ const DataInput = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
   const [error, setError] = useState("");
   const [lastId, setLastId] = useState('');
   const navigate = useNavigate();
@@ -125,12 +126,13 @@ const DataInput = () => {
   };
 
   // data save to server
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (error) {
-      return;
-    }
+    if (error) return;
+
     setError("");
+    setBtnLoading(true); // ✅ Start loading state
+
     const isModelExists = products.some(
       (item) =>
         item.productModel === formData.productModel &&
@@ -138,48 +140,39 @@ const DataInput = () => {
     );
 
     if (isModelExists) {
-      toast.error("This Model already exists. Check table Data", {
-        position: "top-center",
-      });
-    } else {
-      axios
-        .post(
-          "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/products",
-          formData,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        .then((res) => {
-          toast.success("Successfully Add New Product Full Information", {
-            position: "top-center",
-          });
-          setFilteredProducts([
-            {
-              id: lastId,
-              ...formData
-            },
-            ...filteredProducts]
-          )
-          fetchProducts(); // Assuming res.data doesn't have the new record
-          setFormData({
-            productName: "",
-            productBrand: "",
-            productModel: "",
-            productWeight: "",
-          });
-          setFormData({});
-        })
-        .catch((err) =>
-          toast.error("Error coming from server please try again later", {
-            position: "top-center",
-          })
-        );
+      toast.error("This Model already exists. Check table Data", { position: "top-center" });
+      setBtnLoading(false); // ✅ Reset loading state if duplicate exists
+      return;
     }
 
+    try {
+      const res = await axios.post(
+        "https://grozziieget.zjweiting.com:3091/web-api-tht-1/api/dev/products",
+        formData,
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      toast.success("Successfully Added New Product Full Information", { position: "top-center" });
+
+      setFilteredProducts([{ id: lastId, ...formData }, ...filteredProducts]);
+
+      fetchProducts(); // ✅ Refresh product list (Assuming API doesn’t return the new product)
+
+      setFormData({
+        productName: "",
+        productBrand: "",
+        productModel: "",
+        productWeight: "",
+      });
+
+    } catch (err) {
+      toast.error("Error coming from server, please try again later", { position: "top-center" });
+
+    } finally {
+      setBtnLoading(false); // ✅ Always reset loading state
+    }
   };
+
 
   // product delete from server and also frontend
   const handleDelete = async (id) => {
@@ -307,7 +300,7 @@ const DataInput = () => {
               <button
                 className="btn btn-info px-10 active:scale-[.98] active:duration-75 hover:scale-[1.03] ease-in-out transition-all py-3 rounded-lg bg-violet-500 text-white font-bold hover:text-black"
                 type="submit">
-                Save
+                {btnLoading ? "Saving" : "Save"}
               </button>
             </div>
           </div>
